@@ -63,6 +63,22 @@
 .ed-full-bar{display:flex;align-items:center;gap:12px;padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));background:rgba(13,9,17,.96);border-bottom:1px solid var(--line)}
 .ed-full-back{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--field);color:var(--ink);font:500 .85rem/1 var(--f-ui);cursor:pointer}
 .ed-full-back:hover{border-color:var(--accent)}
-.ed-full-tag{flex:1;font:300 .8rem/1.3 var(--f-ui);color:var(--muted);letter-spacing:.04em}
 .ed-full iframe{width:100%;height:100%;border:0;background:#000}
-@media (max-width:600px){.ed-full-tag{display:none}.ed-full-back{flex:1;justify-content:center}}
+/* Pop-up démo : retour · navigation entre modèles · choisir */
+.ed-full-bar{justify-content:space-between}
+.ed-full-nav{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-width:0}
+.ed-full-nav>button{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--field);color:var(--ink);font:300 1.5rem/1 var(--f-ui);cursor:pointer}
+.ed-full-nav>button:hover{border-color:var(--accent);color:var(--accent)}
+.ed-full-name{display:grid;text-align:center;min-width:0}
+.ed-full-name strong{font:400 1.25rem/1.15 var(--f-display);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ed-full-name small{font:300 .72rem/1.3 var(--f-ui);color:var(--muted)}
+.ed-full-bar>.btn-s{flex:none}
+@media (max-width:700px){
+  .ed-full-bar{flex-wrap:wrap;gap:8px}
+  .ed-full-back span:last-child{display:none}
+  .ed-full-back::after{content:"Retour"}
+  .ed-full-nav{order:3;flex-basis:100%}
+}
+/* Indice sur chaque carte : on peut voir la démo */
+.ed-tpls button::after{content:"▶ Démo";position:absolute;top:8px;right:8px;padding:4px 8px;border-radius:999px;background:rgba(13,9,17,.7);color:#fff;font:500 .62rem/1 var(--f-ui);letter-spacing:.08em;opacity:.85}
+.ed-tpls button[aria-pressed=true]::after{top:10px;right:10px;padding:6px 10px;font-size:.68rem}

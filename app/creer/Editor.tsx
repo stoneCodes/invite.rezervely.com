@@ -32,6 +32,12 @@ async function shrink(file: File): Promise<Blob> {
   return new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error("photo"))), "image/jpeg", 0.85));
 }
 
+/** Modèle suivant / précédent dans le catalogue (en boucle). */
+function cycle(id: TemplateId, step: number): TemplateId {
+  const i = TEMPLATES.findIndex((t) => t.id === id);
+  return TEMPLATES[(i + step + TEMPLATES.length) % TEMPLATES.length].id as TemplateId;
+}
+
 const VERSE_HINTS = {
   bible: { text: "Ex. L'amour excuse tout, il croit tout, il espère tout…", ref: "Ex. 1 Corinthiens 13:7" },
   coran: { text: "Traduction en français (facultatif)", ref: "Ex. Sourate Ar-Rûm, 30:21" },
@@ -72,30 +78,34 @@ export default function Editor() {
     frame.current?.contentWindow?.postMessage({ type: "invite-preview", data, template, replay }, window.location.origin);
   }, [data, template]);
   /* Rendu plein écran : l'invitation complète (ouverture, date à révéler…) avec les données en cours, même non enregistrées. */
-  const [full, setFull] = useState(false);
+  // Modèle affiché en plein écran (celui choisi, ou un autre qu'on découvre depuis les cartes).
+  const [full, setFull] = useState<TemplateId | null>(null);
   const fullFrame = useRef<HTMLIFrameElement>(null);
   useEffect(() => {
     if (!full) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const esc = (e: KeyboardEvent) => e.key === "Escape" && setFull(false);
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setFull(null);
+      else if (e.key === "ArrowRight" || e.key === "ArrowLeft") setFull((f) => (f ? cycle(f, e.key === "ArrowRight" ? 1 : -1) : f));
+    };
     window.addEventListener("keydown", esc);
     return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", esc); };
-  }, [full]);
+  }, [full !== null]);
 
   useEffect(() => {
     const on = (e: MessageEvent) => {
       if (e.origin !== window.location.origin || e.data?.type !== "invite-preview-ready") return;
       const fw = fullFrame.current?.contentWindow;
       if (fw && e.source === fw) {
-        fw.postMessage({ type: "invite-preview", data, template, replay: true, full: true }, window.location.origin);
+        fw.postMessage({ type: "invite-preview", data, template: full ?? template, replay: true, full: true }, window.location.origin);
         return;
       }
       ready.current = true; send();
     };
     window.addEventListener("message", on);
     return () => window.removeEventListener("message", on);
-  }, [send, data, template]);
+  }, [send, data, template, full]);
   /* L'iframe a pu annoncer « prête » avant que l'éditeur écoute : on lui redemande. */
   const ping = () => frame.current?.contentWindow?.postMessage({ type: "invite-preview-ping" }, window.location.origin);
   useEffect(() => { ping(); }, []);
@@ -175,13 +185,13 @@ export default function Editor() {
             {/* Le modèle choisi passe en tête, en grand, avec un badge ; les autres restent disponibles mais en retrait. */}
             <div className="ed-tpls">
               {TEMPLATES.map((t) => (
-                <button type="button" key={t.id} aria-pressed={template === t.id} onClick={() => setTemplate(t.id)} style={{ backgroundImage: `url(${t.cover})` }}>
+                <button type="button" key={t.id} aria-pressed={template === t.id} aria-label={`${t.name} : voir la démo`} onClick={() => setFull(t.id)} style={{ backgroundImage: `url(${t.cover})` }}>
                   {template === t.id && <em className="ed-tpl-badge">✓ Votre modèle</em>}
                   <span>{t.name}{template === t.id && <small>{t.tagline}</small>}</span>
                 </button>
               ))}
             </div>
-            <p className="ed-help">Touchez un autre modèle pour changer : vos textes sont conservés.</p>
+            <p className="ed-help">Touchez un modèle pour voir sa démo avec vos informations, puis choisissez-le : vos textes sont conservés.</p>
           </fieldset>
 
           <fieldset>
@@ -306,7 +316,7 @@ export default function Editor() {
           <div className="ed-actions">
             {msg && <p className={`ed-msg ${msg.kind}`} role="status">{msg.text}</p>}
             <div className="ed-btns">
-              <button className="btn-s ghost" type="button" onClick={() => setFull(true)}>Voir le rendu</button>
+              <button className="btn-s ghost" type="button" onClick={() => setFull(template)}>Voir le rendu</button>
               <button className="btn-s ghost" type="submit" disabled={busy}>Enregistrer</button>
               <button className="btn-s" type="button" disabled={busy} onClick={publish}>{status === "published" ? "Mettre à jour" : "Publier"}</button>
               {token && <a className="btn-s ghost" href={`/espace/${token}`}>Mon espace</a>}
@@ -318,22 +328,37 @@ export default function Editor() {
         <aside className={`ed-preview ${tab === "preview" ? "" : "ed-hide-m"}`}>
           <div className="ed-phone"><iframe ref={frame} src="/apercu" title="Aperçu de l'invitation" onLoad={ping} /></div>
           <div className="ed-btns" style={{ justifyContent: "center" }}>
-            <button type="button" className="btn-s" onClick={() => setFull(true)}>Voir en plein écran</button>
+            <button type="button" className="btn-s" onClick={() => setFull(template)}>Voir en plein écran</button>
             <button type="button" className="btn-s ghost" onClick={() => { setTab("preview"); send(true); }}>Rejouer l'ouverture</button>
           </div>
         </aside>
       </div>
 
-      {full && (
-        <div className="ed-full" role="dialog" aria-modal="true" aria-label="Rendu de votre invitation">
-          <div className="ed-full-bar">
-            <button type="button" className="ed-full-back" onClick={() => setFull(false)}><span aria-hidden="true">←</span> Revenir à la modification</button>
-            <span className="ed-full-tag">Rendu, comme vos invités le verront</span>
-            {status !== "published" && <button type="button" className="btn-s" disabled={busy} onClick={() => { setFull(false); publish(); }}>Publier</button>}
+      {full && (() => {
+        const shown = TEMPLATES.find((t) => t.id === full)!;
+        const idx = TEMPLATES.findIndex((t) => t.id === full);
+        const isMine = full === template;
+        return (
+          <div className="ed-full" role="dialog" aria-modal="true" aria-label={`Démo du modèle ${shown.name}`}>
+            <div className="ed-full-bar">
+              <button type="button" className="ed-full-back" onClick={() => setFull(null)}><span aria-hidden="true">←</span> <span>Revenir à la modification</span></button>
+              <div className="ed-full-nav">
+                <button type="button" aria-label="Modèle précédent" onClick={() => setFull(cycle(full, -1))}>‹</button>
+                <div className="ed-full-name">
+                  <strong>{shown.name}</strong>
+                  <small>{isMine ? "✓ Votre modèle" : `Modèle ${idx + 1} sur ${TEMPLATES.length}`} · avec vos informations</small>
+                </div>
+                <button type="button" aria-label="Modèle suivant" onClick={() => setFull(cycle(full, 1))}>›</button>
+              </div>
+              {isMine
+                ? status !== "published" && <button type="button" className="btn-s" disabled={busy} onClick={() => { setFull(null); publish(); }}>Publier</button>
+                : <button type="button" className="btn-s" onClick={() => { setTemplate(full); setFull(null); setMsg({ kind: "ok", text: `Modèle « ${shown.name} » choisi. Pensez à enregistrer.` }); }}>Choisir ce modèle</button>}
+            </div>
+            {/* key : chaque modèle recharge l'iframe, qui rejoue son ouverture. */}
+            <iframe key={full} ref={fullFrame} src="/apercu?plein=1" title={`Démo du modèle ${shown.name}`} />
           </div>
-          <iframe ref={fullFrame} src="/apercu?plein=1" title="Rendu de votre invitation" />
-        </div>
-      )}
+        );
+      })()}
     </main>
   );
 }
