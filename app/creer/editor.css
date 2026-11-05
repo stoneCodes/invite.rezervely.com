@@ -21,7 +21,7 @@
 .ed-x{flex:none;width:36px;height:40px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--muted);font-size:1.2rem;cursor:pointer}
 .ed-add{justify-self:start;border:1px dashed var(--line);background:none;border-radius:8px;padding:8px 12px;color:var(--accent);font:inherit;cursor:pointer}
 .ed-color{display:grid;gap:8px;padding:10px;border:1px solid var(--line);border-radius:10px}
-.ed-tpls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ed-tpls{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
 .ed-tpls button{aspect-ratio:3/4;border-radius:10px;border:2px solid transparent;background:center/cover;cursor:pointer;display:flex;align-items:flex-end;padding:0;overflow:hidden}
 .ed-tpls button span{width:100%;padding:8px 6px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font:500 .78rem/1.2 var(--f-ui);text-align:left}
 .ed-tpls button[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 3px rgba(231,198,140,.3)}

@@ -144,14 +144,14 @@ export default function HomeClient() {
       <div className="gl-marq" aria-hidden>
         <div>
           {[0, 1].map((k) => (
-            <span key={k}>{["Lac aux cygnes", "Nuit dorée", "Jardin de nuit", "Date à gratter", "Réponses en direct"].map((w) => (<span key={w}>{w} <i>&amp;</i> </span>))}</span>
+            <span key={k}>{["Lac aux cygnes", "Nuit dorée", "Jardin de nuit", "Appel entrant", "Date à gratter", "Réponses en direct"].map((w) => (<span key={w}>{w} <i>&amp;</i> </span>))}</span>
           ))}
         </div>
       </div>
 
       <section id="gl-hz" className="gl-hz">
         <div className="gl-stick">
-          <div className="gl-hz-head"><div className="gl-kicker">Trois univers</div><h2>Choisissez <span className="gold-text">votre soirée</span></h2></div>
+          <div className="gl-hz-head"><div className="gl-kicker">{TEMPLATES.length} univers</div><h2>Choisissez <span className="gold-text">votre soirée</span></h2></div>
           <div id="gl-track" className="gl-track">
             {TEMPLATES.map((t, i) => (
               <article key={t.id} className="gl-tpl">

@@ -15,7 +15,9 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
   - `engine.js` : moteur porté du prototype validé (ouvertures, particules, défilement scénarisé, grattage, dress code, verset, musique synthétisée). `mountInvitation(data, template, opts)` → `{ replay, destroy }`. Fichier JS volontairement non typé (typage dans `engine.d.ts`).
   - `markup.ts` : balisage commun aux 3 templates (les ids sont utilisés par le moteur).
   - `invitation.css` : styles des 3 templates (tokens par `body[data-tpl]`).
-  - `Invitation.tsx` : composant client qui monte le moteur. Pour changer les données, remonter le composant (prop `key`).
+  - `Invitation.tsx` : composant client qui monte le moteur. Pour changer les données, remonter le composant (prop `key`). Aiguille selon le template : `appel` → `appel/appel.js` (`mountAppel(root, data, opts)`), les autres → `engine.js`.
+  - `appel/` : moteur « Appel entrant » (écran d'appel → conversation), styles préfixés `ap-`, images `public/img/appel-*.webp`. Mêmes options (`onRsvp`, `skipIntro`, `noGate`) ; dans l'aperçu de l'éditeur, tout s'affiche d'un coup.
+  - Nouveau template = ajouter son id dans `lib/types.ts` (TEMPLATES), `app/i/[slug]/opengraph-image.tsx` et une migration SQL qui élargit la contrainte `invitations_template_check` (ex. `002_template_appel.sql`).
 - `app/creer/Editor.tsx` : éditeur (formulaire + iframe `/apercu` alimentée par `postMessage`).
 - `app/i/[slug]` : page publique + image Open Graph (aperçu WhatsApp).
 - `app/espace/[token]` : réponses, stats, export CSV.
