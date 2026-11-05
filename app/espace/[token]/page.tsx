@@ -65,7 +65,7 @@ export default async function Espace({ params }: { params: Promise<{ token: stri
                   {rsvps.map((r) => (
                     <tr key={r.id}>
                       <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)" }}>{r.name}</td>
-                      <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)", color: r.attending ? "#2F7A4F" : "#A24F4F" }}>{r.attending ? "Présent" : "Absent"}</td>
+                      <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)", color: r.attending ? "var(--ok)" : "var(--err)" }}>{r.attending ? "Présent" : "Absent"}</td>
                       <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)", fontVariantNumeric: "tabular-nums" }}>{r.guests}</td>
                       <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)", minWidth: 180 }}>{r.message}</td>
                       <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)", whiteSpace: "nowrap" }}>{fmt.format(new Date(r.created_at))}</td>

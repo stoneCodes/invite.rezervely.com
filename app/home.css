@@ -1,0 +1,84 @@
+/* Page d'accueil « Nuit de gala ». Toutes les classes sont préfixées gl- : invitation.css utilise déjà .hero, .seal, .card… */
+.gl{overflow-x:clip;font-size:16px}
+.gl-kicker{font:400 .72rem/1 var(--f-ui);letter-spacing:.42em;text-transform:uppercase;color:var(--accent)}
+.gl-canvas{position:fixed;inset:0;pointer-events:none}
+.gl-dust{z-index:1}.gl-fw{z-index:30}
+.gl section,.gl .gl-marq,.gl footer{position:relative;z-index:2}
+
+.gl-nav{position:fixed;inset:0 0 auto;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:16px max(20px,env(safe-area-inset-left,0px));transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.gl-nav.is-scrolled{background:rgba(13,9,17,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:var(--line)}
+.gl-logo{font:400 1.5rem/1 var(--f-display);letter-spacing:.08em;text-decoration:none}
+.gl-nav .btn-s{padding:11px 18px}
+
+/* Héros */
+.gl-hero{min-height:100svh;display:grid;place-items:center;text-align:center;padding:120px 20px 80px;background:radial-gradient(60% 50% at 50% 35%,rgba(201,154,75,.18),transparent 70%),radial-gradient(40% 40% at 80% 90%,rgba(231,166,182,.12),transparent 70%)}
+.gl-hero h1{font-size:clamp(3rem,9vw,7.2rem);line-height:.95;margin:.35em 0 .25em}
+.gl-hero h1 .gl-script{font-family:var(--f-script);font-size:1.12em;display:block;margin-top:.08em}
+.gl-hero p{max-width:50ch;margin:0 auto 34px;color:var(--muted);font-size:1.08rem}
+.gl-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.gl-ctas .btn-s{padding:16px 28px}
+.gl-letter{display:inline-block;opacity:0;transform:translateY(.5em) rotate(4deg);filter:blur(8px);animation:gl-in .9s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes gl-in{to{opacity:1;transform:none;filter:none}}
+.gl-rise{opacity:0;animation:gl-rise 1.2s cubic-bezier(.2,.8,.2,1) forwards,gl-shine 6s linear infinite}
+@keyframes gl-rise{from{opacity:0;transform:translateY(.3em)}to{opacity:1;transform:none}}
+.gl-cue{position:absolute;bottom:28px;left:50%;translate:-50% 0;width:1px;height:56px;background:linear-gradient(var(--accent),transparent);animation:gl-cue 2s ease-in-out infinite}
+@keyframes gl-cue{50%{transform:scaleY(.4);transform-origin:top}}
+
+/* Enveloppe épinglée : s'ouvre au défilement */
+.gl-pin{height:260vh}
+.gl-stick{position:sticky;top:0;height:100svh;overflow:hidden}
+.gl-pin .gl-stick{display:grid;place-items:center;padding-top:12vh}
+.gl-env{position:relative;width:min(78vw,440px);aspect-ratio:1.45;perspective:1400px}
+.gl-env>div{position:absolute;inset:0;border-radius:10px}
+.gl-env-back{background:linear-gradient(160deg,#3A2531,#22161D)}
+.gl-env-card{left:6%!important;right:6%!important;top:8%!important;bottom:auto!important;height:118%;z-index:2;border-radius:8px!important;background:url(/img/2a-enveloppe.webp) center/cover,#F6EBDD;box-shadow:0 30px 60px -20px #000;display:grid;place-items:center;text-align:center;color:#2A1C0C;transform:translateY(calc(var(--p2,0) * -48%))}
+.gl-env-card>div{background:rgba(255,248,236,.88);padding:20px 24px;border-radius:6px}
+.gl-env-card b{display:block;font:400 clamp(2rem,7vw,2.6rem)/1.05 var(--f-script);margin:6px 0}
+.gl-env-card small{letter-spacing:.3em;text-transform:uppercase;font-size:.6rem}
+.gl-env-front{background:linear-gradient(200deg,#4A2F3E,#2A1A24);clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%);z-index:3;box-shadow:inset 0 0 0 1px var(--line)}
+.gl-env-flap{background:linear-gradient(180deg,#5B3A4B,#3A2531);clip-path:polygon(0 0,100% 0,50% 58%);transform-origin:top;transform:rotateX(calc(var(--p1,0) * 180deg));z-index:calc(4 - var(--z,0));box-shadow:inset 0 0 0 1px var(--line)}
+.gl-env-seal{inset:auto!important;left:50%!important;top:50%!important;width:64px;height:64px;margin:-38px 0 0 -32px;border-radius:50%!important;background:radial-gradient(circle at 35% 30%,#F3D79B,#9C7230);z-index:5;display:grid;place-items:center;font:400 1.4rem var(--f-script);color:#3A2410;box-shadow:0 6px 20px rgba(0,0,0,.5);opacity:calc(1 - var(--p1,0) * 3)}
+.gl-pin-cap{position:absolute;bottom:9vh;left:0;right:0;text-align:center;padding:0 16px}
+.gl-pin-cap h2{font-size:clamp(1.6rem,5vw,3.4rem);margin:.3em 0 0}
+
+/* Bandeau défilant */
+.gl-marq{border-block:1px solid var(--line);padding:22px 0;overflow:hidden;white-space:nowrap;font:400 clamp(1.6rem,4vw,2.6rem)/1 var(--f-display)}
+.gl-marq>div{display:inline-block;animation:gl-mq 30s linear infinite}
+.gl-marq i{font-family:var(--f-script);font-style:normal;color:var(--rose);margin:0 .6em}
+@keyframes gl-mq{to{transform:translateX(-50%)}}
+
+/* Modèles en défilement horizontal */
+.gl-hz{height:300vh}
+.gl-hz .gl-stick{display:flex;flex-direction:column;justify-content:center;gap:28px}
+.gl-hz-head{padding:0 6vw}
+.gl-hz h2{font-size:clamp(2.2rem,5.5vw,4rem);margin:.2em 0 0}
+.gl-track{display:flex;gap:4vw;padding:0 6vw;will-change:transform}
+.gl-tpl{flex:0 0 auto;height:min(62svh,540px);aspect-ratio:3/4.3;max-width:80vw;border-radius:22px;position:relative;overflow:hidden;border:1px solid var(--line);transform:perspective(900px) rotateY(var(--ry,0deg))}
+.gl-tpl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.15) translateX(var(--px,0))}
+.gl-tpl-ov{position:absolute;inset:auto 0 0;padding:24px;background:linear-gradient(transparent,rgba(13,9,17,.95) 45%)}
+.gl-tpl h3{font:400 2rem/1 var(--f-display);margin:0 0 6px}
+.gl-tpl p{margin:0 0 16px;color:var(--muted);font-size:.92rem}
+.gl-tpl .gl-row{display:flex;gap:8px;flex-wrap:wrap}
+.gl-tpl .btn-s{padding:12px 16px}
+.gl-num{position:absolute;top:18px;left:22px;font:400 .7rem var(--f-ui);letter-spacing:.3em}
+.gl-tpl.is-end{display:grid;place-items:center;text-align:center;background:var(--card);padding:30px}
+
+/* Étapes */
+.gl-steps{padding-block:18vh;display:grid;gap:12vh}
+.gl-step{display:grid;grid-template-columns:auto 1fr;gap:5vw;align-items:center}
+.gl-step .gl-n{font:400 clamp(5rem,16vw,11rem)/.8 var(--f-display)}
+.gl-step h3{font:400 clamp(1.8rem,4vw,2.8rem)/1.05 var(--f-display);margin:0 0 10px}
+.gl-step p{color:var(--muted);margin:0;max-width:44ch}
+.gl-rv{opacity:0;transform:translateY(50px);transition:opacity 1s,transform 1s cubic-bezier(.2,.8,.2,1)}
+.gl-rv.is-on{opacity:1;transform:none}
+
+.gl-final{padding:22vh 20px;text-align:center;background:radial-gradient(50% 60% at 50% 50%,rgba(201,154,75,.2),transparent 70%)}
+.gl-final h2{font-size:clamp(2.6rem,8vw,6rem);margin:.2em 0 .5em}
+.gl-final .btn-s{padding:16px 28px}
+.gl footer{padding:30px 20px calc(30px + env(safe-area-inset-bottom,0px));text-align:center;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line)}
+
+@media (max-width:640px){.gl-step{grid-template-columns:1fr;gap:8px}}
+@media (prefers-reduced-motion:reduce){
+  .gl *{animation:none!important;transition:none!important}
+  .gl-letter,.gl-rise,.gl-rv{opacity:1;transform:none;filter:none}
+}
