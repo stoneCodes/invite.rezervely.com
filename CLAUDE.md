@@ -40,6 +40,11 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 4. Version allégée des effets pour les téléphones peu puissants (désactiver flou/3D si `navigator.hardwareConcurrency <= 4` ou FPS bas).
 5. Pages légales : mentions légales, CGV, politique de confidentialité (photos + noms des invités → RGPD, durée de conservation).
 6. Templates suivants : voir le document « Catalogue des 10 templates d'invitation » (prompts d'images inclus).
+   Validés par Glad le 5 nov. 2026, à construire (maquette cliquable d'abord, puis moteur) :
+   - `appel` « Appel entrant » : écran d'appel « Samuel & Léa vous appellent », glisser pour décrocher, puis la suite en conversation (bulles, message vocal facultatif des mariés, date en « message masqué » à frotter, réponses rapides). Ne pas copier l'écran d'appel iOS/Android à l'identique. Son seulement après le geste de décrochage.
+   - `boule-neige` « Le monde miniature » : boule à neige à secouer (capteur de mouvement, autorisation demandée au toucher sur iPhone, repli au doigt), puis plongée dans des maquettes miniatures ; la date est de la buée à essuyer sur le verre.
+   - `origami` « Origami » : grue en papier qui se déplie en 3D, chaque section est un pliage dessiné en code, la date est une enveloppe origami à déplier, la réponse part en avion en papier.
+   Images : Glad les génère avec ChatGPT (photographiques, naturelles, sans texte ni visage), puis conversion WebP dans `public/img`.
 7. Vercel : passer en Pro avant d'activer le paiement (Hobby interdit l'usage commercial).
 
 ## Commandes
