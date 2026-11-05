@@ -45,3 +45,7 @@
   .ed-phone iframe{border-radius:22px}
   .ed-row2{grid-template-columns:1fr}
 }
+/* Lien vers l'accueil : au-dessus du formulaire ; sur téléphone, sous la barre d'onglets fixe */
+.ed-top{max-width:1180px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 0}
+.ed-top + .ed-tabs + .ed-grid{padding-top:16px}
+@media (max-width:900px){.ed-top{padding-top:76px}}

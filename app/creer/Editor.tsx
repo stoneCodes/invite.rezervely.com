@@ -1,6 +1,7 @@
 "use client";
 import "./editor.css";
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { sampleData } from "@/lib/sample";
 import { TEMPLATES, type InvitationData, type TemplateId } from "@/lib/types";
@@ -137,6 +138,9 @@ export default function Editor() {
 
   return (
     <main className="site ed">
+      <nav className="ed-top">
+        <Link href="/" className="ed-home" aria-label="Revenir à l'accueil"><span aria-hidden="true">←</span> <span className="gold-text">Rezervely</span></Link>
+      </nav>
       <div className="ed-tabs">
         <button type="button" aria-pressed={tab === "form"} onClick={() => setTab("form")}>Modifier</button>
         <button type="button" aria-pressed={tab === "preview"} onClick={() => setTab("preview")}>Aperçu</button>

@@ -26,3 +26,16 @@ body:has(.site){background:#0D0911}
 .muted{color:var(--muted)}
 .card-s{background:var(--card);border:1px solid var(--line);border-radius:16px}
 @media (prefers-reduced-motion:reduce){.gold-text,.btn-s{animation:none}}
+
+/* Bouton « Accueil » des pages de démo (au-dessus des ouvertures plein écran des invitations) */
+.demo-exit{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:12px;z-index:200;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 15px;border-radius:999px;
+  background:rgba(13,9,17,.62);color:#F6EBDD;border:1px solid rgba(231,198,140,.35);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  font:400 .85rem/1 "Jost",system-ui,sans-serif;letter-spacing:.04em;text-decoration:none;box-shadow:0 6px 18px -6px rgba(0,0,0,.45)}
+.demo-exit:hover{background:rgba(13,9,17,.8)}
+.demo-exit:focus-visible{outline:2px solid #E7C68C;outline-offset:3px}
+/* Démo : laisser la place au bouton « Accueil » au-dessus des titres d'ouverture */
+body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
+
+/* Lien « ← Rezervely » vers l'accueil (éditeur, espace des mariés) */
+.ed-home{display:inline-flex;align-items:center;gap:8px;font:400 1.4rem/1 var(--f-display);letter-spacing:.08em;color:var(--muted);text-decoration:none;padding:6px 0}
+.ed-home:hover{color:var(--ink)}

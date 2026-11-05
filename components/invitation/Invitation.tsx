@@ -48,7 +48,7 @@ function ClassicInvitation({ data, template, slug, skipIntro, noGate, onReady }:
   useEffect(() => {
     const api = mountInvitation(data, template, options(slug, skipIntro, noGate));
     onReady?.(api);
-    return () => api.destroy();
+    return () => { api.destroy(); delete document.body.dataset.tpl; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <div ref={ref} dangerouslySetInnerHTML={{ __html: MARKUP }} />;
@@ -59,7 +59,7 @@ function OwnEngine({ data, slug, skipIntro, noGate, onReady, mount }: Props & { 
   useEffect(() => {
     const api = mount(ref.current!, data, options(slug, skipIntro, noGate));
     onReady?.(api);
-    return () => api.destroy();
+    return () => { api.destroy(); delete document.body.dataset.tpl; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <div ref={ref} />;
