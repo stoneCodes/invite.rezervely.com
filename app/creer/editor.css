@@ -1,0 +1,45 @@
+.ed{min-height:100vh}
+.ed-grid{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:32px;max-width:1180px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left,0px)) 40px}
+.ed-form{display:grid;gap:18px;min-width:0}
+.ed-form h1{font-size:2.4rem;margin:0}
+.ed fieldset{border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px 18px 18px;display:grid;gap:12px;margin:0;min-width:0}
+.ed legend{font:500 .72rem/1 var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--accent);padding:0 6px}
+.ed label{display:grid;gap:6px;font-size:.85rem;color:var(--muted)}
+.ed input:not([type=checkbox]):not([type=color]):not([type=file]),.ed textarea,.ed select{font:inherit;font-size:.95rem;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;min-width:0}
+.ed input:focus,.ed textarea:focus,.ed select:focus{outline:2px solid #E7C9CF;border-color:var(--accent)}
+.ed input[type=color]{width:44px;height:40px;padding:2px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;flex:none}
+.ed-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ed-help{margin:-4px 0 0;font-size:.8rem;color:var(--muted)}
+.ed-sub{margin:4px 0 0;font-size:.85rem;font-weight:500}
+.ed-check{display:flex!important;align-items:center;gap:8px;color:var(--ink)!important;cursor:pointer}
+.ed-inline{display:flex!important;align-items:center;gap:8px}
+.ed-item{display:flex;gap:8px;align-items:flex-start}
+.ed-item>input,.ed-item>textarea{flex:1 1 0}
+.ed-item .ed-time{flex:0 0 76px}
+.ed-x{flex:none;width:36px;height:40px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--muted);font-size:1.2rem;cursor:pointer}
+.ed-add{justify-self:start;border:1px dashed var(--line);background:none;border-radius:8px;padding:8px 12px;color:var(--accent);font:inherit;cursor:pointer}
+.ed-color{display:grid;gap:8px;padding:10px;border:1px solid var(--line);border-radius:10px}
+.ed-tpls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ed-tpls button{aspect-ratio:3/4;border-radius:10px;border:2px solid transparent;background:center/cover;cursor:pointer;display:flex;align-items:flex-end;padding:0;overflow:hidden}
+.ed-tpls button span{width:100%;padding:8px 6px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font:500 .78rem/1.2 var(--f-ui);text-align:left}
+.ed-tpls button[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 3px #F1D8DD}
+.ed-photo{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ed-photo img{width:64px;height:84px;object-fit:cover;border-radius:50%}
+.ed-actions{position:sticky;bottom:0;background:var(--paper);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:grid;gap:8px}
+.ed-btns{display:flex;gap:10px;flex-wrap:wrap}
+.ed-msg{margin:0;font-size:.88rem}.ed-msg.ok{color:#2F7A4F}.ed-msg.err{color:#A23B3B}
+.ed-preview{position:sticky;top:20px;align-self:start;display:grid;gap:14px;justify-items:center}
+.ed-phone{width:390px;height:780px;border-radius:44px;padding:12px;background:#1E1418;box-shadow:0 30px 60px rgba(60,30,40,.25)}
+.ed-phone iframe{width:100%;height:100%;border:0;border-radius:34px;background:#000}
+.ed-tabs{display:none}
+@media (max-width:900px){
+  .ed-grid{grid-template-columns:1fr;padding-top:64px}
+  .ed-tabs{display:flex;position:fixed;top:0;left:0;right:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-left,0px));gap:8px}
+  .ed-tabs button{flex:1;font:500 .8rem var(--f-ui);letter-spacing:.1em;text-transform:uppercase;padding:10px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+  .ed-tabs button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .ed-hide-m{display:none!important}
+  .ed-preview{position:static}
+  .ed-phone{width:min(390px,100%);height:calc(100vh - 150px);border-radius:28px;padding:8px}
+  .ed-phone iframe{border-radius:22px}
+  .ed-row2{grid-template-columns:1fr}
+}

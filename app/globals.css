@@ -1,0 +1,15 @@
+/* Styles du site (accueil, éditeur, espace des mariés). Les invitations ont leur propre feuille. */
+:root{--ink:#3B2630;--muted:#86707A;--paper:#FBF5F3;--card:#fff;--line:#EAD9DA;--accent:#A24F64;--accent-ink:#fff;--gold:#B8935A;
+  --f-script:"Pinyon Script",cursive;--f-serif:"Cormorant Garamond",Garamond,serif;--f-ui:"Jost","Avenir Next",system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+.site{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.5;min-height:100vh}
+.site h1,.site h2{font-family:var(--f-serif);font-weight:500;line-height:1.1;text-wrap:balance}
+.site a{color:var(--accent)}
+.wrap-site{max-width:1080px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.btn-s{display:inline-flex;align-items:center;gap:8px;font:500 .8rem/1 var(--f-ui);letter-spacing:.12em;text-transform:uppercase;padding:13px 20px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;cursor:pointer}
+.btn-s.ghost{background:transparent;color:var(--accent)}
+.btn-s:disabled{opacity:.5;cursor:not-allowed}
+.btn-s:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.muted{color:var(--muted)}
+.card-s{background:var(--card);border:1px solid var(--line);border-radius:14px}
