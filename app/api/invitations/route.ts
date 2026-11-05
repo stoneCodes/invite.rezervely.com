@@ -10,6 +10,6 @@ export async function POST(req: Request) {
   if (!body || !isTemplate(body.template)) return NextResponse.json({ error: "Template inconnu" }, { status: 400 });
   const row = { slug: newSlug(), edit_token: newEditToken(), template: body.template, data: sanitizeData(body.data), owner_email: email(body.email) };
   const { error } = await db().from("invitations").insert(row);
-  if (error) return NextResponse.json({ error: "Enregistrement impossible" }, { status: 500 });
+  if (error) { console.error("invitations.insert", error.code, error.message); return NextResponse.json({ error: "Enregistrement impossible" }, { status: 500 }); }
   return NextResponse.json({ slug: row.slug, editToken: row.edit_token, status: "draft" });
 }
