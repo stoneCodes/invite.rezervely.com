@@ -355,7 +355,7 @@ export default function Editor() {
                 : <button type="button" className="btn-s" onClick={() => { setTemplate(full); setFull(null); setMsg({ kind: "ok", text: `Modèle « ${shown.name} » choisi. Pensez à enregistrer.` }); }}>Choisir ce modèle</button>}
             </div>
             {/* key : chaque modèle recharge l'iframe, qui rejoue son ouverture. */}
-            <iframe key={full} ref={fullFrame} src="/apercu?plein=1" title={`Démo du modèle ${shown.name}`} />
+            <iframe key={full} ref={fullFrame} src="/apercu?plein=1" title={`Démo du modèle ${shown.name}`} allow="accelerometer; gyroscope" />
           </div>
         );
       })()}

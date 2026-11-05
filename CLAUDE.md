@@ -35,7 +35,7 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 - Effets « waouh » au défilement sur les 3 templates (héros épinglé qui avance dans la scène, médaillon photo en 3D avec orbite de particules, titres lettre par lettre, fil lumineux du programme…).
 - Textes, images : pas de texte ni de visage dans les images générées par IA ; images en WebP dans `public/img`.
 - Identité du site (accueil, éditeur, espace) : thème « Nuit de gala », choisi par Glad le 5 nov. 2026 parmi 3 maquettes. Fond nuit aubergine `#0D0911`, or champagne en dégradé animé, touches de rose `#E7A6B6`. Titres en Italiana, écriture en Pinyon Script, texte en Jost 300. Tokens dans `app/globals.css`, posés sur `.site` (jamais sur `:root`, pour ne pas toucher aux invitations).
-- Accueil (`app/HomeClient.tsx` + `app/home.css`, classes préfixées `gl-`) : poussière d'or, titre lettre par lettre, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal, feu d'artifice doré sur les boutons « Créer ». Toujours respecter `prefers-reduced-motion`.
+- Accueil (`app/HomeClient.tsx` + `app/home.css`, classes préfixées `gl-`) : poussière d'or, titre lettre par lettre, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal,  « Démo » ouvre une pop-up plein écran sur place (iframe `/demo/<id>?integre=1`, pas de nouvel onglet ; styles `.ed-full*` partagés dans `globals.css`), feu d'artifice doré sur les boutons « Créer ». Toujours respecter `prefers-reduced-motion`.
 
 ## À faire (par ordre)
 1. Stripe Checkout : quand `PAYMENTS_ENABLED=true`, `POST /api/invitations/[token]/publish` doit créer une session et publier sur webhook `checkout.session.completed`. Prix à définir avec Glad.

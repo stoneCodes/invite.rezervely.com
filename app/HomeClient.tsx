@@ -2,8 +2,8 @@
 import "./home.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, type MouseEvent } from "react";
-import { TEMPLATES } from "@/lib/types";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { TEMPLATES, type TemplateId } from "@/lib/types";
 
 const TITLE = "Faites briller";
 
@@ -100,6 +100,26 @@ export default function HomeClient() {
     setTimeout(() => router.push(href), reduce ? 0 : 550);
   };
 
+  /* Démo en pop-up plein écran, sans quitter l'accueil (plus de nouvel onglet). */
+  const [demo, setDemo] = useState<TemplateId | null>(null);
+  const cycle = (id: TemplateId, step: number) => {
+    const i = TEMPLATES.findIndex((t) => t.id === id);
+    return TEMPLATES[(i + step + TEMPLATES.length) % TEMPLATES.length].id as TemplateId;
+  };
+  useEffect(() => {
+    if (!demo) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDemo(null);
+      else if (e.key === "ArrowRight" || e.key === "ArrowLeft") setDemo((d) => (d ? cycle(d, e.key === "ArrowRight" ? 1 : -1) : d));
+    };
+    window.addEventListener("keydown", key);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", key); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demo !== null]);
+  const shown = demo ? TEMPLATES.find((t) => t.id === demo)! : null;
+
   return (
     <main className="site gl">
       <canvas id="gl-dust" className="gl-canvas gl-dust" aria-hidden />
@@ -162,7 +182,7 @@ export default function HomeClient() {
                   <p>{t.tagline}</p>
                   <div className="gl-row">
                     <a className="btn-s" href={`/creer?t=${t.id}`} onClick={celebrate(`/creer?t=${t.id}`)}>Créer la mienne</a>
-                    <Link className="btn-s ghost" href={`/demo/${t.id}`} target="_blank">Démo</Link>
+                    <a className="btn-s ghost" href={`/demo/${t.id}`} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); setDemo(t.id as TemplateId); }}>Démo</a>
                   </div>
                 </div>
               </article>
@@ -188,6 +208,25 @@ export default function HomeClient() {
         <a className="btn-s" href="/creer" onClick={celebrate("/creer")}>Créer mon invitation</a>
       </section>
       <footer>Rezervely · Invitations de mariage animées</footer>
+
+      {demo && shown && (
+        <div className="ed-full" role="dialog" aria-modal="true" aria-label={`Démo du modèle ${shown.name}`}>
+          <div className="ed-full-bar">
+            <button type="button" className="ed-full-back" onClick={() => setDemo(null)}><span aria-hidden="true">←</span> <span>Revenir à l'accueil</span></button>
+            <div className="ed-full-nav">
+              <button type="button" aria-label="Modèle précédent" onClick={() => setDemo(cycle(demo, -1))}>‹</button>
+              <div className="ed-full-name">
+                <strong>{shown.name}</strong>
+                <small>Modèle {TEMPLATES.findIndex((t) => t.id === demo) + 1} sur {TEMPLATES.length} · démo</small>
+              </div>
+              <button type="button" aria-label="Modèle suivant" onClick={() => setDemo(cycle(demo, 1))}>›</button>
+            </div>
+            <a className="btn-s" href={`/creer?t=${demo}`} onClick={celebrate(`/creer?t=${demo}`)}>Créer avec ce modèle</a>
+          </div>
+          {/* key : chaque modèle recharge la démo, qui rejoue son ouverture. */}
+          <iframe key={demo} src={`/demo/${demo}?integre=1`} title={`Démo du modèle ${shown.name}`} allow="accelerometer; gyroscope" />
+        </div>
+      )}
     </main>
   );
 }
