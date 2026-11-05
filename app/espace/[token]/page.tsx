@@ -38,7 +38,7 @@ export default async function Espace({ params }: { params: Promise<{ token: stri
           )}
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <Link className="btn-s" href={`/creer?edit=${token}`}>Modifier l'invitation</Link>
-            {inv.status === "published" && <a className="btn-s ghost" href={link} target="_blank" rel="noopener">Voir l'invitation</a>}
+            <Link className="btn-s ghost" href={`/espace/${token}/voir`}>Voir mon invitation</Link>
           </div>
         </section>
 

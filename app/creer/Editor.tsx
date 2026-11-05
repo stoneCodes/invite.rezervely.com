@@ -71,11 +71,31 @@ export default function Editor() {
     if (!ready.current) return;
     frame.current?.contentWindow?.postMessage({ type: "invite-preview", data, template, replay }, window.location.origin);
   }, [data, template]);
+  /* Rendu plein écran : l'invitation complète (ouverture, date à révéler…) avec les données en cours, même non enregistrées. */
+  const [full, setFull] = useState(false);
+  const fullFrame = useRef<HTMLIFrameElement>(null);
   useEffect(() => {
-    const on = (e: MessageEvent) => { if (e.origin === window.location.origin && e.data?.type === "invite-preview-ready") { ready.current = true; send(); } };
+    if (!full) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setFull(false);
+    window.addEventListener("keydown", esc);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", esc); };
+  }, [full]);
+
+  useEffect(() => {
+    const on = (e: MessageEvent) => {
+      if (e.origin !== window.location.origin || e.data?.type !== "invite-preview-ready") return;
+      const fw = fullFrame.current?.contentWindow;
+      if (fw && e.source === fw) {
+        fw.postMessage({ type: "invite-preview", data, template, replay: true, full: true }, window.location.origin);
+        return;
+      }
+      ready.current = true; send();
+    };
     window.addEventListener("message", on);
     return () => window.removeEventListener("message", on);
-  }, [send]);
+  }, [send, data, template]);
   /* L'iframe a pu annoncer « prête » avant que l'éditeur écoute : on lui redemande. */
   const ping = () => frame.current?.contentWindow?.postMessage({ type: "invite-preview-ping" }, window.location.origin);
   useEffect(() => { ping(); }, []);
@@ -152,13 +172,16 @@ export default function Editor() {
 
           <fieldset>
             <legend>Style</legend>
+            {/* Le modèle choisi passe en tête, en grand, avec un badge ; les autres restent disponibles mais en retrait. */}
             <div className="ed-tpls">
               {TEMPLATES.map((t) => (
                 <button type="button" key={t.id} aria-pressed={template === t.id} onClick={() => setTemplate(t.id)} style={{ backgroundImage: `url(${t.cover})` }}>
-                  <span>{t.name}</span>
+                  {template === t.id && <em className="ed-tpl-badge">✓ Votre modèle</em>}
+                  <span>{t.name}{template === t.id && <small>{t.tagline}</small>}</span>
                 </button>
               ))}
             </div>
+            <p className="ed-help">Touchez un autre modèle pour changer : vos textes sont conservés.</p>
           </fieldset>
 
           <fieldset>
@@ -283,6 +306,7 @@ export default function Editor() {
           <div className="ed-actions">
             {msg && <p className={`ed-msg ${msg.kind}`} role="status">{msg.text}</p>}
             <div className="ed-btns">
+              <button className="btn-s ghost" type="button" onClick={() => setFull(true)}>Voir le rendu</button>
               <button className="btn-s ghost" type="submit" disabled={busy}>Enregistrer</button>
               <button className="btn-s" type="button" disabled={busy} onClick={publish}>{status === "published" ? "Mettre à jour" : "Publier"}</button>
               {token && <a className="btn-s ghost" href={`/espace/${token}`}>Mon espace</a>}
@@ -293,9 +317,23 @@ export default function Editor() {
 
         <aside className={`ed-preview ${tab === "preview" ? "" : "ed-hide-m"}`}>
           <div className="ed-phone"><iframe ref={frame} src="/apercu" title="Aperçu de l'invitation" onLoad={ping} /></div>
-          <button type="button" className="btn-s ghost" onClick={() => { setTab("preview"); send(true); }}>Rejouer l'ouverture</button>
+          <div className="ed-btns" style={{ justifyContent: "center" }}>
+            <button type="button" className="btn-s" onClick={() => setFull(true)}>Voir en plein écran</button>
+            <button type="button" className="btn-s ghost" onClick={() => { setTab("preview"); send(true); }}>Rejouer l'ouverture</button>
+          </div>
         </aside>
       </div>
+
+      {full && (
+        <div className="ed-full" role="dialog" aria-modal="true" aria-label="Rendu de votre invitation">
+          <div className="ed-full-bar">
+            <button type="button" className="ed-full-back" onClick={() => setFull(false)}><span aria-hidden="true">←</span> Revenir à la modification</button>
+            <span className="ed-full-tag">Rendu, comme vos invités le verront</span>
+            {status !== "published" && <button type="button" className="btn-s" disabled={busy} onClick={() => { setFull(false); publish(); }}>Publier</button>}
+          </div>
+          <iframe ref={fullFrame} src="/apercu?plein=1" title="Rendu de votre invitation" />
+        </div>
+      )}
     </main>
   );
 }

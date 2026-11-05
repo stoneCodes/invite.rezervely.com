@@ -49,3 +49,20 @@
 .ed-top{max-width:1180px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 0}
 .ed-top + .ed-tabs + .ed-grid{padding-top:16px}
 @media (max-width:900px){.ed-top{padding-top:76px}}
+/* Modèle choisi mis en avant : en tête, sur deux colonnes, badge doré ; les autres en retrait */
+.ed-tpls button{position:relative;transition:opacity .25s,transform .25s,filter .25s}
+.ed-tpls button[aria-pressed=false]{opacity:.55;filter:saturate(.7)}
+.ed-tpls button[aria-pressed=false]:hover,.ed-tpls button[aria-pressed=false]:focus-visible{opacity:1;filter:none;transform:translateY(-2px)}
+.ed-tpls button[aria-pressed=true]{order:-1;grid-column:span 2;aspect-ratio:auto;min-height:220px;border-width:2px}
+.ed-tpls button[aria-pressed=true] span{font-size:1rem;padding:14px 12px}
+.ed-tpls button span small{display:block;margin-top:4px;font:300 .78rem/1.35 var(--f-ui);opacity:.9}
+.ed-tpl-badge{position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;background:var(--gold);color:var(--accent-ink);font:600 .68rem/1 var(--f-ui);font-style:normal;letter-spacing:.12em;text-transform:uppercase;box-shadow:0 4px 14px -4px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:reduce){.ed-tpls button{transition:none}}
+/* Rendu plein écran avant publication */
+.ed-full{position:fixed;inset:0;z-index:300;display:grid;grid-template-rows:auto 1fr;background:#000}
+.ed-full-bar{display:flex;align-items:center;gap:12px;padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));background:rgba(13,9,17,.96);border-bottom:1px solid var(--line)}
+.ed-full-back{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--field);color:var(--ink);font:500 .85rem/1 var(--f-ui);cursor:pointer}
+.ed-full-back:hover{border-color:var(--accent)}
+.ed-full-tag{flex:1;font:300 .8rem/1.3 var(--f-ui);color:var(--muted);letter-spacing:.04em}
+.ed-full iframe{width:100%;height:100%;border:0;background:#000}
+@media (max-width:600px){.ed-full-tag{display:none}.ed-full-back{flex:1;justify-content:center}}
