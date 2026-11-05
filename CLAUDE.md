@@ -8,7 +8,7 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 - Next.js 15 (App Router, TypeScript), déployé sur Vercel. Domaine prévu : `invite.rezervely.com` (sous-domaine de Rezervely).
 - Supabase (projet `usolfegmepnazrporeec`) : Postgres + Storage (bucket `photos`). Schéma : `supabase/migrations/001_init.sql`.
 - Pas de client Supabase côté navigateur : RLS activé **sans policy**, tout passe par les routes serveur avec la clé `service_role` (`lib/supabase.ts`, marqué `server-only`).
-- Variables : voir `.env.example`.
+- Variables : voir `.env.example`. Sur Vercel (Hobby), `NEXT_PUBLIC_SITE_URL` reste vide tant que `invite.rezervely.com` n'est pas branché : `siteUrl()` prend alors l'adresse `…vercel.app`. La clé `service_role` est saisie par Glad directement dans Vercel, jamais dans le chat.
 
 ## Structure
 - `components/invitation/` : le cœur visuel.

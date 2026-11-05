@@ -30,4 +30,8 @@ export async function getByToken(token: string): Promise<InvitationRow | null> {
   return (data as InvitationRow) ?? null;
 }
 
-export const siteUrl = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+/** Adresse publique du site : domaine choisi, sinon l'adresse Vercel (…vercel.app) tant que le domaine n'est pas branché. */
+export const siteUrl = () =>
+  (process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000")
+  ).replace(/\/$/, "");
