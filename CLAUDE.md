@@ -20,9 +20,9 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
   - `boule/` : moteur « Le monde miniature » (`boule-neige`), styles préfixés `bn-`, images `public/img/boule-*.webp`. Boule à secouer (capteur de mouvement, autorisation au toucher sur iPhone, glisser au doigt ou bouton en repli), plongée, puis une scène par section (caméra qui avance au défilement). Date = buée à essuyer. Les repères des images (sphère, cadre du chevalet, étapes du chemin, porte du domaine) sont en tête de `boule.js` : à remesurer si une image change.
   - `origami/` : moteur « Origami », styles préfixés `or-`, images `public/img/origami-*.webp`. Grue en 8 facettes (SVG) qui se déplie en feuille ; pliages CSS 3D (carte en deux, accordéon du programme, carte en trois du lieu) dépliés à l'arrivée à l'écran ; date dans une enveloppe à 4 rabats ; réponse envoyée en avion en papier.
   - Nouveau template = ajouter son id dans `lib/types.ts` (TEMPLATES), `app/i/[slug]/opengraph-image.tsx` et une migration SQL qui élargit la contrainte `invitations_template_check` (ex. `002_template_appel.sql`).
-- `app/creer/Editor.tsx` : éditeur (formulaire + iframe `/apercu` alimentée par `postMessage`).
+- `app/creer/Editor.tsx` : éditeur (formulaire + iframe `/apercu` alimentée par `postMessage`), modèle choisi mis en avant, « Voir le rendu » = 2e iframe `/apercu?plein=1` en plein écran (ouverture complète, données non enregistrées comprises).
 - `app/i/[slug]` : page publique + image Open Graph (aperçu WhatsApp).
-- `app/espace/[token]` : réponses, stats, export CSV.
+- `app/espace/[token]` : réponses, stats, export CSV ; `/voir` montre l'invitation aux mariés (publiée ou non, réponses non enregistrées).
 - `app/api/*` : création/mise à jour (`invitations`), publication, envoi photo, RSVP.
 - `lib/validate.ts` : nettoyage/bornage de toutes les données venant du client. Toute nouvelle donnée doit y passer.
 - `prototype/index.html` : prototype d'origine validé par Glad (référence visuelle ; ses images sont dans `public/img`).
