@@ -43,7 +43,10 @@ export default function Editor() {
   const [template, setTemplate] = useState<TemplateId>((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId);
   const [data, setData] = useState<InvitationData>(sampleData);
   const [email, setEmail] = useState("");
-  const [token, setToken] = useState<string | null>(sp.get("edit"));
+  const [token, setTokenState] = useState<string | null>(sp.get("edit"));
+  // Copie synchrone du jeton : deux enregistrements enchaînés (photo) ne doivent pas créer deux invitations.
+  const tokenRef = useRef<string | null>(sp.get("edit"));
+  const setToken = (t: string) => { tokenRef.current = t; setTokenState(t); };
   const [slug, setSlug] = useState<string | null>(null);
   const [status, setStatus] = useState<"draft" | "published">("draft");
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
@@ -72,22 +75,26 @@ export default function Editor() {
     window.addEventListener("message", on);
     return () => window.removeEventListener("message", on);
   }, [send]);
+  /* L'iframe a pu annoncer « prête » avant que l'éditeur écoute : on lui redemande. */
+  const ping = () => frame.current?.contentWindow?.postMessage({ type: "invite-preview-ping" }, window.location.origin);
+  useEffect(() => { ping(); }, []);
   useEffect(() => { const id = setTimeout(() => send(), 450); return () => clearTimeout(id); }, [send]);
 
   const set = <K extends keyof InvitationData>(k: K, v: InvitationData[K]) => setData((d) => ({ ...d, [k]: v }));
   const dc = data.dressCode;
   const setDc = (patch: Partial<InvitationData["dressCode"]>) => set("dressCode", { ...dc, ...patch });
 
-  async function save(): Promise<string | null> {
+  async function save(d: InvitationData = data): Promise<string | null> {
     setBusy(true); setMsg(null);
+    const tk = tokenRef.current;
     try {
-      const res = await fetch(token ? `/api/invitations/${token}` : "/api/invitations", { method: token ? "PUT" : "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, data, email }) });
+      const res = await fetch(tk ? `/api/invitations/${tk}` : "/api/invitations", { method: tk ? "PUT" : "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, data: d, email }) });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error);
       setSlug(j.slug);
-      if (!token && j.editToken) { setToken(j.editToken); router.replace(`/creer?edit=${j.editToken}`); }
+      if (!tk && j.editToken) { setToken(j.editToken); router.replace(`/creer?edit=${j.editToken}`); }
       setMsg({ kind: "ok", text: "Enregistré." });
-      return token ?? j.editToken;
+      return tk ?? j.editToken;
     } catch (e) {
       setMsg({ kind: "err", text: e instanceof Error && e.message ? e.message : "Enregistrement impossible. Réessayez." });
       return null;
@@ -107,7 +114,7 @@ export default function Editor() {
   }
 
   async function upload(file: File) {
-    const t = token ?? (await save());
+    const t = tokenRef.current ?? (await save());
     if (!t) return;
     setBusy(true); setMsg(null);
     try {
@@ -116,8 +123,11 @@ export default function Editor() {
       const res = await fetch(`/api/upload?token=${t}`, { method: "POST", body: fd });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error);
-      set("photoUrl", j.url);
-      setMsg({ kind: "ok", text: "Photo ajoutée. Pensez à enregistrer." });
+      // Enregistrement immédiat : sinon la photo est perdue si l'on quitte la page sans enregistrer.
+      const next = { ...data, photoUrl: j.url };
+      setData(next);
+      setBusy(false);
+      if (await save(next)) setMsg({ kind: "ok", text: "Photo ajoutée et enregistrée." });
     } catch (e) {
       setMsg({ kind: "err", text: e instanceof Error && e.message ? e.message : "Envoi de la photo impossible." });
     } finally { setBusy(false); }
@@ -278,7 +288,7 @@ export default function Editor() {
         </form>
 
         <aside className={`ed-preview ${tab === "preview" ? "" : "ed-hide-m"}`}>
-          <div className="ed-phone"><iframe ref={frame} src="/apercu" title="Aperçu de l'invitation" /></div>
+          <div className="ed-phone"><iframe ref={frame} src="/apercu" title="Aperçu de l'invitation" onLoad={ping} /></div>
           <button type="button" className="btn-s ghost" onClick={() => { setTab("preview"); send(true); }}>Rejouer l'ouverture</button>
         </aside>
       </div>

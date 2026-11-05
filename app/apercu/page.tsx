@@ -11,7 +11,10 @@ export default function Apercu() {
   const v = useRef(0);
   useEffect(() => {
     const on = (e: MessageEvent) => {
-      if (e.origin !== window.location.origin || e.data?.type !== "invite-preview") return;
+      if (e.origin !== window.location.origin) return;
+      // L'éditeur peut se monter après l'iframe : il redemande alors si l'aperçu est prêt.
+      if (e.data?.type === "invite-preview-ping") { window.parent.postMessage({ type: "invite-preview-ready" }, window.location.origin); return; }
+      if (e.data?.type !== "invite-preview") return;
       v.current += 1;
       setState({ v: v.current, msg: e.data as Msg });
     };
