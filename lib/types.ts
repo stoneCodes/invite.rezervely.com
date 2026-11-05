@@ -3,6 +3,7 @@ export const TEMPLATES = [
   { id: "nuit-doree", name: "Nuit dorée", tagline: "Deux portes s'ouvrent dans un éclat de lumière et de poussière d'or", cover: "/img/2b-scene.webp" },
   { id: "jardin-nuit", name: "Jardin de nuit", tagline: "Des lucioles s'échappent de l'enveloppe et écrivent vos prénoms", cover: "/img/5b-scene.webp" },
   { id: "appel", name: "Appel entrant", tagline: "Vos invités reçoivent votre appel, décrochent, et la conversation commence", cover: "/img/appel-fond-defaut.webp" },
+  { id: "boule-neige", name: "Le monde miniature", tagline: "Une boule à neige à secouer, puis une plongée dans votre mariage en miniature", cover: "/img/boule-domaine.webp" },
 ] as const;
 
 export type TemplateId = (typeof TEMPLATES)[number]["id"];

@@ -1,10 +1,12 @@
 "use client";
 import "./invitation.css";
 import "./appel/appel.css";
+import "./boule/boule.css";
 import { useEffect, useRef } from "react";
 import { MARKUP } from "./markup";
 import { mountInvitation, type MountOptions } from "./engine";
 import { mountAppel } from "./appel/appel";
+import { mountBoule } from "./boule/boule";
 import type { InvitationData, TemplateId } from "@/lib/types";
 
 type Props = {
@@ -30,9 +32,13 @@ function options(slug: string | undefined, skipIntro?: boolean, noGate?: boolean
 
 /** Monte une invitation animée. Le balisage est remonté à chaque changement de données (key côté parent). */
 export default function Invitation(props: Props) {
-  // « Appel entrant » a son propre moteur (conversation), les autres partagent engine.js + markup.ts.
-  return props.template === "appel" ? <AppelInvitation {...props} /> : <ClassicInvitation {...props} />;
+  // « Appel entrant » et « Le monde miniature » ont leur propre moteur ; les autres partagent engine.js + markup.ts.
+  if (props.template === "appel") return <OwnEngine {...props} mount={mountAppel} />;
+  if (props.template === "boule-neige") return <OwnEngine {...props} mount={mountBoule} />;
+  return <ClassicInvitation {...props} />;
 }
+
+type Mount = (root: HTMLElement, data: InvitationData, opts?: MountOptions) => { replay(): void; destroy(): void };
 
 function ClassicInvitation({ data, template, slug, skipIntro, noGate, onReady }: Props) {
   const ref = useRef<HTMLDivElement>(null);
@@ -45,10 +51,10 @@ function ClassicInvitation({ data, template, slug, skipIntro, noGate, onReady }:
   return <div ref={ref} dangerouslySetInnerHTML={{ __html: MARKUP }} />;
 }
 
-function AppelInvitation({ data, slug, skipIntro, noGate, onReady }: Props) {
+function OwnEngine({ data, slug, skipIntro, noGate, onReady, mount }: Props & { mount: Mount }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const api = mountAppel(ref.current!, data, options(slug, skipIntro, noGate));
+    const api = mount(ref.current!, data, options(slug, skipIntro, noGate));
     onReady?.(api);
     return () => api.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
