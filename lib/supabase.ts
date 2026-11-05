@@ -1,6 +1,5 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { createHash } from "node:crypto";
 import { customAlphabet } from "nanoid";
 import type { InvitationRow } from "./types";
 
@@ -16,13 +15,6 @@ export function db(): SupabaseClient {
   if (!url || !key) throw new Error("SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY doivent être définis (voir .env.example).");
   client = createClient(url, key, { auth: { persistSession: false } });
   return client;
-}
-
-/** Empreinte non réversible de la clé (longueur, type, 8 caractères de SHA-256) pour diagnostiquer une clé mal collée sans l'afficher. */
-export function keyFingerprint(): string {
-  const k = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? "").trim().replace(/^[A-Z_]+=/, "").replace(/^["']|["']$/g, "").trim();
-  const kind = k.startsWith("eyJ") ? "jwt" : k.startsWith("sb_secret_") ? "sb_secret" : k.startsWith("sb_publishable_") ? "sb_publishable" : "autre";
-  return `cle:${kind} long:${k.length} sha:${createHash("sha256").update(k).digest("hex").slice(0, 8)}`;
 }
 
 // Slug public court et lisible (sans caractères ambigus), jeton d'édition long et secret.
