@@ -2,11 +2,13 @@
 import "./invitation.css";
 import "./appel/appel.css";
 import "./boule/boule.css";
+import "./origami/origami.css";
 import { useEffect, useRef } from "react";
 import { MARKUP } from "./markup";
 import { mountInvitation, type MountOptions } from "./engine";
 import { mountAppel } from "./appel/appel";
 import { mountBoule } from "./boule/boule";
+import { mountOrigami } from "./origami/origami";
 import type { InvitationData, TemplateId } from "@/lib/types";
 
 type Props = {
@@ -35,6 +37,7 @@ export default function Invitation(props: Props) {
   // « Appel entrant » et « Le monde miniature » ont leur propre moteur ; les autres partagent engine.js + markup.ts.
   if (props.template === "appel") return <OwnEngine {...props} mount={mountAppel} />;
   if (props.template === "boule-neige") return <OwnEngine {...props} mount={mountBoule} />;
+  if (props.template === "origami") return <OwnEngine {...props} mount={mountOrigami} />;
   return <ClassicInvitation {...props} />;
 }
 

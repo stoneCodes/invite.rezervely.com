@@ -1,0 +1,225 @@
+/* Modèle « Origami ». Tout est préfixé or- pour ne rien partager avec les autres modèles. */
+body.or-locked{overflow:hidden;height:100%}
+html:has(.or),body:has(.or){background:#E4CBA6}
+.or{--ink:#4B3A30;--muted:#8A7566;--gold:#A9823F;--rose:#D99AA5;--crease:rgba(140,105,70,.22);
+  --washi:#FBF6EE url(/img/origami-washi.webp) center/420px;
+  --f-ui:"Jost","Avenir Next",system-ui,sans-serif;--f-name:"Cormorant Garamond",Garamond,serif;--f-script:"Pinyon Script",cursive;
+  --lift:0 1px 0 rgba(255,255,255,.7) inset,0 22px 40px -20px rgba(80,48,20,.5),0 3px 8px rgba(80,48,20,.14);
+  position:relative;min-height:100svh;color:var(--ink);font:300 16px/1.55 var(--f-ui);-webkit-font-smoothing:antialiased}
+.or *{box-sizing:border-box}
+.or button{font:inherit;color:inherit;cursor:pointer}
+.or svg{display:block}
+.or h1,.or h2,.or h3,.or p{margin:0}
+.or :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* Fond : la table en chêne, et quelques grues qui flottent */
+.or-bg{position:fixed;inset:0;background:#D9B98E url(/img/origami-table.webp) center/cover;z-index:0}
+.or-sky{position:fixed;inset:0;z-index:1;pointer-events:none;display:none}
+.or.is-open .or-sky{display:block}
+.or-sky span{position:absolute;width:calc(46px * var(--s));opacity:.85;filter:drop-shadow(0 10px 8px rgba(80,48,20,.25));animation:or-float 9s ease-in-out var(--d) infinite alternate}
+@keyframes or-float{from{transform:translate(0,0) rotate(-5deg)}to{transform:translate(22px,-30px) rotate(5deg)}}
+
+/* Boutons */
+.or-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:999px;border:0;background:#4B3A30;color:#FBF6EE !important;
+  font:400 .95rem var(--f-ui);letter-spacing:.04em;text-decoration:none;box-shadow:0 10px 24px -10px rgba(60,35,15,.6);transition:transform .2s}
+.or-btn:active{transform:scale(.97)}
+.or-btn svg{width:18px;height:18px}
+.or-btn.ghost{background:rgba(251,246,238,.75);color:var(--ink) !important;border:1px solid rgba(75,58,48,.35);box-shadow:none}
+.or-btn:disabled{opacity:.6}
+.or-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px}
+
+/* ---------- Ouverture : la grue ---------- */
+.or-intro{position:fixed;inset:0;z-index:40;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);justify-items:center;align-items:center;overflow:clip;
+  padding:calc(30px + env(safe-area-inset-top,0px)) 18px calc(34px + env(safe-area-inset-bottom,0px));transition:opacity .9s ease}
+.or-intro[hidden]{display:none}
+.or-intro.is-out{opacity:0;pointer-events:none}
+.or-intro-bg{position:absolute;inset:-20px;background:#F3E6DA url(/img/origami-grues.webp) center/cover;filter:blur(3px) saturate(1.05);z-index:-1}
+.or-intro-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,250,244,.55),rgba(255,250,244,.25) 40%,rgba(255,250,244,.6))}
+.or-kicker{font:italic 400 clamp(1.4rem,6vw,1.9rem)/1.3 var(--f-name);text-align:center;color:var(--ink);transition:opacity .5s}
+.or-hint{font-size:.9rem;letter-spacing:.06em;color:var(--ink);opacity:.8;transition:opacity .5s}
+.or-intro.is-unfolding .or-kicker,.or-intro.is-unfolding .or-hint{opacity:0}
+.or-crane{position:relative;width:min(84vw,48svh,400px);aspect-ratio:1;border:0;padding:0;background:none;perspective:900px;-webkit-tap-highlight-color:transparent}
+.or-crane svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 26px 22px rgba(80,48,20,.32));
+  transform:rotateX(calc(16deg * (1 - var(--t,0)))) rotateY(calc(-26deg * (1 - var(--t,0)))) scale(calc(1 + .04 * var(--t,0)))}
+.or-intro:not(.is-unfolding) .or-crane svg{animation:or-bob 4s ease-in-out infinite}
+@keyframes or-bob{0%,100%{transform:rotateX(16deg) rotateY(-26deg) translateY(0)}50%{transform:rotateX(12deg) rotateY(-18deg) translateY(-10px)}}
+.or-f .p{stroke:var(--crease);stroke-width:.5;stroke-linejoin:round}
+.or-crane-text{position:absolute;left:14%;right:14%;top:14%;bottom:14%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;transition:opacity 1s .2s;pointer-events:none}
+.or-intro.is-flat .or-crane-text{opacity:1}
+
+/* Texte de la feuille dépliée (ouverture + héros) */
+.or-sheet small,.or-crane-text small,.or-head small{display:block;font:500 .7rem/1.4 var(--f-ui);letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.or-sheet h1,.or-crane-text h1{display:flex;flex-direction:column;align-items:center;margin:.25em 0 .2em;font:500 clamp(2.4rem,11vw,3.6rem)/.95 var(--f-name);color:var(--ink)}
+.or-sheet h1 i,.or-crane-text h1 i{font:400 .85em/1 var(--f-script);color:var(--rose)}
+.or-sheet p,.or-crane-text p{max-width:24ch;font:italic 400 clamp(1rem,4.2vw,1.15rem)/1.35 var(--f-name);color:var(--muted)}
+
+/* ---------- Contenu ---------- */
+.or-main{position:relative;z-index:2;display:none;width:min(100%,540px);margin:0 auto;padding:0 18px 8svh}
+.or.is-open .or-main{display:block;animation:or-in 1s ease}
+@keyframes or-in{from{opacity:0}}
+.or-sec{padding-top:12svh}
+.or-head{text-align:center;margin-bottom:22px;opacity:0;translate:0 20px;transition:opacity .8s,translate .9s}
+.or-head.is-in{opacity:1;translate:none}
+.or-head h2{font:500 clamp(2rem,8.5vw,2.5rem)/1.1 var(--f-name);margin-top:.2em;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.or-pan,.or-front,.or-sheet,.or-env-in,.or-rsvp,.or-count span{background:var(--washi);box-shadow:var(--lift)}
+.or-back{position:absolute;inset:0;background:#EFE4D2 url(/img/origami-washi.webp) center/420px;transform:rotateX(180deg);-webkit-backface-visibility:hidden;backface-visibility:hidden;box-shadow:inset 0 0 30px rgba(120,85,50,.18)}
+.or-front{-webkit-backface-visibility:hidden;backface-visibility:hidden}
+
+/* Héros : la feuille dépliée, avec ses plis */
+.or-hero{min-height:100svh;display:grid;place-items:center;padding-top:0;position:relative}
+.or-sheet{width:min(86vw,420px);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12%;rotate:-1.2deg;
+  background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(74,47,30,.045) 0 45deg,transparent 45deg 90deg),
+    linear-gradient(45deg,transparent calc(50% - .6px),var(--crease) 50%,transparent calc(50% + .6px)),
+    linear-gradient(-45deg,transparent calc(50% - .6px),var(--crease) 50%,transparent calc(50% + .6px)),
+    linear-gradient(90deg,transparent calc(50% - .6px),var(--crease) 50%,transparent calc(50% + .6px)),
+    linear-gradient(0deg,transparent calc(50% - .6px),var(--crease) 50%,transparent calc(50% + .6px)),var(--washi)}
+.or-cue{position:absolute;bottom:calc(26px + env(safe-area-inset-bottom,0px));left:0;right:0;display:grid;justify-items:center;gap:8px;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink)}
+.or-cue i{width:1px;height:30px;background:linear-gradient(var(--ink),transparent);animation:or-cue 1.8s ease-in-out infinite}
+@keyframes or-cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* Carte pliée en deux */
+.or-v2{position:relative;perspective:1300px}
+.or-v2 .or-pan{position:relative;z-index:1;padding:16px}
+.or-flap{position:relative;z-index:2;transform-origin:50% 0;transform-style:preserve-3d;transform:rotateX(178deg);transition:transform 1.3s cubic-bezier(.5,.05,.2,1) .1s}
+.or-v2.is-in .or-flap{transform:none}
+.or-flap .or-front{padding:20px 22px;box-shadow:var(--lift),inset 0 1px 0 var(--crease)}
+
+/* Photo + verset */
+.or-photo .or-v2{rotate:.8deg}
+.or-pic{aspect-ratio:4/5;display:grid;place-items:center;overflow:hidden;background:#F1E7D8}
+.or-pic img{width:100%;height:100%;object-fit:cover}
+.or-mono{font:400 clamp(3.5rem,18vw,5rem)/1 var(--f-script);color:var(--gold)}
+.or-mono i{font-style:normal;font-size:.65em;padding:0 .1em}
+.or-verse{text-align:center}
+.or-verse p{font:italic 400 1.2rem/1.45 var(--f-name)}
+.or-verse .or-orig{font:400 1.35rem/1.7 "Amiri",var(--f-name);margin-bottom:.4em;font-style:normal}
+.or-verse small{display:block;margin-top:10px;font:500 .7rem var(--f-ui);letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+.or-script{font:400 2rem/1.2 var(--f-script) !important;color:var(--rose)}
+
+/* ---------- Enveloppe origami ---------- */
+.or-envsec{text-align:center;overflow-x:clip}
+.or-env{position:relative;width:min(66vw,270px);aspect-ratio:1;margin:clamp(70px,12svh,130px) auto 10svh;perspective:1100px}
+.or-env-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px;transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.or-env-in small{font:500 .62rem var(--f-ui);letter-spacing:.26em;text-transform:uppercase;color:var(--gold)}
+.or-env-in b{font:500 clamp(4rem,22vw,5.6rem)/.95 var(--f-name);color:var(--ink)}
+.or-my{font:500 clamp(1.3rem,6vw,1.6rem)/1.1 var(--f-name);text-transform:capitalize}
+.or-wd{font-size:.82rem;color:var(--muted);margin-top:4px}
+.or-flap4{position:absolute;inset:0;border:0;padding:0;transition:transform 1s cubic-bezier(.5,.05,.2,1),opacity .6s;-webkit-tap-highlight-color:transparent}
+.or-flap4.t{clip-path:polygon(0 0,100% 0,50% 50%);transform-origin:50% 0;background:linear-gradient(180deg,rgba(255,255,255,.25),rgba(74,47,30,.14)),var(--washi);z-index:4}
+.or-flap4.r{clip-path:polygon(100% 0,100% 100%,50% 50%);transform-origin:100% 50%;background:linear-gradient(270deg,rgba(255,255,255,.1),rgba(74,47,30,.2)),var(--washi);z-index:3}
+.or-flap4.b{clip-path:polygon(0 100%,100% 100%,50% 50%);transform-origin:50% 100%;background:linear-gradient(0deg,rgba(255,255,255,.15),rgba(74,47,30,.16)),var(--washi);z-index:2}
+.or-flap4.l{clip-path:polygon(0 0,0 100%,50% 50%);transform-origin:0 50%;background:linear-gradient(90deg,rgba(255,255,255,.2),rgba(74,47,30,.1)),var(--washi);z-index:1}
+.or-flap4.t.o{transform:rotateX(180deg)}
+.or-flap4.b.o{transform:rotateX(-180deg)}
+.or-flap4.l.o{transform:rotateY(-180deg)}
+.or-flap4.r.o{transform:rotateY(180deg)}
+.or-env:not(.is-started) .or-flap4.t{animation:or-tease 3.2s ease-in-out 1.5s infinite}
+@keyframes or-tease{0%,70%,100%{transform:none}80%{transform:rotateX(24deg)}90%{transform:rotateX(6deg)}}
+.or-env::before{content:"";position:absolute;inset:0;box-shadow:var(--lift);pointer-events:none}
+.or-env.is-done .or-flap4{opacity:0;pointer-events:none}
+.or-env.is-done .or-env-in{transform:scale(1.14) rotate(-1deg)}
+.or-env.is-done::before{transform:scale(1.14) rotate(-1deg);transition:transform .9s}
+.or-seal{position:absolute;left:50%;top:50%;z-index:5;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;display:grid;place-items:center;pointer-events:none;
+  background:radial-gradient(circle at 35% 30%,#F0D7A6,#B08A4A 72%);color:#FFF8EA;font:400 1.15rem var(--f-script);box-shadow:0 4px 10px rgba(80,48,20,.4),inset 0 0 0 3px rgba(255,255,255,.18);transition:opacity .4s,transform .4s}
+.or-env.is-started .or-seal{opacity:0;transform:scale(.5)}
+.or-env-hint{font-size:.9rem;color:var(--ink);opacity:.85}
+.or.is-gated .or-after{display:none}
+
+/* Compte à rebours */
+.or-countsec{padding-top:6svh}
+.or-count{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.or-count span{display:grid;gap:2px;padding:12px 0 10px;text-align:center;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  background:linear-gradient(135deg,transparent calc(50% - .5px),var(--crease) 50%,transparent calc(50% + .5px)),var(--washi)}
+.or-count span:nth-child(odd){rotate:-2deg}.or-count span:nth-child(even){rotate:1.5deg}
+.or-count b{font:500 1.7rem/1 var(--f-name);letter-spacing:0;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Programme en accordéon */
+.or-acc{perspective:1500px}
+.or-p{transform-style:preserve-3d;transform-origin:50% 0;transform:rotateX(var(--r,0deg));transition:transform 1s cubic-bezier(.5,.05,.2,1);transition-delay:calc(var(--i) * .4s)}
+.or-acc.is-in .or-p{transform:none}
+.or-pc{position:relative;transform-style:preserve-3d}
+.or-pc .or-front{box-shadow:var(--lift),inset 0 1px 0 var(--crease)}
+.or-item{display:flex;gap:14px;align-items:flex-start;padding:18px 18px 16px}
+.or-num{flex:none;width:32px;height:32px;display:grid;place-items:center;font:500 .85rem var(--f-ui);color:#FFF8EA;background:var(--rose);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.or-item time{font:500 .78rem var(--f-ui);letter-spacing:.2em;color:var(--gold)}
+.or-item h3{font:500 1.45rem/1.15 var(--f-name)}
+.or-item p{font-size:.95rem;color:var(--muted)}
+
+/* Dress code */
+.or-dress{display:flex;justify-content:center;gap:6%;padding:10px 0 4px;--gm:#999;--gw:#999}
+.or-dress figure{margin:0;width:40%;filter:drop-shadow(0 12px 10px rgba(80,48,20,.28))}
+.or-dress svg{width:100%;height:auto}
+.g-m{fill:var(--gm);transition:fill .7s}.g-w{fill:var(--gw);transition:fill .7s}
+.or-dress.is-pop figure{animation:or-pop .7s cubic-bezier(.3,1.6,.5,1)}
+.or-dress.is-pop figure.women{animation-delay:.08s}
+@keyframes or-pop{0%{transform:scale(.92) rotate(-3deg)}100%{transform:none}}
+.or-sw{display:flex;justify-content:center;gap:12px;margin-top:12px}
+.or-sw button{width:38px;height:38px;border:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);transition:transform .25s}
+.or-sw button[aria-pressed="true"]{transform:scale(1.25)}
+.or-cname{text-align:center;margin-top:8px !important;font:italic 400 1.15rem var(--f-name);color:var(--gold)}
+.or-dctext{text-align:center;display:grid;gap:10px;font-size:.95rem}
+.or-dctext b{display:block;font:500 .7rem var(--f-ui);letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+
+/* Lieu : carte pliée en trois */
+.or-h3{display:grid;grid-template-columns:repeat(3,1fr);height:clamp(150px,46vw,230px);perspective:1300px}
+.or-h3>div{position:relative;overflow:hidden;box-shadow:var(--lift),inset 1px 0 0 var(--crease)}
+.or-side{z-index:2;transition:transform 1.2s cubic-bezier(.5,.05,.2,1) .15s}
+.or-side.l{transform-origin:100% 50%;transform:rotateY(-178deg)}
+.or-side.r{transform-origin:0 50%;transform:rotateY(178deg);transition-delay:.55s}
+.or-h3.is-in .or-side{transform:none}
+.or-mapc{position:absolute;top:0;bottom:0;width:300%}
+.or-mapc svg{width:100%;height:100%}
+.or-side.l .or-mapc{left:0}.or-mid .or-mapc{left:-100%}.or-side.r .or-mapc{left:-200%}
+.or-pin{position:absolute;left:50%;top:44%;width:38px;height:38px;margin:-38px 0 0 -19px;color:var(--rose);filter:drop-shadow(0 4px 6px rgba(80,48,20,.4));opacity:0;transform:translateY(-30px);transition:opacity .5s 1.6s,transform .6s cubic-bezier(.3,1.6,.5,1) 1.6s}
+.or-pin svg{width:100%;height:100%}
+.or-h3.is-in .or-pin{opacity:1;transform:none}
+.or-addr{text-align:center;margin-top:16px !important;font:italic 400 1.15rem var(--f-name)}
+
+/* Histoire : petits mots pliés */
+.or-notes{display:grid;gap:30px}
+.or-note{width:min(100%,340px);margin:0 auto;rotate:-1.4deg}
+.or-note.alt{rotate:1.6deg}
+.or-note .or-pan{text-align:center;padding:14px 16px 10px}
+.or-year{font:400 2.5rem/1 var(--f-script);color:var(--rose)}
+.or-note .or-front p{text-align:center;font:400 1.15rem/1.45 var(--f-name)}
+
+/* Réponse */
+.or-rsvp{padding:22px 20px}
+.or-by{text-align:center;font-size:.88rem;color:var(--muted);margin-bottom:12px !important}
+.or-rsvp form{display:grid;gap:14px}
+.or-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.or-choice button{padding:12px 8px;border-radius:12px;border:1px solid rgba(75,58,48,.25);background:rgba(255,255,255,.5);font-size:.92rem}
+.or-choice button[aria-pressed="true"]{background:#4B3A30;color:#FBF6EE;border-color:transparent}
+.or-rsvp label{display:grid;gap:6px;font-size:.8rem;letter-spacing:.05em;color:var(--muted)}
+.or-rsvp input,.or-rsvp textarea{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(75,58,48,.25);background:rgba(255,255,255,.65);color:var(--ink);font:400 1rem var(--f-ui);resize:vertical}
+.or-guests[hidden]{display:none}
+.or-guests span{display:flex;align-items:center;gap:14px}
+.or-guests button{width:38px;height:38px;border-radius:50%;border:1px solid rgba(75,58,48,.3);background:rgba(255,255,255,.6);font-size:1.2rem}
+.or-guests output{min-width:2ch;text-align:center;font:500 1.3rem var(--f-name);color:var(--ink)}
+.or-err{color:#B4483F;font-size:.9rem}
+.or-send{width:100%}
+.or-rsvp.is-folding{animation:or-foldaway .65s cubic-bezier(.5,0,.7,.4) forwards;transform-origin:50% 50%}
+@keyframes or-foldaway{40%{transform:perspective(800px) rotateX(65deg) scaleY(.6)}100%{transform:perspective(800px) rotateX(80deg) scale(.12) rotate(-25deg);opacity:0}}
+.or-rsvp.is-sent{animation:or-unfold .9s cubic-bezier(.3,.7,.2,1) 1s both;transform-origin:50% 0}
+@keyframes or-unfold{from{transform:perspective(900px) rotateX(-90deg);opacity:0}}
+.or-thanks{text-align:center;display:grid;gap:10px;justify-items:center}
+.or-thanks small{font:500 .7rem var(--f-ui);letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
+.or-thanks h3{font:500 1.7rem/1.15 var(--f-name)}
+.or-plane{position:fixed;z-index:60;width:120px;pointer-events:none;filter:drop-shadow(0 14px 10px rgba(80,48,20,.3));animation:or-fly 2.3s cubic-bezier(.45,0,.55,1) forwards}
+.or-plane svg{width:100%;height:auto}
+@keyframes or-fly{0%{transform:translate(0,0) rotate(-6deg) scale(.4);opacity:0}12%{transform:translate(0,-10px) rotate(-10deg) scale(1);opacity:1}45%{transform:translate(-26vw,-22vh) rotate(-28deg) scale(.9)}70%{transform:translate(8vw,-46vh) rotate(-8deg) scale(.75)}100%{transform:translate(85vw,-95vh) rotate(-22deg) scale(.45);opacity:.3}}
+.or-fin{padding:14svh 0 4svh;text-align:center}
+.or-fin-crane{width:84px;margin:0 auto 14px;animation:or-float 6s ease-in-out infinite alternate;filter:drop-shadow(0 12px 10px rgba(80,48,20,.3))}
+.or-fin-names{font:500 2.3rem/1.1 var(--f-name)}
+.or-fin-names i{font:400 .8em var(--f-script);color:var(--rose)}
+.or-fin p:not(.or-fin-names){font-size:.92rem;margin:6px 0 20px}
+
+/* Son */
+.or-snd{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:45;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(75,58,48,.2);background:rgba(251,246,238,.75);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.or-snd svg{width:20px;height:20px}
+
+/* ---------- Aperçu de l'éditeur et mouvement réduit : tout est déplié ---------- */
+.or-still .or-flap,.or-still .or-p,.or-still .or-side{transform:none !important;transition:none !important}
+.or-still .or-head,.or-still .or-pin{opacity:1;translate:none;transform:none;transition:none}
+.or-still .or-sky span,.or-still .or-cue i,.or-still .or-fin-crane,.or-still .or-flap4{animation:none}
+@media (prefers-reduced-motion:reduce){.or *,.or *::before,.or *::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}}
