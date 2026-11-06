@@ -318,7 +318,7 @@ export default function Editor() {
             <legend>{e_.replies}</legend>
             <label>{e_.rsvpLine}<input id="rsvpby" maxLength={120} value={data.rsvpBy} onChange={(e) => set("rsvpBy", e.target.value)} /></label>
             <label>{e_.email}<input id="email" type="email" maxLength={200} placeholder={e_.emailPh} value={email} onChange={(e) => setEmail(e.target.value)} /></label>
-            <p className="ed-help">{e_.emailHelp}</p>
+            <p className="ed-help">{e_.emailHelp} <a href="/espace">{t.find.lost}</a></p>
           </fieldset>
 
           <div className="ed-actions">

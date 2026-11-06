@@ -188,6 +188,17 @@ export const en: SiteDict = {
     csvNo: "no",
     csvFile: "replies",
   },
+  find: {
+    title: "Find my space",
+    lead: "Enter the email address you typed in the editor: we'll resend the link to every invitation created with it.",
+    email: "Your email",
+    send: "Send me my links",
+    sending: "Sending…",
+    done: "Sent. If this address matches an invitation, your links will arrive within a few minutes (check your spam folder).",
+    invalid: "This email address doesn't look valid.",
+    fail: "Sending isn't possible right now. Please try again in a moment.",
+    lost: "Lost your link?",
+  },
   api: {
     unknownTemplate: "Unknown design",
     saveFail: "Couldn't save",

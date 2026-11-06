@@ -48,9 +48,16 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 - **Règle** : aucun texte visible écrit en dur dans un composant, un moteur, une route API ou un e-mail. Toute nouveauté (modèle, page, e-mail, message d'erreur) ajoute ses clés FR + EN. Dates : `LOCALE[lang]` et `dateParts(iso, lang)`.
 - Ajouter une langue = l'ajouter dans `LANGS` (`lib/i18n/index.ts`) + un dictionnaire de chaque type.
 
+## E-mails aux mariés (Brevo, décidé le 6 nov. 2026)
+- Service : **Brevo** (compte de Glad déjà utilisé pour rezervely ; quota gratuit de 300/jour partagé entre les deux sites). Envoi par l'API transactionnelle dans `lib/email.ts` (`sendEmail`) : changer de service = réécrire cette seule fonction. Sans `BREVO_API_KEY` (local), mode test : l'e-mail s'affiche dans le terminal.
+- E-mails : lien de l'espace à l'enregistrement (ou quand l'adresse change), lien à partager à la 1re publication, **récapitulatif quotidien** des nouvelles réponses (`/api/cron/recap`, `vercel.json`, 17 h UTC, protégé par `CRON_SECRET`) plutôt qu'un e-mail par invité, et « Retrouver mon espace » (`/espace` → `/api/espace/lien`, réponse identique que l'adresse existe ou non).
+- Textes dans `lib/i18n/email.ts` (FR/EN), langue = `invitations.owner_lang` (langue du site au dernier enregistrement). Aperçu en local : `/api/dev/email?type=welcome|published|recap|links&lang=fr|en`.
+- Migration `005_emails.sql` (`owner_lang`, `rsvps.notified_at`) : à appliquer **avant** de déployer le code (sinon la création d'invitation échoue).
+- Variables Vercel (saisies par Glad) : `BREVO_API_KEY` (secret), `EMAIL_FROM` (`joyeuxevent <bonjour@joyeuxevent.com>`), `EMAIL_REPLY_TO` (facultatif), `CRON_SECRET` (secret). Domaine à authentifier dans Brevo (DNS chez Cloudflare).
+
 ## À faire (par ordre)
 1. Stripe Checkout : quand `PAYMENTS_ENABLED=true`, `POST /api/invitations/[token]/publish` doit créer une session et publier sur webhook `checkout.session.completed`. Prix à définir avec Glad.
-2. E-mail aux mariés avec le lien de leur espace (Resend ou Supabase), sinon un jeton perdu = espace perdu.
+2. ✅ (code fait, migration 005) E-mails aux mariés via Brevo : reste à authentifier le domaine dans Brevo et saisir les variables dans Vercel.
 3. Anti-abus : limite de débit sur `/api/rsvp` et `/api/invitations` (ex. Upstash), honeypot sur le formulaire RSVP.
 4. Version allégée des effets pour les téléphones peu puissants (désactiver flou/3D si `navigator.hardwareConcurrency <= 4` ou FPS bas).
 5. Pages légales : mentions légales, CGV, politique de confidentialité (photos + noms des invités → RGPD, durée de conservation).

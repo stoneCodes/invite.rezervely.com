@@ -49,6 +49,8 @@ export type InvitationRow = {
   data: InvitationData;
   status: "draft" | "published";
   owner_email: string | null;
+  /** Langue des e-mails envoyés aux mariés (langue du site quand ils ont enregistré). */
+  owner_lang: Lang | null;
   created_at: string;
   updated_at: string;
   published_at: string | null;

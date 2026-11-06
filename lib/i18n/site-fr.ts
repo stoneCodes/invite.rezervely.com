@@ -187,6 +187,17 @@ export const fr = {
     csvNo: "non",
     csvFile: "reponses",
   },
+  find: {
+    title: "Retrouver mon espace",
+    lead: "Indiquez l'adresse e-mail saisie dans l'éditeur : nous vous renvoyons le lien de chaque invitation créée avec elle.",
+    email: "Votre e-mail",
+    send: "Recevoir mes liens",
+    sending: "Envoi…",
+    done: "C'est envoyé. Si cette adresse correspond à une invitation, vous recevrez vos liens dans quelques minutes (pensez aux indésirables).",
+    invalid: "Cette adresse e-mail ne semble pas valide.",
+    fail: "Envoi impossible pour le moment. Réessayez dans un instant.",
+    lost: "Lien perdu ?",
+  },
   api: {
     unknownTemplate: "Modèle inconnu",
     saveFail: "Enregistrement impossible",
