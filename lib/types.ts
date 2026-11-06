@@ -58,4 +58,6 @@ export type InvitationRow = {
   paid_at?: string | null;
   paid_amount_cents?: number | null;
   stripe_session_id?: string | null;
+  comped_at?: string | null;
+  pdf_granted_at?: string | null;
 };

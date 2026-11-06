@@ -14,7 +14,7 @@ Décidé avec Glad le 6 nov. 2026. À développer par Codex. Lire d'abord `CLAUD
 ## 2. Accès
 
 - Accès autorisé si : `paid_at` non nul **ou** `comped_at` non nul (publication offerte par l'admin) **ou** `pdf_granted_at` non nul (PDF offert par l'admin).
-- Nouvelle migration `supabase/migrations/008_pdf.sql` : `alter table invitations add column if not exists pdf_granted_at timestamptz;` (Glad l'applique dans Supabase **avant** le déploiement ; le lui rappeler).
+- Nouvelle migration `supabase/migrations/009_pdf.sql` : `alter table invitations add column if not exists pdf_granted_at timestamptz;` (`008_admin_clients.sql` est déjà réservée à la gestion clients ; Glad applique les migrations `008` puis `009` dans Supabase **avant** leur déploiement ; le lui rappeler).
 - **Contrôle côté serveur obligatoire** : les données du PDF viennent d'une route `GET /api/espace/[token]/pdf` (jeton validé comme ailleurs avec `getByToken`), qui renvoie **403** si l'accès n'est pas autorisé. Ne jamais se fier seulement au bouton masqué.
 - Sans accès : le bouton est visible mais présenté comme réservé (« Disponible avec la publication payante »), sans erreur technique. Le CSV reste disponible pour tous, comme aujourd'hui.
 - **Admin** (`app/admin/(protege)/invitations/[id]` + `app/api/admin/invitations/[id]/route.ts`) : action **« Offrir le PDF » / « Retirer le PDF »** (met ou enlève `pdf_granted_at`), avec confirmation et entrée dans le journal `admin_events`, comme les autres actions. Afficher dans la fiche si l'accès vient du paiement, de la publication offerte ou du PDF offert.

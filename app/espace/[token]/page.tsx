@@ -10,6 +10,7 @@ import { getLang } from "@/lib/i18n/server";
 import { siteDict } from "@/lib/i18n/site";
 import { LOCALE } from "@/lib/i18n";
 import { LangSwitch } from "@/components/I18n";
+import PdfDownloadButton from "./PdfDownloadButton";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
@@ -26,6 +27,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
   const s = t.space;
   const inv = await getByToken(token);
   if (!inv) notFound();
+  const pdfAllowed = !!inv.paid_at || !!inv.comped_at || !!inv.pdf_granted_at;
   const { data } = await db().from("rsvps").select("*").eq("invitation_id", inv.id).order("created_at", { ascending: false });
   const rsvps = (data ?? []) as Rsvp[];
   const yes = rsvps.filter((r) => r.attending);
@@ -71,7 +73,10 @@ export default async function Espace({ params, searchParams }: { params: Promise
         <section className="card-s" style={{ padding: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
             <strong>{s.repliesTitle}</strong>
-            {rsvps.length > 0 && <a className="btn-s ghost" href={`/espace/${token}/csv`}>{s.export}</a>}
+            <div className="space-export-actions">
+              <PdfDownloadButton token={token} allowed={pdfAllowed} partner1={inv.data.partner1} partner2={inv.data.partner2} dateISO={inv.data.dateISO} copy={{ download: s.pdfDownload, reserved: s.pdfReserved, preparing: s.pdfPreparing, error: s.pdfError }} />
+              {rsvps.length > 0 && <a className="btn-s ghost" href={`/espace/${token}/csv`}>{s.export}</a>}
+            </div>
           </div>
           {rsvps.length === 0 ? (
             <p className="muted" style={{ margin: 0 }}>{s.empty}</p>

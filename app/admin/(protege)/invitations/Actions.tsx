@@ -9,11 +9,12 @@ type Copy = {
   actionFailed: string; actionWorking: string; dateRequired: string;
   actions: string;
   emailWarning: string;
+  grantPdf: string; revokePdf: string; confirmGrantPdf: string; confirmRevokePdf: string;
 };
-export default function Actions({ id, copy, canOffer, canUnpublish }: { id:string; copy:Copy; canOffer:boolean; canUnpublish:boolean }) {
+export default function Actions({ id, copy, canOffer, canUnpublish, hasPdfGrant }: { id:string; copy:Copy; canOffer:boolean; canUnpublish:boolean; hasPdfGrant:boolean }) {
   const router=useRouter(); const [busy,setBusy]=useState(false); const [message,setMessage]=useState(""); const [date,setDate]=useState("");
-  async function run(action:"offer"|"resend"|"unpublish"|"extend"|"delete") {
-    const confirmText={offer:copy.confirmOffer,resend:copy.confirmResend,unpublish:copy.confirmUnpublish,extend:copy.confirmExtend,delete:copy.confirmDelete}[action];
+  async function run(action:"offer"|"resend"|"unpublish"|"extend"|"delete"|"pdf-grant"|"pdf-revoke") {
+    const confirmText={offer:copy.confirmOffer,resend:copy.confirmResend,unpublish:copy.confirmUnpublish,extend:copy.confirmExtend,delete:copy.confirmDelete,"pdf-grant":copy.confirmGrantPdf,"pdf-revoke":copy.confirmRevokePdf}[action];
     if(!window.confirm(confirmText))return;
     const body:{action:string;date?:string;confirmation?:string}={action};
     if(action==="extend") { if(!date){setMessage(copy.dateRequired);return;} body.date=date; }
@@ -28,5 +29,6 @@ export default function Actions({ id, copy, canOffer, canUnpublish }: { id:strin
     <button disabled={busy||!canUnpublish} onClick={()=>void run("unpublish")}>{copy.unpublish}</button>
     <form onSubmit={e=>{e.preventDefault();void run("extend")}}><label>{copy.extend}<input type="date" value={date} onChange={e=>setDate(e.target.value)}/></label><button disabled={busy} type="submit">{copy.saveDate}</button></form>
     <button className="ad-danger" disabled={busy} onClick={()=>void run("delete")}>{copy.deleteInvitation}</button>
+    {!hasPdfGrant?<button disabled={busy} onClick={()=>void run("pdf-grant")}>{copy.grantPdf}</button>:<button disabled={busy} onClick={()=>void run("pdf-revoke")}>{copy.revokePdf}</button>}
   </div>{busy&&<p role="status">{copy.actionWorking}</p>}{message&&<p role="status">{message}</p>}</section>;
 }

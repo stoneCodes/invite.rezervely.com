@@ -101,3 +101,4 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 .legal-links{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-size:.82rem}
 .site .legal-links a{color:var(--muted);text-decoration:none}
 .site .legal-links a:hover{color:var(--accent);text-decoration:underline}
+.space-export-actions{display:flex;align-items:flex-start;justify-content:flex-end;gap:8px;flex-wrap:wrap}.space-pdf-action{display:grid;justify-items:start;gap:4px}.space-pdf-action small{max-width:240px;color:var(--muted);font-size:.75rem}.space-pdf-action button:disabled{opacity:.65;cursor:not-allowed}

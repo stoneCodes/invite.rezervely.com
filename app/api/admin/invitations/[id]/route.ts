@@ -10,7 +10,7 @@ import adminFr from "@/lib/i18n/admin-fr";
 export const dynamic = "force-dynamic";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 type Context = { params: Promise<{ id: string }> };
-type AdminInvitation = InvitationRow & { comped_at?: string | null; keep_until?: string | null };
+type AdminInvitation = InvitationRow & { comped_at?: string | null; keep_until?: string | null; pdf_granted_at?: string | null };
 type ActionBody = { action?: unknown; date?: unknown; confirmation?: unknown };
 const jsonError = (message: string, status: number) => NextResponse.json({ error: message }, { status });
 
@@ -59,6 +59,14 @@ export async function POST(req: Request, { params }: Context) {
       const { error } = await db().from("invitations").update({ keep_until: end.toISOString(), updated_at: new Date().toISOString() }).eq("id", id);
       if (error) { console.error("admin.invitation.extend", error.message); return jsonError(adminFr.actionFailed, 500); }
       await recordAdminEvent({ actor, action: adminFr.extendAction, invitationId: id, details: { keepUntil: end.toISOString() } });
+      return NextResponse.json({ ok: true });
+    }
+
+    if (body.action === "pdf-grant" || body.action === "pdf-revoke") {
+      const grantedAt = body.action === "pdf-grant" ? new Date().toISOString() : null;
+      const { error } = await db().from("invitations").update({ pdf_granted_at: grantedAt }).eq("id", id);
+      if (error) { console.error("admin.invitation.pdf_access", error.message); return jsonError(adminFr.actionFailed, 500); }
+      await recordAdminEvent({ actor, action: body.action === "pdf-grant" ? adminFr.grantPdfAction : adminFr.revokePdfAction, invitationId: id, details: { pdfGrantedAt: grantedAt } });
       return NextResponse.json({ ok: true });
     }
 
