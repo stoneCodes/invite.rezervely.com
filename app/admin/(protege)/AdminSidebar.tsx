@@ -8,6 +8,7 @@ const items = [
   { href: "/admin/tableau-de-bord", label: adminFr.dashboard, icon: "▦" },
   { href: "/admin/statistiques", label: adminFr.statistics, icon: "⌁" },
   { href: "/admin/invitations", label: adminFr.invitations, icon: "✉" },
+  { href: "/admin/clients", label: adminFr.clientManagement, icon: "♙" },
   { href: "/admin/prix", label: adminFr.priceTitle, icon: "€" },
 ];
 

@@ -75,6 +75,14 @@ Solution retenue : **Cloudflare Web Analytics** (gratuit, sans cookie, pas de ba
 
 Croiser avec l'activité : « visites de `/creer` → invitations créées → publiées → payées » (entonnoir).
 
+## 3 bis. Gestion clients (`/admin/clients`)
+
+Page ajoutée à la demande de Glad : regrouper les invitations par adresse e-mail du propriétaire, rechercher par e-mail ou prénom, et afficher les volumes d'invitations (publiées, payées, offertes), les réponses et la dernière activité. Les invitations d'un client se déplient depuis la liste et ouvrent leur fiche ; suppression protégée depuis cette page avec confirmation et saisie de `SUPPRIMER`.
+
+Les clients sans adresse e-mail restent accessibles individuellement par invitation. La liste est paginée et limitée à 20 invitations récentes par client dans le panneau déplié. La migration `008_admin_clients.sql` fournit les agrégats côté base.
+
+Évolutions proposées, à valider séparément : fiche client consolidée, export/suppression RGPD de toutes les données par e-mail, notes de support et historique des échanges.
+
 ## 4. Invitations (`/admin/invitations`)
 
 Liste paginée, la plus récente en premier :
