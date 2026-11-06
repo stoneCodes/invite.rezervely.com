@@ -59,6 +59,13 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 - Migration `005_emails.sql` (`owner_lang`, `rsvps.notified_at`) : à appliquer **avant** de déployer le code (sinon la création d'invitation échoue).
 - Variables (secrets saisis par Glad dans Cloudflare) : `BREVO_API_KEY` (secret), `EMAIL_FROM` (`joyeuxevent <hello@joyeuxevent.com>`), `EMAIL_REPLY_TO` (facultatif), `CRON_SECRET` (secret). Domaine à authentifier dans Brevo (DNS chez Cloudflare).
 
+## Espace administrateur (étape 1 en cours)
+- `/admin` : connexion par code e-mail (6 chiffres, 10 min, usage unique, 5 essais), session signée de 12 h, vérification serveur et 404 sans session. `/administrateur` redirige vers `/admin`; routes/pages exclues des moteurs de recherche.
+- Tableau de bord d'activité : périodes aujourd'hui / 7 jours / 30 jours / depuis le début ; agrégats calculés par la fonction SQL `admin_dashboard`.
+- Migration `007_admin.sql` : à appliquer dans Supabase > SQL Editor **avant le déploiement** du code de l'étape 1. Elle ajoute les tables privées `settings`, `admin_codes`, `admin_events`, `comped_at`, `keep_until` et les agrégats du tableau de bord.
+- Secrets à saisir directement dans Cloudflare Worker `joyeuxevent` > Settings > Variables and secrets (type Secret) : `ADMIN_EMAILS` (adresses séparées par des virgules) et `ADMIN_SESSION_SECRET` (32 caractères aléatoires minimum). En local, les placer dans `.env.local`.
+- L'activation du paiement reste désactivée et inchangée (`PAYMENTS_ENABLED`).
+
 ## À faire (par ordre)
 1. 🟡 (code fait, migration 006, désactivé) Stripe Checkout, 9,90 € TTC payé à la 1re publication (`lib/payment.ts`, API REST sans SDK). `publish` renvoie `checkoutUrl` ; publication au retour (`/api/stripe/retour`, session revérifiée chez Stripe) ou par webhook signé (`/api/stripe/webhook`, `checkout.session.completed`). Déjà publiée ou déjà payée = gratuit. Reste : migration 006, secrets Cloudflare `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`, webhook dans Stripe, puis `PAYMENTS_ENABLED` à "true" dans `wrangler.jsonc`. Test local : carte 4242 4242 4242 4242 avec une clé sk_test dans .env.local.
 2. ✅ (code fait, migration 005) E-mails aux mariés via Brevo : reste à authentifier le domaine dans Brevo (fait).
