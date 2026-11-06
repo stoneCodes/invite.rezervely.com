@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import Splash from "@/components/Splash";
 
 export const metadata: Metadata = {
   title: { default: "joyeuxevent · Invitations de mariage animées", template: "%s · joyeuxevent" },
@@ -20,7 +21,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Italiana&family=Pinyon+Script&family=Great+Vibes&family=Parisienne&family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&family=Amiri&display=swap"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <Splash />
+        {children}
+      </body>
     </html>
   );
 }

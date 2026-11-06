@@ -20,3 +20,7 @@
   .je-l-dot,.je-l-ring{animation:none;display:none}
   .je-l-star svg,.je-l-word{animation:none}
 }
+/* Écran d'accueil (Splash) : visible tout de suite, s'efface en fondu ; la page en dessous attend pour lancer ses animations d'entrée */
+.je-splash .je-loader{animation:none;z-index:2000;cursor:pointer;transition:opacity .5s ease}
+.je-splash.out .je-loader{opacity:0;pointer-events:none}
+body:has(.je-splash:not(.out):not([data-skip])) :is(.gl-letter,.gl-rise){animation-play-state:paused}
