@@ -59,5 +59,5 @@
 .ed-tpl-badge{position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;background:var(--gold);color:var(--accent-ink);font:600 .68rem/1 var(--f-ui);font-style:normal;letter-spacing:.12em;text-transform:uppercase;box-shadow:0 4px 14px -4px rgba(0,0,0,.5)}
 @media (prefers-reduced-motion:reduce){.ed-tpls button{transition:none}}
 /* Indice sur chaque carte : on peut voir la démo */
-.ed-tpls button::after{content:"▶ Démo";position:absolute;top:8px;right:8px;padding:4px 8px;border-radius:999px;background:rgba(13,9,17,.7);color:#fff;font:500 .62rem/1 var(--f-ui);letter-spacing:.08em;opacity:.85}
+.ed-tpls button::after{content:"▶ " attr(data-demo);position:absolute;top:8px;right:8px;padding:4px 8px;border-radius:999px;background:rgba(13,9,17,.7);color:#fff;font:500 .62rem/1 var(--f-ui);letter-spacing:.08em;opacity:.85}
 .ed-tpls button[aria-pressed=true]::after{top:10px;right:10px;padding:6px 10px;font-size:.68rem}

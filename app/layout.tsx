@@ -1,18 +1,24 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Splash from "@/components/Splash";
+import { I18nProvider } from "@/components/I18n";
+import { getLang, getT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: { default: "joyeuxevent · Invitations de mariage animées", template: "%s · joyeuxevent" },
-  applicationName: "joyeuxevent",
-  appleWebApp: { title: "joyeuxevent" },
-  description: "Créez une invitation de mariage qui s'ouvre de façon spectaculaire, et envoyez-la par un simple lien.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    title: { default: t.meta.title, template: "%s · joyeuxevent" },
+    applicationName: "joyeuxevent",
+    appleWebApp: { title: "joyeuxevent" },
+    description: t.meta.description,
+  };
+}
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const lang = await getLang();
   return (
-    <html lang="fr">
+    <html lang={lang}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -22,8 +28,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <Splash />
-        {children}
+        <I18nProvider lang={lang}>
+          <Splash />
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );

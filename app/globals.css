@@ -75,3 +75,11 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 .demo-exit{transition:padding .25s,width .25s}
 .demo-exit.is-mini,body:has(.ap.is-live) .demo-exit{width:40px;padding:0;justify-content:center}
 .demo-exit.is-mini .demo-exit-txt,body:has(.ap.is-live) .demo-exit .demo-exit-txt{display:none}
+
+/* Bouton de langue FR / EN (accueil, éditeur, espace) */
+.lang-switch{display:inline-flex;padding:3px;gap:2px;border:1px solid var(--line);border-radius:999px;background:var(--field)}
+.lang-switch button{min-width:38px;min-height:32px;padding:0 10px;border:0;border-radius:999px;background:none;color:var(--muted);font:500 .74rem/1 var(--f-ui);letter-spacing:.12em;cursor:pointer}
+.lang-switch button[aria-pressed=true]{background:var(--gold);color:var(--accent-ink)}
+.lang-switch button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.gl-nav-r{display:flex;align-items:center;gap:10px}
+.ed-top{display:flex;justify-content:space-between;align-items:center;gap:12px}

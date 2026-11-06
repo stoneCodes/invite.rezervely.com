@@ -16,6 +16,7 @@ export function sanitizeData(input: any): InvitationData {
   const v = d.verse;
   const photo = typeof d.photoUrl === "string" && d.photoUrl.startsWith(process.env.SUPABASE_URL ?? "https://") ? d.photoUrl.slice(0, 500) : null;
   return {
+    lang: d.lang === "en" ? "en" : "fr",
     partner1: str(d.partner1, 40) || "Prénom",
     partner2: str(d.partner2, 40) || "Prénom",
     intro: str(d.intro, 200),

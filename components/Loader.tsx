@@ -13,10 +13,10 @@ const DOTS = Array.from({ length: 22 }, (_, i) => ({
 }));
 
 /** Loader « Poussière d'or » : les grains se rassemblent, l'étincelle naît, le nom apparaît. Sans JavaScript. */
-export default function Loader() {
+export default function Loader({ label = "Chargement…" }: { label?: string }) {
   return (
     <div className="je-loader" role="status" aria-live="polite">
-      <span className="je-sr">Chargement…</span>
+      <span className="je-sr">{label}</span>
       <div className="je-l-in" aria-hidden="true">
         <div className="je-l-core">
           {DOTS.map((p, i) => (

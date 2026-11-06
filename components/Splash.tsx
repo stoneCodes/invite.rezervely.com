@@ -2,6 +2,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loader from "./Loader";
+import { useT } from "./I18n";
 
 const KEY = "je-splash";
 const SHOW_MS = 2300; // le temps que la poussière se rassemble, que l'étincelle naisse et que le logo apparaisse
@@ -19,6 +20,7 @@ function isSitePage(p: string) {
  */
 export default function Splash() {
   const pathname = usePathname();
+  const t = useT();
   const [state, setState] = useState<"on" | "out" | "off">("on");
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function Splash() {
         onClick={() => setState("out")}
         suppressHydrationWarning
       >
-        <Loader />
+        <Loader label={t.common.loading} />
       </div>
       <script
         dangerouslySetInnerHTML={{

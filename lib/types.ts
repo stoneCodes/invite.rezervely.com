@@ -1,3 +1,6 @@
+import type { Lang } from "./i18n";
+
+/** Noms et accroches affichés : voir lib/i18n (site-fr / site-en). */
 export const TEMPLATES = [
   { id: "cygnes", name: "Lac aux cygnes", tagline: "Enveloppe en relief, la carte s'envole dans une pluie de pétales", cover: "/img/1b-scene.webp" },
   { id: "nuit-doree", name: "Nuit dorée", tagline: "Deux portes s'ouvrent dans un éclat de lumière et de poussière d'or", cover: "/img/2b-scene.webp" },
@@ -13,6 +16,8 @@ export const TEMPLATE_IDS = TEMPLATES.map((t) => t.id) as TemplateId[];
 export type DressColor = { name: string; hex: string; men?: string; women?: string };
 
 export type InvitationData = {
+  /** Langue des textes fixes de l'invitation (titres, boutons, réponse). Absent = français (anciennes invitations). */
+  lang?: Lang;
   partner1: string;
   partner2: string;
   intro: string;

@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getByToken } from "@/lib/supabase";
 import VoirClient from "./VoirClient";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Votre invitation", robots: { index: false, follow: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: (await getT()).meta.yourInvite, robots: { index: false, follow: false } };
+}
 
 /** Les mariés revoient leur invitation telle que leurs invités la verront, publiée ou non. Les réponses envoyées d'ici ne sont pas enregistrées. */
 export default async function Voir({ params }: { params: Promise<{ token: string }> }) {

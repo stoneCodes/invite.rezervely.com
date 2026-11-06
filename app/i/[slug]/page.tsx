@@ -3,18 +3,20 @@ import { notFound } from "next/navigation";
 import { getBySlug } from "@/lib/supabase";
 import { dateParts } from "@/components/invitation/engine";
 import InviteClient from "./InviteClient";
+import { siteDict } from "@/lib/i18n/site";
 
 type P = { params: Promise<{ slug: string }> };
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: P): Promise<Metadata> {
   const inv = await getBySlug((await params).slug);
-  if (!inv || inv.status !== "published") return { title: "Invitation", robots: { index: false } };
+  const t = siteDict(inv?.data.lang ?? "fr");
+  if (!inv || inv.status !== "published") return { title: t.meta.invitation, robots: { index: false } };
   const d = inv.data;
   const when = dateParts(d.dateISO);
   return {
-    title: { absolute: `${d.partner1} & ${d.partner2} vous invitent` },
-    description: when ? `Mariage le ${when.day} ${when.month} ${when.year}. Ouvrez votre invitation.` : "Ouvrez votre invitation.",
+    title: { absolute: t.meta.invites(d.partner1, d.partner2) },
+    description: when ? t.meta.weddingOn(`${when.day} ${when.month} ${when.year}`) : t.meta.openInvite,
     robots: { index: false, follow: false },
   };
 }

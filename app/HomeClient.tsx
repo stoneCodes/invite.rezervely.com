@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { TEMPLATES, type TemplateId } from "@/lib/types";
 import { lockScroll } from "@/lib/scrollLock";
-
-const TITLE = "Faites briller";
+import { LangSwitch, useT } from "@/components/I18n";
 
 /** Page d'accueil « Nuit de gala » : poussière d'or, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal. */
 export default function HomeClient() {
   const router = useRouter();
+  const t = useT();
+  const h = t.home;
+  const TITLE = h.title;
   const burstRef = useRef<(x: number, y: number) => void>(() => {});
 
   useEffect(() => {
@@ -119,7 +121,7 @@ export default function HomeClient() {
     return () => { unlock(); window.removeEventListener("keydown", key); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demo !== null]);
-  const shown = demo ? TEMPLATES.find((t) => t.id === demo)! : null;
+  const shown = demo ? { id: demo, ...t.templates[demo] } : null;
 
   return (
     <main className="site gl">
@@ -127,105 +129,101 @@ export default function HomeClient() {
       <canvas id="gl-fw" className="gl-canvas gl-fw" aria-hidden />
 
       <nav id="gl-nav" className="gl-nav">
-        <Link href="/" className="gl-logo" aria-label="joyeuxevent, accueil"><Logo height={26} /></Link>
-        <Link className="btn-s ghost" href="/creer">Créer</Link>
+        <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={26} /></Link>
+        <div className="gl-nav-r"><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
       </nav>
 
       <section className="gl-hero">
         <div>
-          <div className="gl-kicker">Invitations de mariage animées</div>
-          <h1 aria-label="Faites briller votre oui">
+          <div className="gl-kicker">{h.kicker}</div>
+          <h1 aria-label={`${h.title} ${h.titleScript}`}>
             <span aria-hidden>
               {[...TITLE].map((ch, i) => (
                 <span key={i} className="gl-letter" style={{ animationDelay: `${i * 45}ms` }}>{ch === " " ? " " : ch}</span>
               ))}
-              <span className="gl-script gold-text gl-rise" style={{ animationDelay: `${TITLE.length * 45 + 200}ms, 0s` }}>votre oui</span>
+              <span className="gl-script gold-text gl-rise" style={{ animationDelay: `${TITLE.length * 45 + 200}ms, 0s` }}>{h.titleScript}</span>
             </span>
           </h1>
-          <p>Une enveloppe qui s'ouvre, une pluie d'or, une date qu'on gratte du bout du doigt. Vos invités ne l'oublieront pas.</p>
+          <p>{h.lead}</p>
           <div className="gl-ctas">
-            <a className="btn-s" href="/creer" onClick={celebrate("/creer")}>Créer mon invitation</a>
-            <a className="btn-s ghost" href="#gl-hz">Voir les modèles</a>
+            <a className="btn-s" href="/creer" onClick={celebrate("/creer")}>{h.ctaCreate}</a>
+            <a className="btn-s ghost" href="#gl-hz">{h.ctaModels}</a>
           </div>
         </div>
         <div className="gl-cue" aria-hidden />
       </section>
 
-      <section id="gl-pin" className="gl-pin" aria-label="Aperçu de l'ouverture">
+      <section id="gl-pin" className="gl-pin" aria-label={h.pinAria}>
         <div className="gl-stick">
           <div id="gl-env" className="gl-env" aria-hidden>
             <div className="gl-env-back" />
-            <div className="gl-env-card"><div><small>Nous nous marions</small><b>Léa &amp; Samuel</b><small>13 juin 2027</small></div></div>
+            <div className="gl-env-card"><div><small>{h.envKicker}</small><b>Léa &amp; Samuel</b><small>{h.envDate}</small></div></div>
             <div className="gl-env-front" /><div className="gl-env-flap" /><div className="gl-env-seal">L&amp;S</div>
           </div>
-          <div className="gl-pin-cap"><div className="gl-kicker">Défilez</div><h2>Elle s'ouvre <span className="gold-text">sous leurs yeux</span></h2></div>
+          <div className="gl-pin-cap"><div className="gl-kicker">{h.scroll}</div><h2>{h.pinTitle} <span className="gold-text">{h.pinTitleGold}</span></h2></div>
         </div>
       </section>
 
       <div className="gl-marq" aria-hidden>
         <div>
           {[0, 1].map((k) => (
-            <span key={k}>{["Lac aux cygnes", "Nuit dorée", "Jardin de nuit", "Appel entrant", "Date à gratter", "Réponses en direct"].map((w) => (<span key={w}>{w} <i>&amp;</i> </span>))}</span>
+            <span key={k}>{h.marquee.map((w) => (<span key={w}>{w} <i>&amp;</i> </span>))}</span>
           ))}
         </div>
       </div>
 
       <section id="gl-hz" className="gl-hz">
         <div className="gl-stick">
-          <div className="gl-hz-head"><div className="gl-kicker">{TEMPLATES.length} univers</div><h2>Choisissez <span className="gold-text">votre soirée</span></h2></div>
+          <div className="gl-hz-head"><div className="gl-kicker">{h.worlds(TEMPLATES.length)}</div><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
           <div id="gl-track" className="gl-track">
-            {TEMPLATES.map((t, i) => (
-              <article key={t.id} className="gl-tpl">
-                <img src={t.cover} alt="" loading="lazy" />
+            {TEMPLATES.map((tp, i) => (
+              <article key={tp.id} className="gl-tpl">
+                <img src={tp.cover} alt="" loading="lazy" />
                 <span className="gl-num">0{i + 1}</span>
                 <div className="gl-tpl-ov">
-                  <h3>{t.name}</h3>
-                  <p>{t.tagline}</p>
+                  <h3>{t.templates[tp.id].name}</h3>
+                  <p>{t.templates[tp.id].tagline}</p>
                   <div className="gl-row">
-                    <a className="btn-s" href={`/creer?t=${t.id}`} onClick={celebrate(`/creer?t=${t.id}`)}>Créer la mienne</a>
-                    <a className="btn-s ghost" href={`/demo/${t.id}`} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); setDemo(t.id as TemplateId); }}>Démo</a>
+                    <a className="btn-s" href={`/creer?t=${tp.id}`} onClick={celebrate(`/creer?t=${tp.id}`)}>{h.createMine}</a>
+                    <a className="btn-s ghost" href={`/demo/${tp.id}`} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); setDemo(tp.id as TemplateId); }}>{h.demo}</a>
                   </div>
                 </div>
               </article>
             ))}
-            <article className="gl-tpl is-end"><div><div className="gl-kicker">Bientôt</div><h3 style={{ marginTop: 12 }}>D'autres univers arrivent</h3><p>Le catalogue s'agrandit.</p></div></article>
+            <article className="gl-tpl is-end"><div><div className="gl-kicker">{h.soon}</div><h3 style={{ marginTop: 12 }}>{h.soonTitle}</h3><p>{h.soonText}</p></div></article>
           </div>
         </div>
       </section>
 
       <section className="wrap-site gl-steps">
-        {[
-          ["01", "Votre style, vos mots", "Prénoms, date, photo, verset, dress code : l'aperçu se met à jour pendant que vous écrivez."],
-          ["02", "Un lien, sur WhatsApp", "Pas d'appli à installer. Vos invités ouvrent le lien et l'invitation prend vie."],
-          ["03", "Les réponses arrivent", "Présents, absents, nombre de personnes, petits mots : tout est dans votre espace, exportable."],
-        ].map(([n, h, p]) => (
-          <div key={n} className="gl-step gl-rv"><div className="gl-n gold-text">{n}</div><div><h3>{h}</h3><p>{p}</p></div></div>
+        {h.steps.map(([n, st, p]) => (
+          <div key={n} className="gl-step gl-rv"><div className="gl-n gold-text">{n}</div><div><h3>{st}</h3><p>{p}</p></div></div>
         ))}
       </section>
 
       <section className="gl-final">
-        <div className="gl-kicker">Prêts ?</div>
-        <h2>Que la fête <span className="gold-text">commence</span></h2>
-        <a className="btn-s" href="/creer" onClick={celebrate("/creer")}>Créer mon invitation</a>
+        <div className="gl-kicker">{h.ready}</div>
+        <h2>{h.finalTitle} <span className="gold-text">{h.finalGold}</span></h2>
+        <a className="btn-s" href="/creer" onClick={celebrate("/creer")}>{h.ctaCreate}</a>
       </section>
-      <footer>joyeuxevent · Invitations de mariage animées</footer>
+      <footer>{h.footer}</footer>
 
       {demo && shown && (
-        <div className="ed-full" role="dialog" aria-modal="true" aria-label={`Démo du modèle ${shown.name}`}>
+        <div className="ed-full" role="dialog" aria-modal="true" aria-label={t.common.demoOf(shown.name)}>
           <div className="ed-full-bar">
-            <button type="button" className="ed-full-back" onClick={() => setDemo(null)}><span aria-hidden="true">←</span> <span>Revenir à l'accueil</span></button>
+            <button type="button" className="ed-full-back" onClick={() => setDemo(null)}><span aria-hidden="true">←</span> <span>{t.common.backHome}</span></button>
             <div className="ed-full-nav">
-              <button type="button" aria-label="Modèle précédent" onClick={() => setDemo(cycle(demo, -1))}>‹</button>
+              <button type="button" aria-label={t.common.prevTpl} onClick={() => setDemo(cycle(demo, -1))}>‹</button>
               <div className="ed-full-name">
                 <strong>{shown.name}</strong>
-                <small>Modèle {TEMPLATES.findIndex((t) => t.id === demo) + 1} sur {TEMPLATES.length} · démo</small>
+                <small>{t.common.tplOf(TEMPLATES.findIndex((x) => x.id === demo) + 1, TEMPLATES.length)} · {h.demoSub}</small>
               </div>
-              <button type="button" aria-label="Modèle suivant" onClick={() => setDemo(cycle(demo, 1))}>›</button>
+              <button type="button" aria-label={t.common.nextTpl} onClick={() => setDemo(cycle(demo, 1))}>›</button>
             </div>
-            <a className="btn-s" href={`/creer?t=${demo}`} onClick={celebrate(`/creer?t=${demo}`)}><span className="lbl-lg">Créer avec ce modèle</span><span className="lbl-sm">Créer</span></a>
+            <a className="btn-s" href={`/creer?t=${demo}`} onClick={celebrate(`/creer?t=${demo}`)}><span className="lbl-lg">{h.createWith}</span><span className="lbl-sm">{h.create}</span></a>
           </div>
           {/* key : chaque modèle recharge la démo, qui rejoue son ouverture. */}
-          <iframe key={demo} src={`/demo/${demo}?integre=1`} title={`Démo du modèle ${shown.name}`} allow="accelerometer; gyroscope" />
+          <iframe key={demo} src={`/demo/${demo}?integre=1`} title={t.common.demoOf(shown.name)} allow="accelerometer; gyroscope" />
         </div>
       )}
     </main>
