@@ -1,0 +1,25 @@
+{
+	// Hébergement sur Cloudflare Workers (adaptateur OpenNext). Doc : https://opennext.js.org/cloudflare
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "joyeuxevent",
+	"main": "worker.ts",
+	"compatibility_date": "2026-10-01",
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"services": [
+		{ "binding": "WORKER_SELF_REFERENCE", "service": "joyeuxevent" }
+	],
+	// Récapitulatif quotidien des réponses aux mariés (17 h UTC), voir worker.ts.
+	"triggers": { "crons": ["0 17 * * *"] },
+	// Variables non secrètes. Les secrets (SUPABASE_SERVICE_ROLE_KEY, BREVO_API_KEY, CRON_SECRET)
+	// sont saisis par Glad dans le tableau de bord Cloudflare, jamais ici.
+	"vars": {
+		"NEXT_PUBLIC_SITE_URL": "https://joyeuxevent.com",
+		"SUPABASE_URL": "https://usolfegmepnazrporeec.supabase.co",
+		"EMAIL_FROM": "joyeuxevent <hello@joyeuxevent.com>"
+	},
+	"observability": { "enabled": true }
+}
