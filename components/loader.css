@@ -1,0 +1,22 @@
+/* Loader « Poussière d'or » (choisi par Glad le 6 nov. 2026). Couleurs en dur : il s'affiche aussi avant les invitations. */
+.je-loader{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#1C1220 0%,#0D0911 70%);animation:je-l-fade .35s ease .12s both}
+@keyframes je-l-fade{from{opacity:0}}
+.je-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.je-l-in{display:grid;justify-items:center;gap:26px}
+.je-l-core{position:relative;width:150px;height:150px}
+.je-l-dot{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);margin:calc(var(--s) / -2);border-radius:50%;background:radial-gradient(circle,#FFF4D6,#D4A85A 60%,transparent 70%);box-shadow:0 0 8px rgba(240,200,120,.8);opacity:0;transform:rotate(var(--a)) translateX(var(--r));animation:je-l-in 2.6s cubic-bezier(.55,0,.25,1) var(--d) infinite}
+.je-l-dot.rose{background:radial-gradient(circle,#FFE3EA,#E7A6B6 60%,transparent 70%);box-shadow:0 0 8px rgba(231,166,182,.8)}
+@keyframes je-l-in{0%{opacity:0;transform:rotate(var(--a)) translateX(var(--r))}15%{opacity:1}48%{opacity:1;transform:rotate(calc(var(--a) + 160deg)) translateX(0)}52%,100%{opacity:0;transform:rotate(calc(var(--a) + 160deg)) translateX(0)}}
+.je-l-ring{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px;border-radius:50%;border:1.5px solid rgba(246,227,176,.9);opacity:0;animation:je-l-ring 2.6s ease-out infinite}
+@keyframes je-l-ring{0%,50%{opacity:0;transform:scale(.4)}54%{opacity:1}80%,100%{opacity:0;transform:scale(4.2)}}
+.je-l-star{position:absolute;inset:0;display:grid;place-items:center}
+/* L'étincelle naît quand la première poussière arrive, puis « reflashe » à chaque nouvelle vague */
+.je-l-star svg{width:90px;height:90px;overflow:visible;filter:drop-shadow(0 0 16px rgba(240,200,120,.7));animation:je-l-born .7s cubic-bezier(.3,1.5,.5,1) 1.2s both,je-l-pulse 2.6s ease-out 3.9s infinite}
+@keyframes je-l-born{from{transform:scale(0) rotate(-45deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes je-l-pulse{0%{transform:scale(1)}8%{transform:scale(1.12)}30%,100%{transform:scale(1)}}
+.je-l-word{animation:je-l-word .6s ease 1.5s both}
+@keyframes je-l-word{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){
+  .je-l-dot,.je-l-ring{animation:none;display:none}
+  .je-l-star svg,.je-l-word{animation:none}
+}
