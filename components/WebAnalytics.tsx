@@ -6,12 +6,11 @@ const BEACON="https://static.cloudflareinsights.com/beacon.min.js";
 export default function WebAnalytics({siteTag}:{siteTag:string}){
   const pathname=usePathname();
   useEffect(()=>{
-    if(!siteTag||!pathname||pathname.startsWith("/admin")||pathname.startsWith("/api")||document.getElementById("cf-web-analytics"))return;
+    if(!siteTag||!pathname||pathname.startsWith("/admin")||pathname.startsWith("/api")||pathname.startsWith("/apercu")||document.getElementById("cf-web-analytics"))return;
     const script=document.createElement("script");
     script.id="cf-web-analytics";
-    script.type="module";
+    script.defer=true;
     script.src=BEACON;
-    script.async=true;
     script.dataset.cfBeacon=JSON.stringify({token:siteTag});
     document.body.appendChild(script);
   },[siteTag,pathname]);

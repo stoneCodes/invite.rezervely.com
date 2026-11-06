@@ -46,7 +46,7 @@ async function stripe<T>(path: string, params?: Record<string, string>, method =
   return j as T;
 }
 
-type Session = { id: string; url: string | null; payment_status: string; amount_total: number | null; metadata: Record<string, string> | null };
+type Session = { id: string; url: string | null; status?: string; payment_status: string; amount_total: number | null; metadata: Record<string, string> | null };
 
 export type PromotionCode = {
   id: string; code: string; active: boolean; times_redeemed: number; max_redemptions: number | null; expires_at: number | null;
@@ -116,7 +116,9 @@ export const getSession = (id: string) => stripe<Session>(`checkout/sessions/${e
 /** Session payée → invitation marquée payée et publiée (sans effet si c'est déjà fait : retour + webhook peuvent arriver tous les deux). */
 export async function applyPaidSession(s: Session): Promise<{ token: string } | null> {
   const token = s.metadata?.token;
-  if (s.payment_status !== "paid" || !token) return null;
+  // Code promo à 100 % : Stripe termine la session sans paiement (« no_payment_required ») ; elle doit quand même publier.
+  const settled = s.payment_status === "paid" || (s.payment_status === "no_payment_required" && s.status === "complete");
+  if (!settled || !token) return null;
   const { data: inv } = await db().from("invitations").select("*").eq("edit_token", token).maybeSingle<InvitationRow>();
   if (!inv) return null;
   const now = new Date().toISOString();
