@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { db } from "@/lib/supabase";
 import { invitePath } from "@/lib/slug";
 import adminFr from "@/lib/i18n/admin-fr";
+import DeleteInvitationButton from "./DeleteInvitationButton";
 
 export const dynamic = "force-dynamic";
 const PAGE_SIZE = 50;
@@ -33,7 +34,7 @@ export default async function InvitationsPage({ searchParams }: { searchParams: 
   return <main className="ad-main">
     <div className="ad-title"><h1>{adminFr.invitationsTitle}</h1></div>
     <form method="get" className="ad-filters"><label>{adminFr.search}<input name="q" defaultValue={search} placeholder={adminFr.searchPlaceholder} maxLength={100}/></label><label>{adminFr.filter}<select name="filtre" defaultValue={filter}><option value="toutes">{adminFr.allStatuses}</option><option value="brouillon">{adminFr.draft}</option><option value="publiee">{adminFr.publishedStatus}</option><option value="payee">{adminFr.paidStatus}</option><option value="offerte">{adminFr.offeredStatus}</option><option value="passee">{adminFr.pastEvent}</option></select></label><button type="submit">{adminFr.apply}</button></form>
-    {rows.length===0?<section className="ad-panel"><p>{adminFr.noInvitations}</p></section>:<div className="ad-panel ad-table-wrap"><table><thead><tr><th>{adminFr.coupleName}</th><th>{adminFr.emailColumn}</th><th>{adminFr.template}</th><th>{adminFr.status}</th><th>{adminFr.payment}</th><th>{adminFr.eventDate}</th><th>{adminFr.replyCount}</th><th>{adminFr.createdAt}</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td><Link href={`/admin/invitations/${row.id}`}>{row.data.partner1} &amp; {row.data.partner2}</Link></td><td>{row.owner_email||"—"}</td><td>{row.template}</td><td>{row.status==="published"?adminFr.publishedStatus:adminFr.draft}</td><td>{row.comped_at?adminFr.offeredPayment:row.paid_at?amount(row.paid_amount_cents):adminFr.unpaid}</td><td>{fmtDate(row.data.dateISO)}</td><td>{row.rsvps?.[0]?.count??0}</td><td>{fmtDate(row.created_at)}</td></tr>)}</tbody></table></div>}
+    {rows.length===0?<section className="ad-panel"><p>{adminFr.noInvitations}</p></section>:<div className="ad-panel ad-table-wrap"><table><thead><tr><th>{adminFr.coupleName}</th><th>{adminFr.emailColumn}</th><th>{adminFr.template}</th><th>{adminFr.status}</th><th>{adminFr.payment}</th><th>{adminFr.eventDate}</th><th>{adminFr.replyCount}</th><th>{adminFr.createdAt}</th><th>{adminFr.actions}</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td><Link href={`/admin/invitations/${row.id}`}>{row.data.partner1} &amp; {row.data.partner2}</Link></td><td>{row.owner_email||"—"}</td><td>{row.template}</td><td>{row.status==="published"?adminFr.publishedStatus:adminFr.draft}</td><td>{row.comped_at?adminFr.offeredPayment:row.paid_at?amount(row.paid_amount_cents):adminFr.unpaid}</td><td>{fmtDate(row.data.dateISO)}</td><td>{row.rsvps?.[0]?.count??0}</td><td>{fmtDate(row.created_at)}</td><td><DeleteInvitationButton id={row.id}/></td></tr>)}</tbody></table></div>}
     <nav className="ad-pagination" aria-label={adminFr.invitations}><span>{adminFr.pageOf(page,pages)} · {count||0}</span><div>{page>1&&<Link href={hrefFor(page-1)}>{adminFr.previous}</Link>}{page<pages&&<Link href={hrefFor(page+1)}>{adminFr.next}</Link>}</div></nav>
   </main>;
 }

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import adminFr from "@/lib/i18n/admin-fr";
 
 type Invitation = {
@@ -23,9 +24,24 @@ const name = (item: Invitation) => [item.data?.partner1, item.data?.partner2].fi
 
 export default function DashboardDetails({ summary, children }: { summary: Summary; children: React.ReactNode }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const router = useRouter();
   const [detail, setDetail] = useState<Detail | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
   const open = (value: Detail) => { setDetail(value); dialog.current?.showModal(); };
   const close = () => dialog.current?.close();
+  async function deleteInvitation(item: Invitation) {
+    if (!window.confirm(adminFr.confirmDelete)) return;
+    if (window.prompt(adminFr.deleteWord) !== "SUPPRIMER") { setActionError(adminFr.deleteMustType); return; }
+    setDeleting(item.id); setActionError("");
+    try {
+      const response = await fetch(`/api/admin/invitations/${item.id}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "delete", confirmation: "SUPPRIMER" }) });
+      const result = await response.json();
+      if (!response.ok || !result.deleted) throw new Error(result.error || adminFr.actionFailed);
+      close(); router.refresh();
+    } catch (error) { setActionError(error instanceof Error ? error.message : adminFr.actionFailed); }
+    finally { setDeleting(null); }
+  }
   const stats = summary.activity;
   const groups: Record<string, Detail> = {
     revenue: { title: adminFr.revenue, stats: [[adminFr.revenue, amount(stats.revenue_cents)], [adminFr.payments, String(stats.paid)], [adminFr.averagePayment, stats.paid ? amount(Math.round(stats.revenue_cents / stats.paid)) : "—"]], invitations: summary.recent.filter(x => x.paid_at && !x.comped_at) },
@@ -44,7 +60,8 @@ export default function DashboardDetails({ summary, children }: { summary: Summa
     <dialog ref={dialog} className="ad-detail-dialog" aria-labelledby="ad-detail-title" onClick={event => { if (event.target === dialog.current) close(); }} onClose={() => setDetail(null)}>
       {detail && <div className="ad-detail-content"><header><div><span>{adminFr.details}</span><h2 id="ad-detail-title">{detail.title}</h2></div><button type="button" aria-label={adminFr.close} onClick={close}>×</button></header>
         <dl>{detail.stats.map(([label, value], index) => <div key={`${label}-${index}`}><dt>{label}</dt><dd>{value || "—"}</dd></div>)}</dl>
-        {detail.invitations.length > 0 && <section><h3>{adminFr.recentInvitations}</h3><ul>{detail.invitations.map(item => <li key={item.id}><Link href={`/admin/invitations/${item.id}`} onClick={close}><span>{name(item)}</span><span>{item.paid_at ? amount(item.paid_amount_cents) : item.status === "published" ? adminFr.publishedStatus : adminFr.draft} · {date(item.created_at)}</span></Link></li>)}</ul><Link className="ad-detail-all" href="/admin/invitations">{adminFr.allInvitations} →</Link></section>}
+        {detail.invitations.length > 0 && <section><h3>{adminFr.recentInvitations}</h3><ul>{detail.invitations.map(item => <li key={item.id} className="ad-detail-invitation"><Link href={`/admin/invitations/${item.id}`} onClick={close}><span>{name(item)}</span><span>{item.paid_at ? amount(item.paid_amount_cents) : item.status === "published" ? adminFr.publishedStatus : adminFr.draft} · {date(item.created_at)}</span></Link><button type="button" className="ad-mini-danger" disabled={deleting===item.id} onClick={()=>void deleteInvitation(item)}>{deleting===item.id?adminFr.actionWorking:adminFr.deleteFromDashboard}</button></li>)}</ul><Link className="ad-detail-all" href="/admin/invitations" onClick={close}>{adminFr.allInvitations} →</Link></section>}
+        {actionError&&<p className="ad-danger-message" role="alert">{actionError}</p>}
         {detail.invitations.length === 0 && <p className="ad-detail-empty">{adminFr.noDetailsList}</p>}
       </div>}
     </dialog>
