@@ -82,3 +82,10 @@
   .gl *{animation:none!important;transition:none!important}
   .gl-letter,.gl-rise,.gl-rv{opacity:1;transform:none;filter:none}
 }
+/* Retour des clients : lien « Mon espace » et « Reprendre l’invitation » */
+.gl-space{display:inline-flex;align-items:center;gap:6px;color:var(--ink)!important;text-decoration:none;font-size:.8rem;letter-spacing:.08em;padding:8px 10px;border-radius:999px;border:1px solid transparent}
+.gl-space:hover{border-color:var(--line)}
+.gl-space svg{width:18px;height:18px}
+@media (max-width:480px){.gl-space span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.gl-space{padding:8px}}
+.gl-back{margin:18px 0 0;font-size:.88rem;color:var(--muted)}
+.gl-back a{color:var(--accent)}

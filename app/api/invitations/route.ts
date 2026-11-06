@@ -10,8 +10,10 @@ export async function POST(req: Request) {
   const lang = await getLang();
   const body = await req.json().catch(() => null);
   if (!body || !isTemplate(body.template)) return NextResponse.json({ error: t.api.unknownTemplate }, { status: 400 });
+  const owner = cleanEmail(body.email);
+  if (!owner) return NextResponse.json({ error: t.api.emailRequired }, { status: 400 });
   const data = sanitizeData(body.data);
-  const row = { slug: newSlug(), edit_token: newEditToken(), template: body.template, data, owner_email: cleanEmail(body.email), owner_lang: lang };
+  const row ={ slug: newSlug(), edit_token: newEditToken(), template: body.template, data, owner_email: owner, owner_lang: lang };
   const { error } = await db().from("invitations").insert(row);
   if (error) { console.error("invitations.insert", error.code, error.message); return NextResponse.json({ error: t.api.saveFail }, { status: 500 }); }
   // L'e-mail part après la réponse : l'enregistrement n'attend pas Brevo.

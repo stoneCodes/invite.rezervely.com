@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { TEMPLATES, type TemplateId } from "@/lib/types";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useT } from "@/components/I18n";
+import { getLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 
 /** Page d'accueil « Nuit de gala » : poussière d'or, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal. */
 export default function HomeClient() {
@@ -14,6 +15,9 @@ export default function HomeClient() {
   const t = useT();
   const h = t.home;
   const TITLE = h.title;
+  // Dernière invitation créée sur cet appareil (lu après le montage : le stockage n'existe pas côté serveur).
+  const [last, setLast] = useState<LastInvite | null>(null);
+  useEffect(() => { setLast(getLastInvite()); }, []);
   const burstRef = useRef<(x: number, y: number) => void>(() => {});
 
   useEffect(() => {
@@ -130,7 +134,7 @@ export default function HomeClient() {
 
       <nav id="gl-nav" className="gl-nav">
         <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={26} /></Link>
-        <div className="gl-nav-r"><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
+        <div className="gl-nav-r"><Link className="gl-space" href={spaceHref(last)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg><span>{t.find.mySpace}</span></Link><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
       </nav>
 
       <section className="gl-hero">
@@ -149,6 +153,7 @@ export default function HomeClient() {
             <a className="btn-s" href="/creer" onClick={celebrate("/creer")}>{h.ctaCreate}</a>
             <a className="btn-s ghost" href="#gl-hz">{h.ctaModels}</a>
           </div>
+          <p className="gl-back">{last ? <Link href={spaceHref(last)}>{t.find.resume(last.names)} →</Link> : <>{t.editor.already} <Link href="/espace">{t.find.title}</Link></>}</p>
         </div>
         <div className="gl-cue" aria-hidden />
       </section>

@@ -61,3 +61,6 @@
 /* Indice sur chaque carte : on peut voir la démo */
 .ed-tpls button::after{content:"▶ " attr(data-demo);position:absolute;top:8px;right:8px;padding:4px 8px;border-radius:999px;background:rgba(13,9,17,.7);color:#fff;font:500 .62rem/1 var(--f-ui);letter-spacing:.08em;opacity:.85}
 .ed-tpls button[aria-pressed=true]::after{top:10px;right:10px;padding:6px 10px;font-size:.68rem}
+/* E-mail obligatoire : champ en erreur, lien « déjà une invitation ? » */
+.ed input.ed-invalid{border-color:var(--err);outline:2px solid rgba(241,154,154,.3)}
+.ed-back{margin:-.4em 0 1.2em}

@@ -8,6 +8,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ token:
   const t = await getT();
   const inv = await getByToken((await params).token);
   if (!inv) return NextResponse.json({ error: t.api.notFound }, { status: 404 });
+  if (!inv.owner_email) return NextResponse.json({ error: t.api.emailRequired }, { status: 400 });
   if (process.env.PAYMENTS_ENABLED === "true") {
     // TODO Stripe : créer une session Checkout et ne publier qu'après le webhook checkout.session.completed.
     return NextResponse.json({ error: t.api.payment }, { status: 402 });

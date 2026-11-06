@@ -21,6 +21,7 @@ export async function PUT(req: Request, { params }: Ctx) {
   const body = await req.json().catch(() => null);
   if (!body || !isTemplate(body.template)) return NextResponse.json({ error: t.api.unknownTemplate }, { status: 400 });
   const email = cleanEmail(body.email) ?? inv.owner_email;
+  if (!email) return NextResponse.json({ error: t.api.emailRequired }, { status: 400 });
   const data = sanitizeData(body.data);
   const { error } = await db()
     .from("invitations")

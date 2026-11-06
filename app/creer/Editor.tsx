@@ -8,6 +8,7 @@ import { sampleData } from "@/lib/sample";
 import { TEMPLATES, type InvitationData, type TemplateId } from "@/lib/types";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
+import { getLastInvite, setLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 import { LANGS } from "@/lib/i18n";
 
 /* ---------- Dates : l'éditeur saisit l'heure de Paris, on stocke un ISO avec décalage ---------- */
@@ -51,6 +52,9 @@ export default function Editor() {
   const [template, setTemplate] = useState<TemplateId>((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId);
   const [data, setData] = useState<InvitationData>(() => sampleData(siteLang));
   const [email, setEmail] = useState("");
+  const [emailErr, setEmailErr] = useState(false);
+  const [last, setLast] = useState<LastInvite | null>(null);
+  useEffect(() => { setLast(getLastInvite()); }, []);
   const [token, setTokenState] = useState<string | null>(sp.get("edit"));
   // Copie synchrone du jeton : deux enregistrements enchaînés (photo) ne doivent pas créer deux invitations.
   const tokenRef = useRef<string | null>(sp.get("edit"));
@@ -116,6 +120,12 @@ export default function Editor() {
   const setDc = (patch: Partial<InvitationData["dressCode"]>) => set("dressCode", { ...dc, ...patch });
 
   async function save(d: InvitationData = data): Promise<string | null> {
+    // E-mail obligatoire avant tout enregistrement (et donc avant publication ou envoi de photo).
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setEmailErr(true); setTab("form"); setMsg({ kind: "err", text: e_.emailRequired });
+      requestAnimationFrame(() => { const el = document.getElementById("email") as HTMLInputElement | null; el?.scrollIntoView({ block: "center", behavior: "smooth" }); el?.focus({ preventScroll: true }); });
+      return null;
+    }
     setBusy(true); setMsg(null);
     const tk = tokenRef.current;
     try {
@@ -124,6 +134,7 @@ export default function Editor() {
       if (!res.ok) throw new Error(j.error);
       setSlug(j.slug);
       if (!tk && j.editToken) { setToken(j.editToken); router.replace(`/creer?edit=${j.editToken}`); }
+      setLastInvite({ token: tk ?? j.editToken, names: `${d.partner1} & ${d.partner2}` });
       setMsg({ kind: "ok", text: e_.msgSaved });
       return tk ?? j.editToken;
     } catch (e) {
@@ -181,6 +192,7 @@ export default function Editor() {
       <div className="ed-grid">
         <form className={`ed-form ${tab === "form" ? "" : "ed-hide-m"}`} onSubmit={(e) => { e.preventDefault(); save(); }}>
           <h1>{e_.title}</h1>
+          {!token && <p className="ed-help ed-back">{e_.already} {last ? <a href={spaceHref(last)}>{t.find.resume(last.names)}</a> : <a href="/espace">{t.find.title}</a>}</p>}
 
           <fieldset>
             <legend>{e_.style}</legend>
@@ -317,7 +329,7 @@ export default function Editor() {
           <fieldset>
             <legend>{e_.replies}</legend>
             <label>{e_.rsvpLine}<input id="rsvpby" maxLength={120} value={data.rsvpBy} onChange={(e) => set("rsvpBy", e.target.value)} /></label>
-            <label>{e_.email}<input id="email" type="email" maxLength={200} placeholder={e_.emailPh} value={email} onChange={(e) => setEmail(e.target.value)} /></label>
+            <label><span>{e_.email} <span aria-hidden="true">*</span></span><input id="email" type="email" required autoComplete="email" aria-invalid={emailErr || undefined} className={emailErr ? "ed-invalid" : undefined} maxLength={200} placeholder={e_.emailPh} value={email} onChange={(e) => { setEmail(e.target.value); setEmailErr(false); }} /></label>
             <p className="ed-help">{e_.emailHelp} <a href="/espace">{t.find.lost}</a></p>
           </fieldset>
 

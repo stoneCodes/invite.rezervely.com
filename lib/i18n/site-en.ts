@@ -144,7 +144,9 @@ export const en: SiteDict = {
     rsvpLine: "Reply line",
     email: "Your email",
     emailPh: "you@example.com",
-    emailHelp: "So we can resend the link to your space if you lose it.",
+    emailHelp: "Required: we send you the link to your space (replies, edits) so you never lose your invitation.",
+    emailRequired: "Enter your email above: it is required, we send the link to your space there.",
+    already: "Already created an invitation?",
     seeRender: "See the result",
     save: "Save",
     publish: "Publish",
@@ -198,6 +200,8 @@ export const en: SiteDict = {
     invalid: "This email address doesn't look valid.",
     fail: "Sending isn't possible right now. Please try again in a moment.",
     lost: "Lost your link?",
+    mySpace: "My space",
+    resume: (names) => `Continue ${names}'s invitation`,
   },
   api: {
     unknownTemplate: "Unknown design",
@@ -208,6 +212,7 @@ export const en: SiteDict = {
     saveFirst: "Save the invitation first.",
     format: "Accepted formats: JPG, PNG or WebP.",
     tooBig: "Photo too large (4 MB max).",
+    emailRequired: "A valid email address is required.",
     uploadFail: "Upload failed",
   },
 };

@@ -143,7 +143,9 @@ export const fr = {
     rsvpLine: "Phrase pour les réponses",
     email: "Votre e-mail",
     emailPh: "vous@exemple.fr",
-    emailHelp: "Pour vous renvoyer le lien de votre espace si vous le perdez.",
+    emailHelp: "Obligatoire : nous vous y envoyons le lien de votre espace (réponses, modifications), pour ne jamais perdre votre invitation.",
+    emailRequired: "Indiquez votre e-mail ci-dessus : il est obligatoire, nous y envoyons le lien de votre espace.",
+    already: "Vous avez déjà créé une invitation ?",
     seeRender: "Voir le rendu",
     save: "Enregistrer",
     publish: "Publier",
@@ -197,6 +199,8 @@ export const fr = {
     invalid: "Cette adresse e-mail ne semble pas valide.",
     fail: "Envoi impossible pour le moment. Réessayez dans un instant.",
     lost: "Lien perdu ?",
+    mySpace: "Mon espace",
+    resume: (names: string) => `Reprendre l'invitation de ${names}`,
   },
   api: {
     unknownTemplate: "Modèle inconnu",
@@ -208,6 +212,7 @@ export const fr = {
     format: "Format accepté : JPG, PNG ou WebP.",
     tooBig: "Photo trop lourde (4 Mo maximum).",
     uploadFail: "Envoi impossible",
+    emailRequired: "Une adresse e-mail valide est obligatoire.",
   },
 };
 
