@@ -7,10 +7,10 @@ Marque visée : **joyeuxevent** (décidé avec Glad le 6 nov. 2026). Les mariage
 Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à puces). Toute l'interface est en français.
 
 ## Stack
-- Next.js 15 (App Router, TypeScript), déployé sur Vercel (équipe `iccgospel`, projet `invite.rezervely.com`, formule Hobby) : en ligne sur https://inviterezervelycom.vercel.app depuis le 5 nov. 2026, redéploiement automatique à chaque push sur `main`. Domaine prévu : `joyeuxevent.com` (acheté par Glad chez LWS le 6 nov. 2026, DNS chez Cloudflare (gratuit, serveurs `kyle` et `veronica.ns.cloudflare.com`, compte Glesucces) : A `@` → 216.198.79.1 et CNAME `www` → Vercel, en « DNS only » (pas de proxy orange devant Vercel) ; `joyeuxevent.com` est l’adresse principale, `www` redirige (308) ; LWS ne garde que l’enregistrement du domaine ; seul le domaine sert, l'hébergement LWS ne fait pas tourner Node) ; l'ancien plan `invite.rezervely.com` est abandonné.
+- Next.js 15 (App Router, TypeScript), hébergé sur **Cloudflare Workers** depuis le 6 nov. 2026 (adaptateur `@opennextjs/cloudflare`, Worker `joyeuxevent`, compte Cloudflare Glesucces, formule gratuite ; passer à Workers Paid 5 $/mois dès les premiers paiements ou au premier « Exceeded CPU Time Limits » dans Metrics). Relié au dépôt GitHub (Workers Builds) : build `npx opennextjs-cloudflare build`, déploiement `npx opennextjs-cloudflare deploy` à chaque push sur `main`. Config : `wrangler.jsonc` (variables non secrètes, cron, `keep_vars: true` pour ne pas effacer les secrets du tableau de bord), `open-next.config.ts`, `worker.ts` (entrée : site + tâche planifiée). Domaine `joyeuxevent.com` (acheté chez LWS, DNS chez Cloudflare, serveurs `kyle`/`veronica.ns.cloudflare.com`) attaché au Worker en domaine personnalisé ; `www` redirige en 301 (règle « Redirect from WWW to root »). Adresse de secours : https://joyeuxevent.glesucces.workers.dev. L'ancien projet Vercel (`iccgospel`, https://inviterezervelycom.vercel.app) reste en secours sans domaine ; retour arrière = remettre A `@` → 216.198.79.1 et CNAME `www` → Vercel après avoir retiré les domaines du Worker.
 - Supabase (projet `usolfegmepnazrporeec`) : Postgres + Storage (bucket `photos`). Schéma : `supabase/migrations/001_init.sql`.
 - Pas de client Supabase côté navigateur : RLS activé **sans policy**, tout passe par les routes serveur avec la clé `service_role` (`lib/supabase.ts`, marqué `server-only`).
-- Variables : voir `.env.example`. Sur Vercel (Hobby), `NEXT_PUBLIC_SITE_URL` reste vide tant que `invite.rezervely.com` n'est pas branché : `siteUrl()` prend alors l'adresse `…vercel.app`. La clé `service_role` est saisie par Glad directement dans Vercel, jamais dans le chat.
+- Variables : voir `.env.example`. Non secrètes dans `wrangler.jsonc` ; secrets (`SUPABASE_SERVICE_ROLE_KEY`, `BREVO_API_KEY`, `CRON_SECRET`) saisis par Glad dans Cloudflare (Worker → Settings → Variables and secrets, type Secret), jamais dans le chat. Local sur le moteur Cloudflare : `.dev.vars` (non versionné) + `npm run cf:preview` ou la config `cf` de `.claude/launch.json` (port 8787).
 
 ## Structure
 - `components/invitation/` : le cœur visuel.
@@ -50,17 +50,17 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 
 ## E-mails aux mariés (Brevo, décidé le 6 nov. 2026)
 - Service : **Brevo** (compte de Glad déjà utilisé pour rezervely ; quota gratuit de 300/jour partagé entre les deux sites). Envoi par l'API transactionnelle dans `lib/email.ts` (`sendEmail`) : changer de service = réécrire cette seule fonction. Sans `BREVO_API_KEY` (local), mode test : l'e-mail s'affiche dans le terminal.
-- E-mails : lien de l'espace à l'enregistrement (ou quand l'adresse change), lien à partager à la 1re publication, **récapitulatif quotidien** des nouvelles réponses (`/api/cron/recap`, `vercel.json`, 17 h UTC, protégé par `CRON_SECRET`) plutôt qu'un e-mail par invité, et « Retrouver mon espace » (`/espace` → `/api/espace/lien`, réponse identique que l'adresse existe ou non).
+- E-mails : lien de l'espace à l'enregistrement (ou quand l'adresse change), lien à partager à la 1re publication, **récapitulatif quotidien** des nouvelles réponses (`/api/cron/recap`, tâche planifiée Cloudflare dans `wrangler.jsonc` + `worker.ts`, 17 h UTC, protégé par `CRON_SECRET`) plutôt qu'un e-mail par invité, et « Retrouver mon espace » (`/espace` → `/api/espace/lien`, réponse identique que l'adresse existe ou non).
 - Textes dans `lib/i18n/email.ts` (FR/EN), langue = `invitations.owner_lang` (langue du site au dernier enregistrement). Aperçu en local : `/api/dev/email?type=welcome|published|recap|links&lang=fr|en`.
 - **E-mail obligatoire** (décision de Glad, 6 nov. 2026) : l'éditeur refuse d'enregistrer, publier ou envoyer une photo sans e-mail valide (message + focus sur le champ), et les routes `POST /api/invitations`, `PUT` et `publish` le refusent aussi (400).
 - Retour des clients : lien « Mon espace » dans la barre de l'accueil et « Vous avez déjà créé une invitation ? » (accueil + éditeur). Le dernier jeton enregistré sur l'appareil est gardé dans le navigateur (`lib/lastInvite.ts`) pour proposer « Reprendre l'invitation de … » ; sinon lien vers `/espace` (renvoi par e-mail).
 - Brevo : l'expéditeur `joyeuxevent <hello@joyeuxevent.com>` doit exister dans Expéditeurs (sinon Brevo envoie depuis `…@brevosend.com` sans erreur, et Gmail classe en indésirables). `hello` est aussi le sous-domaine de suivi des liens.
 - Migration `005_emails.sql` (`owner_lang`, `rsvps.notified_at`) : à appliquer **avant** de déployer le code (sinon la création d'invitation échoue).
-- Variables Vercel (saisies par Glad) : `BREVO_API_KEY` (secret), `EMAIL_FROM` (`joyeuxevent <hello@joyeuxevent.com>`), `EMAIL_REPLY_TO` (facultatif), `CRON_SECRET` (secret). Domaine à authentifier dans Brevo (DNS chez Cloudflare).
+- Variables (secrets saisis par Glad dans Cloudflare) : `BREVO_API_KEY` (secret), `EMAIL_FROM` (`joyeuxevent <hello@joyeuxevent.com>`), `EMAIL_REPLY_TO` (facultatif), `CRON_SECRET` (secret). Domaine à authentifier dans Brevo (DNS chez Cloudflare).
 
 ## À faire (par ordre)
 1. Stripe Checkout : quand `PAYMENTS_ENABLED=true`, `POST /api/invitations/[token]/publish` doit créer une session et publier sur webhook `checkout.session.completed`. Prix à définir avec Glad.
-2. ✅ (code fait, migration 005) E-mails aux mariés via Brevo : reste à authentifier le domaine dans Brevo et saisir les variables dans Vercel.
+2. ✅ (code fait, migration 005) E-mails aux mariés via Brevo : reste à authentifier le domaine dans Brevo (fait).
 3. Anti-abus : limite de débit sur `/api/rsvp` et `/api/invitations` (ex. Upstash), honeypot sur le formulaire RSVP.
 4. Version allégée des effets pour les téléphones peu puissants (désactiver flou/3D si `navigator.hardwareConcurrency <= 4` ou FPS bas).
 5. Pages légales : mentions légales, CGV, politique de confidentialité (photos + noms des invités → RGPD, durée de conservation).
@@ -70,7 +70,7 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
    - ✅ (fait, migration 003) `boule-neige` « Le monde miniature » : boule à neige à secouer (capteur de mouvement, autorisation demandée au toucher sur iPhone, repli au doigt), puis plongée dans des maquettes miniatures ; la date est de la buée à essuyer sur le verre.
    - ✅ (fait, migration 004) `origami` « Origami » : grue en papier qui se déplie en 3D, chaque section est un pliage dessiné en code, la date est une enveloppe origami à déplier, la réponse part en avion en papier.
    Images : Glad les génère avec ChatGPT (photographiques, naturelles, sans texte ni visage), puis conversion WebP dans `public/img`.
-7. Vercel : passer en Pro avant d'activer le paiement (Hobby interdit l'usage commercial).
+7. Cloudflare : passer en Workers Paid (5 $/mois) avant ou dès les premiers paiements. Prix validé : 9,90 € TTC, payé à la publication (invités/réponses illimités, modifications illimitées, en ligne jusqu'à 3 mois après la date).
 
 ## Commandes
 - `npm run dev` → http://localhost:3000 (démo sans base : `/demo/jardin-nuit`)
