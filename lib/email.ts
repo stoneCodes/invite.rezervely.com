@@ -64,12 +64,13 @@ const linkBox = (label: string, url: string) =>
 
 function layout(lang: Lang | null | undefined, blocks: Block[]) {
   const c = emailDict(lang).common;
-  const logo = `${siteUrl()}/brand/joyeuxevent-logo-sombre.png`;
+  // Logo en texte (pas d'image) : beaucoup d'applis mail bloquent les images par défaut et affichaient un grand cadre vide.
+  const home = siteUrl();
   return `<!doctype html><html lang="${lang === "en" ? "en" : "fr"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head>
 <body style="margin:0;padding:0;background:#F3ECE3">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3ECE3"><tr><td align="center" style="padding:28px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;border-radius:18px;overflow:hidden;background:#ffffff">
-<tr><td align="center" style="background:#0D0911;padding:22px 24px"><img src="${esc(logo)}" width="200" height="62" alt="joyeuxevent" style="display:block;border:0;width:200px;height:auto;${FONT};color:#E9D3A0;font-size:22px"></td></tr>
+<tr><td align="center" style="background:#0D0911;padding:22px 24px"><a href="${esc(home)}" style="text-decoration:none;${FONT};font-size:28px;letter-spacing:.02em;line-height:1"><span style="color:#E7A6B6;font-size:16px;vertical-align:top">&#10022;</span><span style="color:#F4EADB">joyeux</span><span style="color:#D9B76E">event</span><span style="color:#D9B76E;font-size:13px;vertical-align:top">&#10022;</span></a></td></tr>
 <tr><td style="padding:30px 28px 14px">${blocks.join("")}</td></tr>
 <tr><td style="padding:0 28px 26px">${p(c.footer, true)}</td></tr>
 </table></td></tr></table></body></html>`;
