@@ -14,6 +14,7 @@ const adminFr = {
   dashboard: "Tableau de bord",
   logout: "Se déconnecter",
   period: "Période",
+  apply: "Appliquer",
   today: "Aujourd'hui",
   days7: "7 derniers jours",
   days30: "30 derniers jours",

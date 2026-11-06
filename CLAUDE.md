@@ -62,6 +62,7 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 ## Espace administrateur (étape 1 en cours)
 - `/admin` : connexion par code e-mail (6 chiffres, 10 min, usage unique, 5 essais), session signée de 12 h, vérification serveur et 404 sans session. `/administrateur` redirige vers `/admin`; routes/pages exclues des moteurs de recherche.
 - Tableau de bord d'activité : périodes aujourd'hui / 7 jours / 30 jours / depuis le début ; agrégats calculés par la fonction SQL `admin_dashboard`.
+- Le filtre de période du tableau de bord est un formulaire GET natif (page serveur), sans gestionnaire client dans le rendu serveur.
 - Migration `007_admin.sql` : à appliquer dans Supabase > SQL Editor **avant le déploiement** du code de l'étape 1. Elle ajoute les tables privées `settings`, `admin_codes`, `admin_events`, `comped_at`, `keep_until` et les agrégats du tableau de bord.
 - Secrets à saisir directement dans Cloudflare Worker `joyeuxevent` > Settings > Variables and secrets (type Secret) : `ADMIN_EMAILS` (adresses séparées par des virgules) et `ADMIN_SESSION_SECRET` (32 caractères aléatoires minimum). En local, les placer dans `.env.local`.
 - L'activation du paiement reste désactivée et inchangée (`PAYMENTS_ENABLED`).
