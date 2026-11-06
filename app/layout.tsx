@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <I18nProvider lang={lang}>
           <Splash />
-          <WebAnalytics siteTag={process.env.CF_WEB_ANALYTICS_SITE_TAG || ""} />
+          <WebAnalytics siteTag={process.env.CF_WEB_ANALYTICS_TOKEN || ""} />{/* jeton du script (≠ site tag, qui sert à lire les chiffres) */}
           {children}
         </I18nProvider>
       </body>
