@@ -3,6 +3,7 @@
 // mountBoule(racine, données, options) → { replay, destroy }. Même contrat que les autres modèles.
 /* eslint-disable */
 import { esc, dateParts } from "../engine";
+import { inviteDict } from "../../../lib/i18n/invite";
 
 const IMG = {
   globe: "/img/boule-globe.webp", domaine: "/img/boule-domaine.webp", easel: "/img/boule-jardin-chevalet.webp",
@@ -22,8 +23,8 @@ const ICON = {
 };
 
 // Veste et robe (mêmes dessins que les autres modèles), recolorées par --gm / --gw.
-const JACKET = `<svg viewBox="0 0 140 210" role="img" aria-label="Veste pour les hommes"><defs><clipPath id="bnJ"><path d="M70 30 L52 33 L26 46 Q18 50 17 60 L10 168 Q10 174 17 174 L28 174 L31 112 L33 196 Q70 204 107 196 L109 112 L112 174 L123 174 Q130 174 130 168 L123 60 Q122 50 114 46 L88 33 Z"/></clipPath><linearGradient id="bnShJ" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs><path d="M70 8 q9 0 9 7 q0 6 -9 9 v6" stroke="#C9A86A" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M70 29 L24 50 M70 29 L116 50" stroke="#C9A86A" stroke-width="4" stroke-linecap="round"/><path class="g-m" d="M70 30 L52 33 L26 46 Q18 50 17 60 L10 168 Q10 174 17 174 L28 174 L31 112 L33 196 Q70 204 107 196 L109 112 L112 174 L123 174 Q130 174 130 168 L123 60 Q122 50 114 46 L88 33 Z"/><g clip-path="url(#bnJ)"><path d="M10 40 L31 112 L28 180 L0 180 Z" fill="#000" opacity=".13"/><path d="M130 40 L109 112 L112 180 L140 180 Z" fill="#000" opacity=".09"/><rect width="140" height="210" fill="url(#bnShJ)"/></g><path fill="#F7F3EE" d="M56 33 L70 80 L84 33 L76 31 L70 36 L64 31 Z"/><path class="g-m" d="M67 38 L73 38 L74.5 72 L70 79 L65.5 72 Z"/><path d="M67 38 L73 38 L74.5 72 L70 79 L65.5 72 Z" fill="#000" opacity=".38"/><path class="g-m" d="M56 33 L46 40 L54 64 L47 68 L70 112 L70 82 Z"/><path d="M56 33 L46 40 L54 64 L47 68 L70 112 L70 82 Z" fill="#fff" opacity=".14"/><path class="g-m" d="M84 33 L94 40 L86 64 L93 68 L70 112 L70 82 Z"/><path d="M84 33 L94 40 L86 64 L93 68 L70 112 L70 82 Z" fill="#000" opacity=".1"/><path d="M70 112 L70 199" stroke="#000" stroke-opacity=".28" stroke-width="1"/><circle cx="70" cy="126" r="2.6" fill="#000" opacity=".45"/><circle cx="70" cy="146" r="2.6" fill="#000" opacity=".45"/><path d="M84 156 L104 154" stroke="#000" stroke-opacity=".3" stroke-width="2"/><path d="M38 154 L56 156" stroke="#000" stroke-opacity=".3" stroke-width="2"/><path d="M88 88 L104 86" stroke="#000" stroke-opacity=".3" stroke-width="2"/><path d="M92 87 L96 81 L100 86.5 Z" fill="#F7F3EE"/></svg>`;
-const DRESS = `<svg viewBox="0 0 140 210" role="img" aria-label="Robe pour les femmes"><defs><clipPath id="bnD"><path d="M50 42 L55 42 L70 70 L85 42 L90 42 L94 92 Q112 150 128 200 Q70 212 12 200 Q28 150 46 92 Z"/></clipPath><linearGradient id="bnShD" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".2"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs><path d="M70 8 q9 0 9 7 q0 6 -9 9 v6" stroke="#C9A86A" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M70 29 L32 48 M70 29 L108 48" stroke="#C9A86A" stroke-width="4" stroke-linecap="round"/><path d="M50 42 L46 36 M90 42 L94 36" stroke="#C9A86A" stroke-width="1.4"/><path class="g-w" d="M50 42 L55 42 L70 70 L85 42 L90 42 L94 92 Q70 101 46 92 Z"/><path class="g-w" d="M46 97 Q70 106 94 97 Q112 150 128 200 Q70 212 12 200 Q28 150 46 97 Z"/><g clip-path="url(#bnD)"><path d="M58 104 Q50 150 36 204" stroke="#000" stroke-opacity=".16" stroke-width="7" fill="none"/><path d="M70 106 Q70 150 68 208" stroke="#fff" stroke-opacity=".14" stroke-width="5" fill="none"/><path d="M82 104 Q90 150 104 204" stroke="#000" stroke-opacity=".16" stroke-width="7" fill="none"/><rect width="140" height="210" fill="url(#bnShD)"/></g><path d="M46 92 Q70 101 94 92 L94 98 Q70 107 46 98 Z" fill="#000" opacity=".22"/></svg>`;
+const JACKET = `<svg viewBox="0 0 140 210" role="img" aria-label="__JACKET__"><defs><clipPath id="bnJ"><path d="M70 30 L52 33 L26 46 Q18 50 17 60 L10 168 Q10 174 17 174 L28 174 L31 112 L33 196 Q70 204 107 196 L109 112 L112 174 L123 174 Q130 174 130 168 L123 60 Q122 50 114 46 L88 33 Z"/></clipPath><linearGradient id="bnShJ" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs><path d="M70 8 q9 0 9 7 q0 6 -9 9 v6" stroke="#C9A86A" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M70 29 L24 50 M70 29 L116 50" stroke="#C9A86A" stroke-width="4" stroke-linecap="round"/><path class="g-m" d="M70 30 L52 33 L26 46 Q18 50 17 60 L10 168 Q10 174 17 174 L28 174 L31 112 L33 196 Q70 204 107 196 L109 112 L112 174 L123 174 Q130 174 130 168 L123 60 Q122 50 114 46 L88 33 Z"/><g clip-path="url(#bnJ)"><path d="M10 40 L31 112 L28 180 L0 180 Z" fill="#000" opacity=".13"/><path d="M130 40 L109 112 L112 180 L140 180 Z" fill="#000" opacity=".09"/><rect width="140" height="210" fill="url(#bnShJ)"/></g><path fill="#F7F3EE" d="M56 33 L70 80 L84 33 L76 31 L70 36 L64 31 Z"/><path class="g-m" d="M67 38 L73 38 L74.5 72 L70 79 L65.5 72 Z"/><path d="M67 38 L73 38 L74.5 72 L70 79 L65.5 72 Z" fill="#000" opacity=".38"/><path class="g-m" d="M56 33 L46 40 L54 64 L47 68 L70 112 L70 82 Z"/><path d="M56 33 L46 40 L54 64 L47 68 L70 112 L70 82 Z" fill="#fff" opacity=".14"/><path class="g-m" d="M84 33 L94 40 L86 64 L93 68 L70 112 L70 82 Z"/><path d="M84 33 L94 40 L86 64 L93 68 L70 112 L70 82 Z" fill="#000" opacity=".1"/><path d="M70 112 L70 199" stroke="#000" stroke-opacity=".28" stroke-width="1"/><circle cx="70" cy="126" r="2.6" fill="#000" opacity=".45"/><circle cx="70" cy="146" r="2.6" fill="#000" opacity=".45"/><path d="M84 156 L104 154" stroke="#000" stroke-opacity=".3" stroke-width="2"/><path d="M38 154 L56 156" stroke="#000" stroke-opacity=".3" stroke-width="2"/><path d="M88 88 L104 86" stroke="#000" stroke-opacity=".3" stroke-width="2"/><path d="M92 87 L96 81 L100 86.5 Z" fill="#F7F3EE"/></svg>`;
+const DRESS = `<svg viewBox="0 0 140 210" role="img" aria-label="__DRESS__"><defs><clipPath id="bnD"><path d="M50 42 L55 42 L70 70 L85 42 L90 42 L94 92 Q112 150 128 200 Q70 212 12 200 Q28 150 46 92 Z"/></clipPath><linearGradient id="bnShD" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".2"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs><path d="M70 8 q9 0 9 7 q0 6 -9 9 v6" stroke="#C9A86A" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M70 29 L32 48 M70 29 L108 48" stroke="#C9A86A" stroke-width="4" stroke-linecap="round"/><path d="M50 42 L46 36 M90 42 L94 36" stroke="#C9A86A" stroke-width="1.4"/><path class="g-w" d="M50 42 L55 42 L70 70 L85 42 L90 42 L94 92 Q70 101 46 92 Z"/><path class="g-w" d="M46 97 Q70 106 94 97 Q112 150 128 200 Q70 212 12 200 Q28 150 46 97 Z"/><g clip-path="url(#bnD)"><path d="M58 104 Q50 150 36 204" stroke="#000" stroke-opacity=".16" stroke-width="7" fill="none"/><path d="M70 106 Q70 150 68 208" stroke="#fff" stroke-opacity=".14" stroke-width="5" fill="none"/><path d="M82 104 Q90 150 104 204" stroke="#000" stroke-opacity=".16" stroke-width="7" fill="none"/><rect width="140" height="210" fill="url(#bnShD)"/></g><path d="M46 92 Q70 101 94 92 L94 98 Q70 107 46 98 Z" fill="#000" opacity=".22"/></svg>`;
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
@@ -50,7 +51,9 @@ export function mountBoule(root, INPUT, OPTS = {}) {
   // Aperçu de l'éditeur (sans ouverture ni buée) : tout est posé d'un coup, sans mouvement.
   const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches || (!!OPTS.skipIntro && !!OPTS.noGate);
   document.body.dataset.tpl = "boule-neige";
-  const when = dateParts(D.dateISO);
+  const T = inviteDict(D.lang), B = T.boule;
+  const jacket = JACKET.replace("__JACKET__", B.jacket), dress = DRESS.replace("__DRESS__", B.dress);
+  const when = dateParts(D.dateISO, D.lang);
   const p1 = esc(D.partner1), p2 = esc(D.partner2);
   const ini = (s) => esc((String(s || "").trim()[0] || "").toUpperCase());
   const photo = typeof D.photoUrl === "string" && D.photoUrl ? D.photoUrl : null;
@@ -63,7 +66,7 @@ export function mountBoule(root, INPUT, OPTS = {}) {
   const start = new Date(D.dateISO), end = new Date(start.getTime() + 10 * 3600e3);
   const gfmt = (d) => isNaN(d) ? "" : d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const venueQ = [D.venue?.name, D.venue?.address].filter(Boolean).join(", ");
-  const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Mariage de ${D.partner1} & ${D.partner2}`)}&dates=${gfmt(start)}/${gfmt(end)}&location=${encodeURIComponent(venueQ)}`;
+  const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(T.c.weddingOf(D.partner1, D.partner2))}&dates=${gfmt(start)}/${gfmt(end)}&location=${encodeURIComponent(venueQ)}`;
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueQ)}`;
 
   /* ---------- Contenu ---------- */
@@ -89,11 +92,11 @@ export function mountBoule(root, INPUT, OPTS = {}) {
 
   const scenes = [
     scene("hero", IMG.domaine, "", `
-      <div class="bn-hero"><small>Nous nous marions</small><h1><span>${p1}</span><i>&amp;</i><span>${p2}</span></h1>${D.intro ? `<p>${esc(D.intro)}</p>` : ""}</div>
-      <div class="bn-cue" aria-hidden="true"><span>Descendez dans le monde miniature</span><i></i></div>`, "bn-s-hero"),
+      <div class="bn-hero"><small>${B.married}</small><h1><span>${p1}</span><i>&amp;</i><span>${p2}</span></h1>${D.intro ? `<p>${esc(D.intro)}</p>` : ""}</div>
+      <div class="bn-cue" aria-hidden="true"><span>${B.dive}</span><i></i></div>`, "bn-s-hero"),
 
-    scene("photo", IMG.easel, `<div class="bn-frame" style="left:${FRAME.l}%;top:${FRAME.t}%;width:${FRAME.w}%;height:${FRAME.h}%">${photo ? `<img src="${esc(photo)}" alt="Photo de ${p1} et ${p2}">` : `<span class="bn-mono">${ini(D.partner1)}<i>&amp;</i>${ini(D.partner2)}</span>`}</div>`,
-      `<div class="bn-spacer"></div>${v ? `<article class="bn-card bn-verse">${v.orig ? `<p class="bn-orig" dir="auto">${esc(v.orig)}</p>` : ""}<p>${v.orig ? "" : "« "}${esc(v.text)}${v.orig ? "" : " »"}</p>${v.ref ? `<small>${esc(v.ref)}</small>` : ""}</article>` : ""}`, v ? "" : "bn-short"),
+    scene("photo", IMG.easel, `<div class="bn-frame" style="left:${FRAME.l}%;top:${FRAME.t}%;width:${FRAME.w}%;height:${FRAME.h}%">${photo ? `<img src="${esc(photo)}" alt="${B.photoOf(p1, p2)}">` : `<span class="bn-mono">${ini(D.partner1)}<i>&amp;</i>${ini(D.partner2)}</span>`}</div>`,
+      `<div class="bn-spacer"></div>${v ? `<article class="bn-card bn-verse">${v.orig ? `<p class="bn-orig" dir="auto">${esc(v.orig)}</p>` : ""}<p>${v.orig ? esc(v.text) : esc(T.c.quote(v.text))}</p>${v.ref ? `<small>${esc(v.ref)}</small>` : ""}</article>` : ""}`, v ? "" : "bn-short"),
   ];
 
   const dateScene = `
@@ -102,14 +105,14 @@ export function mountBoule(root, INPUT, OPTS = {}) {
       <div class="bn-col">
         <div class="bn-gview" aria-hidden="true"></div>
         <div class="bn-date">
-          <small>Le grand jour</small>
+          <small>${B.bigDay}</small>
           <b>${when ? esc(when.day) : ""}</b>
           <span class="bn-my">${monthYear}</span>
           <span class="bn-wd">${dayLine}</span>
-          <div class="bn-count" aria-label="Compte à rebours"><span><b data-c="0">0</b>jours</span><span><b data-c="1">00</b>heures</span><span><b data-c="2">00</b>min</span><span><b data-c="3">00</b>sec</span></div>
+          <div class="bn-count" aria-label="${B.countdown}"><span><b data-c="0">0</b>${B.days}</span><span><b data-c="1">00</b>${B.hours}</span><span><b data-c="2">00</b>${B.min}</span><span><b data-c="3">00</b>${B.sec}</span></div>
         </div>
         <canvas class="bn-fog" aria-hidden="true"></canvas>
-        <p class="bn-fog-hint"><i aria-hidden="true"></i>Essuyez la buée du bout du doigt<br>pour découvrir la date</p>
+        <p class="bn-fog-hint"><i aria-hidden="true"></i>${B.fog}</p>
       </div>
     </section>`;
 
@@ -118,59 +121,59 @@ export function mountBoule(root, INPUT, OPTS = {}) {
       <svg class="bn-route" viewBox="0 0 100 150" preserveAspectRatio="none" aria-hidden="true"><path class="bg" d="${route.d}"/><path class="lit" d="${route.d}" pathLength="1"/></svg>
       ${programme.map((_, i) => { const [x, y] = stopAt(i); return `<span class="bn-stop" style="left:${x.toFixed(2)}%;top:${y.toFixed(2)}%">${i + 1}</span>`; }).join("")}
       <span class="bn-walker" aria-hidden="true"></span>`,
-      `<header class="bn-title"><small>Le déroulé</small><h2>Le programme</h2></header>
+      `<header class="bn-title"><small>${B.progEyebrow}</small><h2>${B.progTitle}</h2></header>
        ${programme.map((x, i) => `<div class="bn-step"><article class="bn-card bn-prog"><span class="bn-num">${i + 1}</span><div><time>${esc(x.t)}</time><h3>${esc(x.title)}</h3>${x.note ? `<p>${esc(x.note)}</p>` : ""}</div></article></div>`).join("")}`) : "",
 
     showDress ? scene("dress", IMG.dress, `
-      <div class="bn-rack"><i class="bn-rod"></i><figure class="bn-g men">${JACKET}</figure><figure class="bn-g women">${DRESS}</figure></div>`,
+      <div class="bn-rack"><i class="bn-rod"></i><figure class="bn-g men">${jacket}</figure><figure class="bn-g women">${dress}</figure></div>`,
       `<div class="bn-spacer"></div>
-       <article class="bn-card bn-dc"><small>Dress code</small>${dc.title ? `<h2>${esc(dc.title)}</h2>` : ""}${dc.note ? `<p>${esc(dc.note)}</p>` : ""}
-         <div class="bn-sw" role="group" aria-label="Couleurs">${colors.map((c, i) => { const m = c.men || c.hex, w = c.women || c.hex; return `<button type="button" data-i="${i}" aria-pressed="${i === 0}" aria-label="${esc(c.name)}" style="background:${m === w ? m : `linear-gradient(135deg,${m} 50%,${w} 50%)`}"></button>`; }).join("")}</div>
+       <article class="bn-card bn-dc"><small>${B.dressEyebrow}</small>${dc.title ? `<h2>${esc(dc.title)}</h2>` : ""}${dc.note ? `<p>${esc(dc.note)}</p>` : ""}
+         <div class="bn-sw" role="group" aria-label="${B.colors}">${colors.map((c, i) => { const m = c.men || c.hex, w = c.women || c.hex; return `<button type="button" data-i="${i}" aria-pressed="${i === 0}" aria-label="${esc(c.name)}" style="background:${m === w ? m : `linear-gradient(135deg,${m} 50%,${w} 50%)`}"></button>`; }).join("")}</div>
          <p class="bn-cname">${esc(colors[0].name)}</p>
-         ${dc.men?.text ? `<p class="bn-dcl"><b>${esc(dc.men.label || "Messieurs")}</b> ${esc(dc.men.text)}</p>` : ""}
-         ${dc.women?.text ? `<p class="bn-dcl"><b>${esc(dc.women.label || "Mesdames")}</b> ${esc(dc.women.text)}</p>` : ""}
+         ${dc.men?.text ? `<p class="bn-dcl"><b>${esc(dc.men.label || B.men)}</b> ${esc(dc.men.text)}</p>` : ""}
+         ${dc.women?.text ? `<p class="bn-dcl"><b>${esc(dc.women.label || B.women)}</b> ${esc(dc.women.text)}</p>` : ""}
        </article>`) : "",
 
     venueQ ? scene("lieu", IMG.domaine, `<span class="bn-pin" style="left:${MANOR[0]}%;top:${MANOR[1]}%">${ICON.pin}</span>`,
       `<div class="bn-spacer"></div>
-       <article class="bn-card bn-lieu"><small>Le lieu</small><h2>${esc(D.venue?.name)}</h2><p>${esc(D.venue?.address)}</p>
-         <div class="bn-btns"><a class="bn-btn" href="${mapUrl}" target="_blank" rel="noopener">${ICON.pin} Itinéraire</a><a class="bn-btn ghost" href="${calUrl}" target="_blank" rel="noopener">Ajouter à mon agenda</a></div></article>`) : "",
+       <article class="bn-card bn-lieu"><small>${B.venueEyebrow}</small><h2>${esc(D.venue?.name)}</h2><p>${esc(D.venue?.address)}</p>
+         <div class="bn-btns"><a class="bn-btn" href="${mapUrl}" target="_blank" rel="noopener">${ICON.pin} ${B.route}</a><a class="bn-btn ghost" href="${calUrl}" target="_blank" rel="noopener">${esc(T.c.addCal)}</a></div></article>`) : "",
 
     story.length ? scene("story", IMG.banquet, "",
-      `<header class="bn-title"><small>Il était une fois</small><h2>Notre histoire</h2></header>
+      `<header class="bn-title"><small>${B.storyEyebrow}</small><h2>${B.storyTitle}</h2></header>
        ${story.map((s, i) => `<div class="bn-step short"><article class="bn-place" style="--r:${i % 2 ? 2 : -2}deg"><b>${esc(s.y)}</b><p>${esc(s.text)}</p></article></div>`).join("")}`) : "",
 
     scene("rsvp", IMG.dance, "", `
       <div class="bn-spacer short"></div>
       <article class="bn-card bn-rsvp">
-        <small>Votre réponse</small><h2>Serez-vous des nôtres&nbsp;?</h2>${D.rsvpBy ? `<p class="bn-by">${esc(D.rsvpBy)}</p>` : ""}
+        <small>${B.rsvpEyebrow}</small><h2>${B.rsvpTitle}</h2>${D.rsvpBy ? `<p class="bn-by">${esc(D.rsvpBy)}</p>` : ""}
         <form novalidate>
-          <div class="bn-choice" role="group" aria-label="Présence"><button type="button" data-a="yes" aria-pressed="true">Oui, avec joie</button><button type="button" data-a="no" aria-pressed="false">Je ne pourrai pas</button></div>
-          <label>Votre nom<input name="name" autocomplete="name" placeholder="Ex. Marie Dupont" maxlength="120"></label>
-          <label class="bn-guests">Nombre de personnes<span><button type="button" data-g="-1" aria-label="Moins">−</button><output>1</output><button type="button" data-g="1" aria-label="Plus">+</button></span></label>
-          <label>Un mot pour les mariés (facultatif)<textarea name="msg" rows="2" maxlength="1000"></textarea></label>
-          <p class="bn-err" hidden>L'envoi n'a pas marché. Réessayez dans un instant.</p>
-          <button class="bn-btn bn-send" type="submit">Envoyer ma réponse</button>
+          <div class="bn-choice" role="group" aria-label="${B.presence}"><button type="button" data-a="yes" aria-pressed="true">${B.yes}</button><button type="button" data-a="no" aria-pressed="false">${B.no}</button></div>
+          <label>${B.yourName}<input name="name" autocomplete="name" placeholder="${esc(T.c.namePh)}" maxlength="120"></label>
+          <label class="bn-guests">${B.guests}<span><button type="button" data-g="-1" aria-label="${B.less}">−</button><output>1</output><button type="button" data-g="1" aria-label="${B.more}">+</button></span></label>
+          <label>${B.word}<textarea name="msg" rows="2" maxlength="1000"></textarea></label>
+          <p class="bn-err" hidden>${B.err}</p>
+          <button class="bn-btn bn-send" type="submit">${B.send}</button>
         </form>
       </article>
-      <div class="bn-fin"><p class="bn-fin-names">${p1} <i>&amp;</i> ${p2}</p><p>${when ? esc(when.full) : ""}</p><button type="button" class="bn-btn ghost bn-again">${ICON.snow} Secouer à nouveau</button></div>`, "bn-s-rsvp"),
+      <div class="bn-fin"><p class="bn-fin-names">${p1} <i>&amp;</i> ${p2}</p><p>${when ? esc(when.full) : ""}</p><button type="button" class="bn-btn ghost bn-again">${ICON.snow} ${B.again}</button></div>`, "bn-s-rsvp"),
   ];
 
   root.innerHTML = `
   <div class="bn">
-    <section class="bn-intro" aria-label="Boule à neige : secouez-la pour ouvrir l'invitation de ${p1} et ${p2}">
-      <p class="bn-kicker">Un petit monde vous attend…</p>
+    <section class="bn-intro" aria-label="${B.introAria(p1, p2)}">
+      <p class="bn-kicker">${B.kicker}</p>
       <div class="bn-globe-wrap">
         <div class="bn-globe">
-          <img src="${IMG.globe}" alt="Boule à neige contenant un domaine miniature" draggable="false">
+          <img src="${IMG.globe}" alt="${B.globeAlt}" draggable="false">
           <canvas class="bn-snow" aria-hidden="true"></canvas>
           <p class="bn-plaque">${p1} <i>&amp;</i> ${p2}</p>
         </div>
         <div class="bn-floor" aria-hidden="true"></div>
       </div>
       <div class="bn-intro-bot">
-        <button type="button" class="bn-btn bn-shake">${ICON.snow}<span>Secouer la boule</span></button>
-        <p class="bn-hint">Secouez votre téléphone, ou faites glisser la boule du doigt</p>
+        <button type="button" class="bn-btn bn-shake">${ICON.snow}<span>${B.shake}</span></button>
+        <p class="bn-hint">${B.hint}</p>
       </div>
     </section>
 
@@ -182,7 +185,7 @@ export function mountBoule(root, INPUT, OPTS = {}) {
 
     <canvas class="bn-flakes" aria-hidden="true"></canvas>
     <div class="bn-glass" aria-hidden="true"></div>
-    <button type="button" class="bn-snd" aria-label="Couper le son">${ICON.sound}</button>
+    <button type="button" class="bn-snd" aria-label="${B.mute}">${ICON.sound}</button>
   </div>`;
 
   const bn = q(".bn"), intro = q(".bn-intro");
@@ -201,7 +204,7 @@ export function mountBoule(root, INPUT, OPTS = {}) {
   const sparkle = () => { if (!actx || !soundOn) return; const t = actx.currentTime; [1047, 1319, 1568, 2093, 2637].forEach((f, i) => tone(f, t + i * 0.08, 1.1, 0.2)); };
   const whoosh = () => { if (!actx || !soundOn) return; const t = actx.currentTime, len = actx.sampleRate * 1.6, b = actx.createBuffer(1, len, actx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.sin((i / len) * Math.PI); const s = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain(); s.buffer = b; f.type = "bandpass"; f.Q.value = 0.8; f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(2400, t + 1.4); g.gain.value = 0.5; s.connect(f).connect(g).connect(master); s.start(t); };
   const sndBtn = q(".bn-snd");
-  sndBtn.addEventListener("click", () => { soundOn = !soundOn; sndBtn.innerHTML = soundOn ? ICON.sound : ICON.mute; sndBtn.setAttribute("aria-label", soundOn ? "Couper le son" : "Remettre le son");
+  sndBtn.addEventListener("click", () => { soundOn = !soundOn; sndBtn.innerHTML = soundOn ? ICON.sound : ICON.mute; sndBtn.setAttribute("aria-label", soundOn ? B.mute : B.unmute);
     if (soundOn) { audio(); if (bn.classList.contains("is-world")) loop(); } else { clearTimeout(loopT); looping = false; } });
 
   /* ---------- La boule à neige (ouverture) ---------- */
@@ -250,8 +253,8 @@ export function mountBoule(root, INPUT, OPTS = {}) {
     if (diveT || !introOn) return;
     energy = Math.min(3, energy + power); angV += dir * 3 * Math.min(1.2, power); total += power; chime(power > 0.4 ? 4 : 2);
     intro.classList.add("is-shaken");
-    if (total >= THRESH) { q(".bn-kicker").textContent = "Le monde s'ouvre…"; diveT = later(dive, 1300); if (navigator.vibrate) navigator.vibrate([30, 50, 30]); }
-    else if (total > 0.8) q(".bn-kicker").textContent = "Encore un peu…";
+    if (total >= THRESH) { q(".bn-kicker").textContent = B.opening; diveT = later(dive, 1300); if (navigator.vibrate) navigator.vibrate([30, 50, 30]); }
+    else if (total > 0.8) q(".bn-kicker").textContent = B.more2;
   };
   const autoShake = () => { [0, 260, 520, 800].forEach((t, i) => later(() => shook(0.75, i % 2 ? -1 : 1), t)); };
 
@@ -277,7 +280,7 @@ export function mountBoule(root, INPUT, OPTS = {}) {
     if (needsPerm && !asked) {
       asked = true;
       DeviceMotionEvent.requestPermission().then((st) => {
-        if (st === "granted") { listenMotion(); q(".bn-hint").textContent = "Secouez votre téléphone !"; q(".bn-shake span").textContent = "Secouer pour moi"; }
+        if (st === "granted") { listenMotion(); q(".bn-hint").textContent = B.shakePhone; q(".bn-shake span").textContent = B.shakeForMe; }
         else autoShake();
       }).catch(autoShake);
       return;
@@ -293,7 +296,7 @@ export function mountBoule(root, INPUT, OPTS = {}) {
   function showIntro() {
     clearTimeout(diveT); diveT = 0; total = 0; energy = 0;
     bn.classList.remove("is-world", "is-diving"); intro.hidden = false; intro.classList.remove("is-shaken");
-    q(".bn-kicker").textContent = "Un petit monde vous attend…";
+    q(".bn-kicker").textContent = B.kicker;
     document.body.classList.add("bn-locked"); scrollTo(0, 0);
     introOn = true; sizeGlobe(); cancelAnimationFrame(introRaf); introRaf = requestAnimationFrame(stepGlobe);
   }
@@ -472,12 +475,12 @@ export function mountBoule(root, INPUT, OPTS = {}) {
   });
   form.addEventListener("submit", async (e) => {
     e.preventDefault(); const inp = form.querySelector("input"), name = inp.value.trim();
-    if (!name) { inp.focus(); inp.placeholder = "Votre nom, pour savoir qui vient"; return; }
+    if (!name) { inp.focus(); inp.placeholder = B.nameMissing; return; }
     const msg = form.querySelector("textarea").value.trim(), btn = form.querySelector(".bn-send"), err = form.querySelector(".bn-err");
     err.hidden = true;
-    if (OPTS.onRsvp) { btn.disabled = true; btn.textContent = "Envoi…"; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg }); } catch (x) { btn.disabled = false; btn.textContent = "Envoyer ma réponse"; err.hidden = false; return; } }
+    if (OPTS.onRsvp) { btn.disabled = true; btn.textContent = T.c.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg }); } catch (x) { btn.disabled = false; btn.textContent = B.send; err.hidden = false; return; } }
     const first = esc(name.split(" ")[0]);
-    card.innerHTML = `<small>Merci ${first}</small><h2>${attending ? "Rendez-vous sur la piste&nbsp;!" : "Vous allez nous manquer"}</h2><p>${attending ? `Votre réponse est bien arrivée : ${guests} personne${guests > 1 ? "s" : ""}. On a hâte de danser avec vous.` : "Merci d'avoir pris le temps de répondre. On pensera à vous ce jour-là."}</p>${OPTS.onRsvp ? "" : `<p class="bn-by">Aperçu : la réponse n'est pas enregistrée.</p>`}<div class="bn-btns"><a class="bn-btn" href="${calUrl}" target="_blank" rel="noopener">Ajouter à mon agenda</a></div>`;
+    card.innerHTML = `<small>${B.thanks(first)}</small><h2>${attending ? B.yesTitle : B.noTitle}</h2><p>${attending ? B.yesText(guests) : B.noText}</p>${OPTS.onRsvp ? "" : `<p class="bn-by">${B.previewOnly}</p>`}<div class="bn-btns"><a class="bn-btn" href="${calUrl}" target="_blank" rel="noopener">${esc(T.c.addCal)}</a></div>`;
     card.classList.add("is-done"); if (attending) { gust = 200; sparkle(); q(".bn-s-rsvp").classList.add("is-party"); }
   });
   q(".bn-again").addEventListener("click", () => showIntro());

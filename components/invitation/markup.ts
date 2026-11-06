@@ -1,8 +1,10 @@
-// Balisage commun aux 3 templates (rempli par engine.js).
-export const MARKUP = String.raw`<div class="backdrop fixed-frame" aria-hidden="true"></div>
+// Balisage commun aux 3 templates (rempli par engine.js). Textes fixes : lib/i18n/invite.ts.
+import type { InviteDict } from "@/lib/i18n/invite";
+
+export const markup = (T: InviteDict) => String.raw`<div class="backdrop fixed-frame" aria-hidden="true"></div>
 <div id="stage" class="fixed-frame"></div>
 <canvas id="fx" class="fixed-frame" aria-hidden="true"></canvas>
-<button class="sound" id="sound" hidden aria-label="Couper la musique">♪</button>
+<button class="sound" id="sound" hidden aria-label="${T.c.soundOff}">♪</button>
 
 <div class="app">
   <div class="hero-track" id="heroTrack">
@@ -11,11 +13,11 @@ export const MARKUP = String.raw`<div class="backdrop fixed-frame" aria-hidden="
     <div class="flicker" aria-hidden="true"><i style="left:14%;top:57%"></i><i style="left:36%;top:55%;animation-delay:.4s"></i><i style="left:52%;top:61%;animation-delay:.9s"></i><i style="left:20%;top:76%;animation-delay:.2s"></i><i style="left:58%;top:75%;animation-delay:1.1s"></i><i style="left:66%;top:58%;animation-delay:.6s"></i></div>
     <div class="curtain l"></div><div class="curtain r"></div>
     <div class="hero-text">
-      <div class="eyebrow">Nous nous marions</div>
+      <div class="eyebrow">${T.classic.eyebrow}</div>
       <h1 class="names" id="names"></h1>
       <div class="date-line" id="dateLine"></div>
     </div>
-    <div class="hint">Faites défiler</div>
+    <div class="hint">${T.classic.scroll}</div>
   </header>
   </div>
 
@@ -23,36 +25,36 @@ export const MARKUP = String.raw`<div class="backdrop fixed-frame" aria-hidden="
     <section>
       <div class="bouquet bq1"></div>
       <p class="intro" id="intro"></p>
-      <div class="medallion" id="medal"><svg class="ring-draw" viewBox="0 0 244 312" aria-hidden="true"><ellipse cx="122" cy="156" rx="118" ry="152"/></svg><div class="tilt"><div class="ring r2"></div><div class="ring"></div><div class="photo"><img id="photo" alt="Photo du couple"><div class="glare"></div></div></div><div class="orbit" id="orbit"></div></div>
+      <div class="medallion" id="medal"><svg class="ring-draw" viewBox="0 0 244 312" aria-hidden="true"><ellipse cx="122" cy="156" rx="118" ry="152"/></svg><div class="tilt"><div class="ring r2"></div><div class="ring"></div><div class="photo"><img id="photo" alt="${T.c.photoAlt}"><div class="glare"></div></div></div><div class="orbit" id="orbit"></div></div>
       <blockquote class="verse" id="verse"><p class="v-orig" id="vOrig" lang="ar" dir="rtl"></p><p class="v-text" id="vText"></p><cite id="vRef"></cite></blockquote>
     </section>
     <section id="dateSec">
-      <div class="eyebrow">La date</div>
-      <h2>Grattez pour découvrir</h2>
+      <div class="eyebrow">${T.classic.dateEyebrow}</div>
+      <h2>${T.classic.dateTitle}</h2>
       <div class="scratch-row" id="scratchRow"></div>
       <div class="heart-box"><div class="heart"><b id="heartDate"></b><canvas></canvas></div></div>
       <p class="date-full" id="dateFull"></p>
       <p class="gate-hint" id="gateHint"></p>
     </section>
     <section>
-      <div class="eyebrow">Compte à rebours</div>
-      <h2>Plus que…</h2>
-      <div class="count"><div><b id="cD">0</b><span>jours</span></div><div><b id="cH">0</b><span>heures</span></div><div><b id="cM">0</b><span>min</span></div><div><b id="cS">0</b><span>sec</span></div></div>
+      <div class="eyebrow">${T.classic.countEyebrow}</div>
+      <h2>${T.classic.countTitle}</h2>
+      <div class="count"><div><b id="cD">0</b><span>${T.classic.days}</span></div><div><b id="cH">0</b><span>${T.classic.hours}</span></div><div><b id="cM">0</b><span>${T.classic.min}</span></div><div><b id="cS">0</b><span>${T.classic.sec}</span></div></div>
     </section>
     <section>
-      <div class="eyebrow">Le déroulé</div>
-      <h2>Programme du jour</h2>
+      <div class="eyebrow">${T.classic.progEyebrow}</div>
+      <h2>${T.classic.progTitle}</h2>
       <div class="tl-wrap"><ol class="timeline" id="timeline"></ol><div class="tl-line"></div><div class="tl-head"></div></div>
-      <div class="swipe">Glissez →</div>
+      <div class="swipe">${T.classic.swipe}</div>
     </section>
     <section id="dress">
-      <div class="eyebrow">Dress code</div>
+      <div class="eyebrow">${T.classic.dressEyebrow}</div>
       <h2 id="dcTitle"></h2>
       <p class="small" id="dcNote"></p>
       <div class="dc-swatches" id="dcSwatches"></div>
       <div class="dc-figs" id="dcFigs">
         <figure>
-          <svg viewBox="0 0 140 210" role="img" aria-label="Veste pour les hommes">
+          <svg viewBox="0 0 140 210" role="img" aria-label="${T.classic.jacket}">
             <defs><clipPath id="cJ"><path d="M70 30 L52 33 L26 46 Q18 50 17 60 L10 168 Q10 174 17 174 L28 174 L31 112 L33 196 Q70 204 107 196 L109 112 L112 174 L123 174 Q130 174 130 168 L123 60 Q122 50 114 46 L88 33 Z"/></clipPath>
               <linearGradient id="shJ" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs>
             <path d="M70 8 q9 0 9 7 q0 6 -9 9 v6" stroke="#B89B6A" stroke-width="3" fill="none" stroke-linecap="round"/>
@@ -74,7 +76,7 @@ export const MARKUP = String.raw`<div class="backdrop fixed-frame" aria-hidden="
           <figcaption id="dcMenL"></figcaption><p class="dc-desc" id="dcMen"></p>
         </figure>
         <figure>
-          <svg viewBox="0 0 140 210" role="img" aria-label="Robe pour les femmes">
+          <svg viewBox="0 0 140 210" role="img" aria-label="${T.classic.dress}">
             <defs><clipPath id="cD2"><path d="M50 42 L55 42 L70 70 L85 42 L90 42 L94 92 Q112 150 128 200 Q70 212 12 200 Q28 150 46 92 Z"/></clipPath>
               <linearGradient id="shD" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".2"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs>
             <path d="M70 8 q9 0 9 7 q0 6 -9 9 v6" stroke="#B89B6A" stroke-width="3" fill="none" stroke-linecap="round"/>
@@ -97,30 +99,30 @@ export const MARKUP = String.raw`<div class="backdrop fixed-frame" aria-hidden="
       <div class="dc-name" id="dcName"></div>
     </section>
     <section>
-      <div class="eyebrow">Le lieu</div>
-      <h2>Où nous retrouver</h2>
+      <div class="eyebrow">${T.classic.venueEyebrow}</div>
+      <h2>${T.classic.venueTitle}</h2>
       <p class="venue-name" id="venueName"></p>
       <p class="small" id="venueAddr"></p>
-      <div class="btns"><a class="btn" id="mapsBtn" target="_blank" rel="noopener">Itinéraire</a><a class="btn ghost" id="calBtn" target="_blank" rel="noopener">Ajouter au calendrier</a></div>
+      <div class="btns"><a class="btn" id="mapsBtn" target="_blank" rel="noopener">${T.classic.route}</a><a class="btn ghost" id="calBtn" target="_blank" rel="noopener">${T.classic.calendar}</a></div>
     </section>
     <section>
-      <div class="eyebrow">Notre histoire</div>
-      <h2>Comment tout a commencé</h2>
+      <div class="eyebrow">${T.classic.storyEyebrow}</div>
+      <h2>${T.classic.storyTitle}</h2>
       <div class="story" id="story"></div>
     </section>
     <section>
       <div class="bouquet bq2"></div>
       <div class="eyebrow">RSVP</div>
-      <h2>Serez-vous des nôtres ?</h2>
+      <h2>${T.classic.rsvpTitle}</h2>
       <p class="small" id="rsvpBy"></p>
       <form id="rsvp" novalidate>
-        <div><label for="gName">Votre nom</label><input type="text" id="gName" placeholder="Ex. Marie Dupont"></div>
-        <div class="choice"><label><input type="radio" name="att" id="attYes" checked> Avec joie</label><label><input type="radio" name="att" id="attNo"> Hélas, non</label></div>
-        <div><label for="gCount">Nombre de personnes</label><select id="gCount"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
-        <div><label for="gMsg">Un mot pour les mariés</label><textarea id="gMsg" rows="3"></textarea></div>
-        <button class="btn" type="submit">Envoyer ma réponse</button>
+        <div><label for="gName">${T.classic.yourName}</label><input type="text" id="gName" placeholder="${T.c.namePh}"></div>
+        <div class="choice"><label><input type="radio" name="att" id="attYes" checked> ${T.classic.yes}</label><label><input type="radio" name="att" id="attNo"> ${T.classic.no}</label></div>
+        <div><label for="gCount">${T.classic.guests}</label><select id="gCount"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+        <div><label for="gMsg">${T.classic.word}</label><textarea id="gMsg" rows="3"></textarea></div>
+        <button class="btn" type="submit">${T.classic.send}</button>
       </form>
-      <p class="small" id="rsvpErr" hidden>Votre réponse n'a pas pu être envoyée. Vérifiez votre connexion et réessayez.</p>
+      <p class="small" id="rsvpErr" hidden>${T.c.sendErr}</p>
       <div class="thanks" id="thanks" hidden></div>
     </section>
   </main>

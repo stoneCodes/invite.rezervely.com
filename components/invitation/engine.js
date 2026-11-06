@@ -1,23 +1,26 @@
 // Moteur des invitations animées (porté depuis le prototype validé).
 // mountInvitation(données, template, options) monte l'invitation sur le balisage de markup.ts.
 /* eslint-disable */
+import { inviteDict } from "../../lib/i18n/invite";
+import { LOCALE } from "../../lib/i18n";
 const CAP=s=>s.charAt(0).toUpperCase()+s.slice(1);
 export const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-export function dateParts(iso,tz="Europe/Paris"){
+export function dateParts(iso,lang="fr",tz="Europe/Paris"){
   const d=new Date(iso);if(isNaN(d))return null;
-  const f=o=>new Intl.DateTimeFormat("fr-FR",{timeZone:tz,...o}).format(d);
+  const en=lang==="en",f=o=>new Intl.DateTimeFormat(LOCALE[en?"en":"fr"],{timeZone:tz,...o}).format(d);
   const day=f({day:"numeric"}),month=f({month:"long"}),year=f({year:"numeric"});
   return{day,month,year,label:`${f({day:"2-digit"})} · ${f({month:"2-digit"})} · ${year}`,
-    full:`${CAP(f({weekday:"long"}))} ${day} ${month} ${year} · ${f({hour:"2-digit",minute:"2-digit"}).replace(":","h")}`};
+    full:`${CAP(f({weekday:"long"}))} ${day} ${en?CAP(month):month} ${year} · ${en?f({hour:"numeric",minute:"2-digit",hour12:true}):f({hour:"2-digit",minute:"2-digit"}).replace(":","h")}`};
 }
 export function normalize(d){
-  const p=dateParts(d.dateISO)||{day:"?",month:"?",year:"?",label:"",full:""};
+  const T=inviteDict(d.lang);
+  const p=dateParts(d.dateISO,d.lang)||{day:"?",month:"?",year:"?",label:"",full:""};
   const ini=s=>(String(s||"").trim()[0]||"").toUpperCase();
   return{...d,raw:d,
     partner1:esc(d.partner1),partner2:esc(d.partner2),
     monogram:esc(d.monogram||`${ini(d.partner1)}&${ini(d.partner2)}`),
     dateLabel:p.label,dateFull:p.full,
-    scratch:[{v:p.day,l:"Jour"},{v:CAP(p.month),l:"Mois"},{v:p.year,l:"Année"}],
+    scratch:[{v:p.day,l:T.c.day},{v:CAP(p.month),l:T.c.month},{v:p.year,l:T.c.year}],
     programme:(d.programme||[]).map(x=>({t:esc(x.t),title:esc(x.title),note:esc(x.note)})),
     story:(d.story||[]).map(x=>({y:esc(x.y),text:esc(x.text)})),
     dressCode:{...d.dressCode,colors:(d.dressCode?.colors||[]).slice(0,4).map(c=>({...c,name:esc(c.name)}))},
@@ -27,9 +30,10 @@ export function mountInvitation(INPUT,TPL,OPTS={}){
 
 /* ===== Données du client (ce que le formulaire remplira) ===== */
 const DATA=normalize(INPUT);
+const T=inviteDict(INPUT.lang);
 let alive=true;const CLEAN=[];
 const TEMPLATES = {"cygnes":{fx:"petals"},"nuit-doree":{fx:"gold"},"jardin-nuit":{fx:"fireflies"}};
-const PLACEHOLDER="data:image/svg+xml,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 300"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3DCD4"/><stop offset=".6" stop-color="#E9CFC6"/><stop offset="1" stop-color="#C9B9A0"/></linearGradient></defs><rect width="230" height="300" fill="url(#g)"/><g fill="#8A5A5E" opacity=".5"><circle cx="92" cy="128" r="24"/><path d="M48 300c0-62 18-118 44-118s44 56 44 118z"/><circle cx="140" cy="118" r="26"/><path d="M92 300c0-70 20-130 48-130s50 60 50 130z"/></g><text x="115" y="272" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="13" fill="#5E3E41">Votre photo ici</text></svg>`);
+const PLACEHOLDER="data:image/svg+xml,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 300"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3DCD4"/><stop offset=".6" stop-color="#E9CFC6"/><stop offset="1" stop-color="#C9B9A0"/></linearGradient></defs><rect width="230" height="300" fill="url(#g)"/><g fill="#8A5A5E" opacity=".5"><circle cx="92" cy="128" r="24"/><path d="M48 300c0-62 18-118 44-118s44 56 44 118z"/><circle cx="140" cy="118" r="26"/><path d="M92 300c0-70 20-130 48-130s50 60 50 130z"/></g><text x="115" y="272" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="13" fill="#5E3E41">${esc(T.c.photoHere)}</text></svg>`);
 const $=id=>document.getElementById(id), tpl=()=>document.body.dataset.tpl, wait=ms=>new Promise(r=>setTimeout(r,ms));
 const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -42,13 +46,13 @@ function render(){
   $("venueName").textContent=DATA.venue.name; $("venueAddr").textContent=DATA.venue.address;
   $("mapsBtn").href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(DATA.venue.name+", "+DATA.venue.address);
   const s=new Date(DATA.dateISO),e=new Date(s.getTime()+10*3600e3),f=d=>d.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
-  $("calBtn").href="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(`Mariage de ${DATA.raw.partner1} & ${DATA.raw.partner2}`)+`&dates=${f(s)}/${f(e)}&location=`+encodeURIComponent(DATA.venue.name+", "+DATA.venue.address);
+  $("calBtn").href="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(T.c.weddingOf(DATA.raw.partner1,DATA.raw.partner2))+`&dates=${f(s)}/${f(e)}&location=`+encodeURIComponent(DATA.venue.name+", "+DATA.venue.address);
   $("story").closest("section").hidden=!DATA.story.length;$("timeline").closest("section").hidden=!DATA.programme.length;$("rsvpBy").hidden=!DATA.rsvpBy;
   $("story").innerHTML=DATA.story.map(x=>`<div><span>${x.y}</span><p>${x.text}</p></div>`).join("");
   $("rsvpBy").textContent=DATA.rsvpBy;
   renderVerse();$("dateFull").textContent=DATA.dateFull;renderDress();
 }
-function renderVerse(){const v=DATA.verse&&DATA.verse.text?DATA.verse:null;$("verse").hidden=!v;if(!v)return;$("vOrig").textContent=v.orig||"";$("vOrig").hidden=!v.orig;$("vText").textContent=v.orig?v.text:"« "+v.text+" »";$("vRef").textContent=v.ref||"";}
+function renderVerse(){const v=DATA.verse&&DATA.verse.text?DATA.verse:null;$("verse").hidden=!v;if(!v)return;$("vOrig").textContent=v.orig||"";$("vOrig").hidden=!v.orig;$("vText").textContent=v.orig?v.text:T.c.quote(v.text);$("vRef").textContent=v.ref||"";}
 
 /* ===== Dress code ===== */
 let dcIdx=0, dcTimer, dcManual=false;
@@ -72,9 +76,9 @@ function visibleScratches(){return [...document.querySelectorAll(".disc canvas,.
 function lockGate(){document.body.classList.add("gated");checkGate(true);}
 function checkGate(silent){
   const cs=visibleScratches(),left=cs.filter(c=>!c.classList.contains("done")).length;
-  if(left>0){$("gateHint").textContent=cs.length>1&&left<cs.length?`Encore ${left} à gratter pour continuer`:"Grattez la date pour continuer";return;}
+  if(left>0){$("gateHint").textContent=cs.length>1&&left<cs.length?T.classic.gateLeft(left):T.classic.gateAll;return;}
   if(!document.body.classList.contains("gated"))return;
-  document.body.classList.remove("gated");$("gateHint").textContent="Continuez";
+  document.body.classList.remove("gated");$("gateHint").textContent=T.classic.gateDone;
   if(!silent){const r=$("dateFull").getBoundingClientRect();fx.heart(r.left+r.width/2,r.top+r.height/2);boom();
     setTimeout(()=>scrollBy({top:innerHeight*.5,behavior:REDUCE?"auto":"smooth"}),1100);}
 }
@@ -88,7 +92,7 @@ function initScratch(cv){
   const a=cssVar("--scratch-a"),b=cssVar("--scratch-b"),g=ctx.createLinearGradient(0,0,w,h);
   g.addColorStop(0,a);g.addColorStop(.45,b);g.addColorStop(.7,a);g.addColorStop(1,b); ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
   for(let i=0;i<(w*h)/30;i++){ctx.fillStyle=`rgba(255,255,255,${Math.random()*.7})`;const s=Math.random()*1.8;ctx.fillRect(Math.random()*w,Math.random()*h,s,s);}
-  ctx.fillStyle="rgba(60,30,30,.5)";ctx.font=`italic ${Math.min(w,h)*.15}px Georgia,serif`;ctx.textAlign="center";ctx.fillText("grattez",w/2,h/2+5);
+  ctx.fillStyle="rgba(60,30,30,.5)";ctx.font=`italic ${Math.min(w,h)*.15}px Georgia,serif`;ctx.textAlign="center";ctx.fillText(T.c.scratchHere,w/2,h/2+5);
   let down=false,n=0;
   const hit=ev=>{const r=cv.getBoundingClientRect();ctx.globalCompositeOperation="destination-out";ctx.beginPath();ctx.arc(ev.clientX-r.left,ev.clientY-r.top,Math.min(w,h)*.15,0,7);ctx.fill();if(++n%6===0)check();};
   const check=()=>{const d=ctx.getImageData(0,0,cv.width,cv.height).data;let c=0,t=0;for(let i=3;i<d.length;i+=64){t++;if(d[i]===0)c++;}
@@ -147,7 +151,7 @@ $("sound").onclick=()=>musicOn?stopMusic():startMusic();
 const stage=$("stage"),hero=$("hero"),scene=$("scene");
 let opening=false,token=0;
 const sealHTML=()=>`<span>${DATA.monogram}</span>`;
-const tapHTML=()=>`<div class="tap"><div class="who">${DATA.partner1} &amp; ${DATA.partner2}</div><div class="t">Touchez le sceau pour ouvrir</div></div>`;
+const tapHTML=()=>`<div class="tap"><div class="who">${DATA.partner1} &amp; ${DATA.partner2}</div><div class="t">${esc(T.classic.tapSeal)}</div></div>`;
 
 function hideNames(){document.querySelectorAll("#names span").forEach(s=>{s.className=s.className.replace(/\b(write|d2|d3|reveal-soft|on)\b/g,"").trim();});
   $("names").style.opacity=0;$("dateLine").style.opacity=0;}
@@ -163,7 +167,7 @@ const BUILD={
         <div class="e-back"></div><div class="e-card" id="card"></div>
         <div class="e-front-w"><div class="e-front"></div></div>
         <div class="e-flapw" id="flapw"><div class="e-flap" id="flap"><div class="o"></div><div class="i"></div></div></div>
-        <button class="seal breathe" id="seal" aria-label="Ouvrir l'invitation">${sealHTML()}</button>
+        <button class="seal breathe" id="seal" aria-label="${esc(T.classic.open)}">${sealHTML()}</button>
       </div></div><div class="sweep" id="sweep"></div>${tapHTML()}`;
     return async my=>{
       const seal=$("seal"),r=seal.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
@@ -197,7 +201,7 @@ const BUILD={
     stage.innerHTML=`<div class="doors" id="doors"><div class="door l"><div class="pic"></div>${half}</div><div class="door r"><div class="pic"></div>${half}</div><div class="seam" id="seam"></div></div>
       <svg class="frame-svg" id="fsvg" preserveAspectRatio="none"><rect x="14" y="14" width="0" height="0" rx="2"/></svg>
       <div class="rays" id="rays"></div><div class="flare" id="flare"></div><div class="flash" id="flash"></div>
-      <button class="hit" id="seal" aria-label="Ouvrir l'invitation"></button>${tapHTML()}`;
+      <button class="hit" id="seal" aria-label="${esc(T.classic.open)}"></button>${tapHTML()}`;
     const sr=stage.getBoundingClientRect(),rect=stage.querySelector("rect");rect.setAttribute("width",Math.max(0,sr.width-28));rect.setAttribute("height",Math.max(0,sr.height-28));
     requestAnimationFrame(()=>requestAnimationFrame(()=>{$("doors").classList.add("in");$("fsvg").classList.add("in");}));
     return async my=>{
@@ -216,7 +220,7 @@ const BUILD={
     stage.className="fixed-frame st-jardin";
     stage.innerHTML=`<canvas class="stage-fx" id="sfx"></canvas>
       <div class="j-env" id="jenv"><div class="halo"></div><div class="bob"><div class="j-light"></div><div class="j-body"></div><div class="j-flap"><div></div></div>
-      <button class="seal breathe" id="seal" aria-label="Ouvrir l'invitation">${sealHTML()}</button></div></div>${tapHTML()}`;
+      <button class="seal breathe" id="seal" aria-label="${esc(T.classic.open)}">${sealHTML()}</button></div></div>${tapHTML()}`;
     const fxs=fireflyStage($("sfx"));
     return async my=>{
       const env=$("jenv");env.classList.add("open");chime();
@@ -294,12 +298,12 @@ function setTemplate(name){
   fx.setMode(TEMPLATES[name].fx);if(musicOn){clearTimeout(loopTimer);playLoop();}
   buildStage();
 }
-$("rsvp").onsubmit=async e=>{e.preventDefault();const name=$("gName").value.trim();if(!name){$("gName").focus();$("gName").placeholder="Indiquez votre nom pour répondre";return;}
+$("rsvp").onsubmit=async e=>{e.preventDefault();const name=$("gName").value.trim();if(!name){$("gName").focus();$("gName").placeholder=T.c.nameMissing;return;}
   const yes=$("attYes").checked,btn=$("rsvp").querySelector("button");$("rsvpErr").hidden=true;
-  if(OPTS.onRsvp){btn.disabled=true;btn.textContent="Envoi…";try{await OPTS.onRsvp({name,attending:yes,guests:yes?+$("gCount").value:0,message:$("gMsg").value.trim()});}
-    catch(err){btn.disabled=false;btn.textContent="Envoyer ma réponse";$("rsvpErr").hidden=false;return;}}
+  if(OPTS.onRsvp){btn.disabled=true;btn.textContent=T.c.sending;try{await OPTS.onRsvp({name,attending:yes,guests:yes?+$("gCount").value:0,message:$("gMsg").value.trim()});}
+    catch(err){btn.disabled=false;btn.textContent=T.classic.send;$("rsvpErr").hidden=false;return;}}
   $("rsvp").hidden=true;$("thanks").hidden=false;
-  $("thanks").innerHTML=`<p style="font-family:var(--f-script);font-size:2.2rem;margin:0">Merci ${esc(name.split(" ")[0])}</p><p class="small">${yes?`Réponse notée : ${$("gCount").value} personne(s). À très vite !`:"Vous nous manquerez. Merci d'avoir répondu."}</p>${OPTS.onRsvp?"":`<p class="small" style="font-family:var(--f-label);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase">Aperçu : la réponse n'est pas enregistrée</p>`}`;chime();const tr=$("thanks").getBoundingClientRect();fx.heart(tr.left+tr.width/2,tr.top+tr.height/2);};
+  $("thanks").innerHTML=`<p style="font-family:var(--f-script);font-size:2.2rem;margin:0">${esc(T.c.thanks(name.split(" ")[0]))}</p><p class="small">${esc(yes?T.c.noted($("gCount").value):T.c.missYou)}</p>${OPTS.onRsvp?"":`<p class="small" style="font-family:var(--f-label);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase">${esc(T.c.previewOnly)}</p>`}`;chime();const tr=$("thanks").getBoundingClientRect();fx.heart(tr.left+tr.width/2,tr.top+tr.height/2);};
 let counting=false;
 function remaining(){let s=Math.max(0,Math.floor((new Date(DATA.dateISO)-Date.now())/1000));const d=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;return[d,h,Math.floor(s/60),s%60];}
 function setCount(v){$("cD").textContent=v[0];$("cH").textContent=String(v[1]).padStart(2,"0");$("cM").textContent=String(v[2]).padStart(2,"0");$("cS").textContent=String(v[3]).padStart(2,"0");}

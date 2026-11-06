@@ -41,6 +41,13 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 - Accueil (`app/HomeClient.tsx` + `app/home.css`, classes préfixées `gl-`) : poussière d'or, titre lettre par lettre, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal,  « Démo » ouvre une pop-up plein écran sur place (iframe `/demo/<id>?integre=1`, pas de nouvel onglet ; styles `.ed-full*` partagés dans `globals.css`), feu d'artifice doré sur les boutons « Créer ». Toujours respecter `prefers-reduced-motion`.
 - Loader « Poussière d'or » (choisi le 6 nov. 2026) : `components/Loader.tsx` + `loader.css`, branché via `app/loading.tsx` (pages dynamiques : invitation, espace ; navigation). Sans JS, apparaît après 120 ms pour éviter le flash. En plus, écran d'accueil animé (`components/Splash.tsx`, dans le layout) : 1 fois par onglet (sessionStorage), ~2,3 s, sur accueil / éditeur / espace seulement (jamais invitations, démos, iframes), toucher pour passer ; les animations d'entrée de l'accueil attendent sa fin.
 
+## Langues (FR/EN, décidé le 6 nov. 2026)
+- **Site** (accueil, éditeur, espace, API) : langue choisie par le bouton FR/EN (`components/I18n.tsx`, `LangSwitch`), mémorisée dans le cookie `lang` (sinon langue du navigateur). Serveur : `getT()` / `getLang()` (`lib/i18n/server.ts`) ; client : `useT()`.
+- **Invitation** : langue choisie par les mariés dans l'éditeur (champ `data.lang`, `fr` par défaut), indépendante du site. Textes fixes dans `lib/i18n/invite.ts` (`inviteDict(lang)`, importé aussi par les moteurs .js). Les textes saisis par les mariés ne sont jamais traduits.
+- Dictionnaires : `lib/i18n/site-fr.ts` (référence) + `site-en.ts` typé `SiteDict` ; `invite.ts` typé `InviteDict`. Une clé ajoutée en français sans anglais fait échouer `npm run typecheck` : c'est la garantie.
+- **Règle** : aucun texte visible écrit en dur dans un composant, un moteur, une route API ou un e-mail. Toute nouveauté (modèle, page, e-mail, message d'erreur) ajoute ses clés FR + EN. Dates : `LOCALE[lang]` et `dateParts(iso, lang)`.
+- Ajouter une langue = l'ajouter dans `LANGS` (`lib/i18n/index.ts`) + un dictionnaire de chaque type.
+
 ## À faire (par ordre)
 1. Stripe Checkout : quand `PAYMENTS_ENABLED=true`, `POST /api/invitations/[token]/publish` doit créer une session et publier sur webhook `checkout.session.completed`. Prix à définir avec Glad.
 2. E-mail aux mariés avec le lien de leur espace (Resend ou Supabase), sinon un jeton perdu = espace perdu.

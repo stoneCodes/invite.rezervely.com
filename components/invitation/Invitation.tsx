@@ -4,7 +4,8 @@ import "./appel/appel.css";
 import "./boule/boule.css";
 import "./origami/origami.css";
 import { useEffect, useRef } from "react";
-import { MARKUP } from "./markup";
+import { markup } from "./markup";
+import { inviteDict } from "@/lib/i18n/invite";
 import { mountInvitation, type MountOptions } from "./engine";
 import { mountAppel } from "./appel/appel";
 import { mountBoule } from "./boule/boule";
@@ -51,7 +52,7 @@ function ClassicInvitation({ data, template, slug, skipIntro, noGate, onReady }:
     return () => { api.destroy(); delete document.body.dataset.tpl; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return <div ref={ref} dangerouslySetInnerHTML={{ __html: MARKUP }} />;
+  return <div ref={ref} dangerouslySetInnerHTML={{ __html: markup(inviteDict(data.lang)) }} />;
 }
 
 function OwnEngine({ data, slug, skipIntro, noGate, onReady, mount }: Props & { mount: Mount }) {

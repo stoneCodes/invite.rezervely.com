@@ -3,6 +3,7 @@
 // Même contrat de données que les autres modèles (InvitationData), mêmes options (onRsvp, skipIntro, noGate).
 /* eslint-disable */
 import { esc, dateParts } from "../engine";
+import { inviteDict } from "../../../lib/i18n/invite";
 
 const IMG = { call: "/img/appel-fond-defaut.webp", end: "/img/appel-fin.webp" };
 const ICON = {
@@ -18,10 +19,11 @@ const ICON = {
 
 export function mountAppel(root, INPUT, OPTS = {}) {
   const D = INPUT || {};
+  const T = inviteDict(D.lang), A = T.appel;
   // Aperçu de l'éditeur (sans appel ni grattage) : tout s'affiche d'un coup, sinon chaque frappe relance l'animation.
   const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches || (!!OPTS.skipIntro && !!OPTS.noGate);
   document.body.dataset.tpl = "appel";
-  const when = dateParts(D.dateISO);
+  const when = dateParts(D.dateISO, D.lang);
   const p1 = esc(D.partner1), p2 = esc(D.partner2);
   const ini = (s) => esc((String(s || "").trim()[0] || "").toUpperCase());
   const photo = typeof D.photoUrl === "string" && D.photoUrl ? D.photoUrl : null;
@@ -36,7 +38,7 @@ export function mountAppel(root, INPUT, OPTS = {}) {
   const start = new Date(D.dateISO), end = new Date(start.getTime() + 10 * 3600e3);
   const gfmt = (d) => isNaN(d) ? "" : d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const venueQ = [D.venue?.name, D.venue?.address].filter(Boolean).join(", ");
-  const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Mariage de ${D.partner1} & ${D.partner2}`)}&dates=${gfmt(start)}/${gfmt(end)}&location=${encodeURIComponent(venueQ)}`;
+  const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(T.c.weddingOf(D.partner1, D.partner2))}&dates=${gfmt(start)}/${gfmt(end)}&location=${encodeURIComponent(venueQ)}`;
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueQ)}`;
 
   /* ---------- Bulles ---------- */
@@ -47,80 +49,80 @@ export function mountAppel(root, INPUT, OPTS = {}) {
   const v = D.verse && D.verse.text ? D.verse : null;
 
   const before = [
-    sep("Aujourd'hui"),
-    them("Allô&nbsp;? 😊"),
-    them(`C'est ${p1} &amp; ${p2}&nbsp;!`),
-    them("On a une grande nouvelle à t'annoncer…"),
-    them(`<div class="ap-b ap-hero"><small>Nous nous marions</small><b>${p1} <i>&amp;</i> ${p2}</b>${D.intro ? `<p>${esc(D.intro)}</p>` : ""}</div>`, "ap-wide"),
-    them(`<div class="ap-b ap-photo">${photo ? `<img src="${esc(photo)}" alt="Photo de ${p1} et ${p2}">` : `<div class="ap-photo-ph">${ini(D.partner1)}&amp;${ini(D.partner2)}</div>`}</div>`),
-    v ? them(`<div class="ap-b ap-quote">${v.orig ? `<p class="ap-orig" dir="auto">${esc(v.orig)}</p>` : ""}<p>${v.orig ? "" : "« "}${esc(v.text)}${v.orig ? "" : " »"}</p>${v.ref ? `<small>${esc(v.ref)}</small>` : ""}</div>`) : "",
-    them("Et la date&nbsp;? Elle est cachée… 🤫"),
-    them(`<div class="ap-b ap-secret"><small>Message masqué</small><b>${when ? esc(when.full) : ""}</b><canvas aria-hidden="true"></canvas></div>`, "ap-wide ap-gate-msg"),
+    sep(A.today),
+    them(A.hello),
+    them(A.itsUs(p1, p2)),
+    them(A.news),
+    them(`<div class="ap-b ap-hero"><small>${A.married}</small><b>${p1} <i>&amp;</i> ${p2}</b>${D.intro ? `<p>${esc(D.intro)}</p>` : ""}</div>`, "ap-wide"),
+    them(`<div class="ap-b ap-photo">${photo ? `<img src="${esc(photo)}" alt="${A.photoOf(p1, p2)}">` : `<div class="ap-photo-ph">${ini(D.partner1)}&amp;${ini(D.partner2)}</div>`}</div>`),
+    v ? them(`<div class="ap-b ap-quote">${v.orig ? `<p class="ap-orig" dir="auto">${esc(v.orig)}</p>` : ""}<p>${v.orig ? esc(v.text) : esc(T.c.quote(v.text))}</p>${v.ref ? `<small>${esc(v.ref)}</small>` : ""}</div>`) : "",
+    them(A.dateHidden),
+    them(`<div class="ap-b ap-secret"><small>${A.hiddenMsg}</small><b>${when ? esc(when.full) : ""}</b><canvas aria-hidden="true"></canvas></div>`, "ap-wide ap-gate-msg"),
   ];
 
   const programme = (D.programme || []).filter((x) => x.title || x.t);
   const after = [
-    them("Tu seras des nôtres&nbsp;? 🥹"),
-    them(`<div class="ap-b ap-count"><small>Il reste</small><div><span><b data-c="0">0</b>jours</span><span><b data-c="1">00</b>heures</span><span><b data-c="2">00</b>min</span><span><b data-c="3">00</b>sec</span></div></div>`, "ap-wide"),
-    programme.length ? them("Voici le programme de la journée 👇") : "",
-    programme.length ? them(`<div class="ap-b ap-cal"><header>${ICON.cal}<div><small>Invitation</small><b>Mariage de ${p1} &amp; ${p2}</b><span>${when ? esc(when.full.split(" · ")[0]) : ""}</span></div></header><ol>${programme.map((x) => `<li><time>${esc(x.t)}</time><div><b>${esc(x.title)}</b>${x.note ? `<span>${esc(x.note)}</span>` : ""}</div></li>`).join("")}</ol><a class="ap-btn" href="${calUrl}" target="_blank" rel="noopener">Ajouter à mon agenda</a></div>`, "ap-wide") : "",
-    dc.enabled !== false && colors.length ? them(`Côté tenue 👗 ${dc.title ? `<b>${esc(dc.title)}</b>` : ""}${dc.note ? `<br>${esc(dc.note)}` : ""}`) : "",
+    them(A.joinUs),
+    them(`<div class="ap-b ap-count"><small>${A.left}</small><div><span><b data-c="0">0</b>${A.days}</span><span><b data-c="1">00</b>${A.hours}</span><span><b data-c="2">00</b>${A.min}</span><span><b data-c="3">00</b>${A.sec}</span></div></div>`, "ap-wide"),
+    programme.length ? them(A.progIntro) : "",
+    programme.length ? them(`<div class="ap-b ap-cal"><header>${ICON.cal}<div><small>${A.invitation}</small><b>${T.c.weddingOf(p1, p2).replace("&", "&amp;")}</b><span>${when ? esc(when.full.split(" · ")[0]) : ""}</span></div></header><ol>${programme.map((x) => `<li><time>${esc(x.t)}</time><div><b>${esc(x.title)}</b>${x.note ? `<span>${esc(x.note)}</span>` : ""}</div></li>`).join("")}</ol><a class="ap-btn" href="${calUrl}" target="_blank" rel="noopener">${esc(T.c.addCal)}</a></div>`, "ap-wide") : "",
+    dc.enabled !== false && colors.length ? them(`${A.outfit} ${dc.title ? `<b>${esc(dc.title)}</b>` : ""}${dc.note ? `<br>${esc(dc.note)}` : ""}`) : "",
     dc.enabled !== false && colors.length ? `<div class="ap-m them ap-stickers">${colors.map((c, i) => { const m = c.men || c.hex, w = c.women || c.hex; return `<figure style="--i:${i}"><i style="background:${m === w ? m : `linear-gradient(135deg,${m} 50%,${w} 50%)`}"></i><figcaption>${esc(c.name)}</figcaption></figure>`; }).join("")}</div>` : "",
-    dc.enabled !== false && colors.length && dc.men?.text ? them(`<b>${esc(dc.men.label || "Messieurs")}</b> · ${esc(dc.men.text)}`) : "",
-    dc.enabled !== false && colors.length && dc.women?.text ? them(`<b>${esc(dc.women.label || "Mesdames")}</b> · ${esc(dc.women.text)}`) : "",
-    venueQ ? them("On t'attend ici 📍") : "",
-    venueQ ? them(`<div class="ap-b ap-map"><div class="ap-mapview" aria-hidden="true"><svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice"><rect width="300" height="150" class="g0"/><path class="g1" d="M-10 110 C60 90 90 130 160 112 S260 70 320 84 L320 160 L-10 160Z"/><path class="g2" d="M190 -5 C200 40 230 50 300 46 L300 -5Z"/><path class="rd" d="M-5 62 H310 M120 -5 V160 M40 -5 L95 160 M210 60 L260 160"/><path class="rd2" d="M-5 30 H120 M120 96 H310 M160 -5 V62"/></svg><span class="ap-pin">${ICON.pin}</span></div><div class="ap-mapinfo"><b>${esc(D.venue?.name)}</b><span>${esc(D.venue?.address)}</span><a class="ap-btn" href="${mapUrl}" target="_blank" rel="noopener">Itinéraire</a></div></div>`, "ap-wide") : "",
-    (D.story || []).length ? them("Petit retour en arrière ⏪") : "",
+    dc.enabled !== false && colors.length && dc.men?.text ? them(`<b>${esc(dc.men.label || A.men)}</b> · ${esc(dc.men.text)}`) : "",
+    dc.enabled !== false && colors.length && dc.women?.text ? them(`<b>${esc(dc.women.label || A.women)}</b> · ${esc(dc.women.text)}`) : "",
+    venueQ ? them(A.waitHere) : "",
+    venueQ ? them(`<div class="ap-b ap-map"><div class="ap-mapview" aria-hidden="true"><svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice"><rect width="300" height="150" class="g0"/><path class="g1" d="M-10 110 C60 90 90 130 160 112 S260 70 320 84 L320 160 L-10 160Z"/><path class="g2" d="M190 -5 C200 40 230 50 300 46 L300 -5Z"/><path class="rd" d="M-5 62 H310 M120 -5 V160 M40 -5 L95 160 M210 60 L260 160"/><path class="rd2" d="M-5 30 H120 M120 96 H310 M160 -5 V62"/></svg><span class="ap-pin">${ICON.pin}</span></div><div class="ap-mapinfo"><b>${esc(D.venue?.name)}</b><span>${esc(D.venue?.address)}</span><a class="ap-btn" href="${mapUrl}" target="_blank" rel="noopener">${A.route}</a></div></div>`, "ap-wide") : "",
+    (D.story || []).length ? them(A.flashback) : "",
     ...(D.story || []).flatMap((s) => [sep(esc(s.y)), them(esc(s.text))]),
-    sep("Maintenant"),
-    them("Alors… tu viens&nbsp;? 💌"),
+    sep(A.now),
+    them(A.coming),
     D.rsvpBy ? `<p class="ap-note">${esc(D.rsvpBy)}</p>` : "",
-    `<div class="ap-m me ap-quick"><button type="button" data-a="yes">Je viens ✅</button><button type="button" data-a="no">Je ne pourrai pas 😢</button></div>`,
-    `<form class="ap-m me ap-form" hidden novalidate><div class="ap-b"><label>Ton nom<input name="name" autocomplete="name" placeholder="Ex. Marie Dupont" maxlength="120"></label><label class="ap-guests">Nombre de personnes<span><button type="button" data-g="-1" aria-label="Moins">−</button><output>1</output><button type="button" data-g="1" aria-label="Plus">+</button></span></label><label>Un mot pour nous (facultatif)<textarea name="msg" rows="2" maxlength="1000"></textarea></label><p class="ap-err" hidden>L'envoi n'a pas marché. Réessaie dans un instant.</p><button class="ap-send" type="submit">${ICON.send}<span>Envoyer</span></button></div></form>`,
+    `<div class="ap-m me ap-quick"><button type="button" data-a="yes">${A.yes}</button><button type="button" data-a="no">${A.no}</button></div>`,
+    `<form class="ap-m me ap-form" hidden novalidate><div class="ap-b"><label>${A.yourName}<input name="name" autocomplete="name" placeholder="${esc(T.c.namePh)}" maxlength="120"></label><label class="ap-guests">${A.guests}<span><button type="button" data-g="-1" aria-label="${A.less}">−</button><output>1</output><button type="button" data-g="1" aria-label="${A.more}">+</button></span></label><label>${A.word}<textarea name="msg" rows="2" maxlength="1000"></textarea></label><p class="ap-err" hidden>${A.err}</p><button class="ap-send" type="submit">${ICON.send}<span>${A.send}</span></button></div></form>`,
     `<div class="ap-thread-end"></div>`,
   ];
 
   root.innerHTML = `
   <div class="ap" data-theme="clair">
     <div class="ap-backdrop" style="background-image:${cssUrl(photo || IMG.call)}" aria-hidden="true"></div>
-    <section class="ap-call" role="dialog" aria-modal="true" aria-label="Appel entrant de ${p1} et ${p2}">
+    <section class="ap-call" role="dialog" aria-modal="true" aria-label="${A.callFrom(p1, p2)}">
       <div class="ap-call-bg" style="background-image:${cssUrl(photo || IMG.call)}"></div>
-      <div class="ap-call-top"><span class="ap-pill"><i></i>Appel entrant</span></div>
+      <div class="ap-call-top"><span class="ap-pill"><i></i>${A.incoming}</span></div>
       <div class="ap-call-mid">
         <div class="ap-ring"><i></i><i></i><i></i>${avatar("big")}</div>
         <h1>${p1} <span>&amp;</span> ${p2}</h1>
-        <p class="ap-callsub">vous appellent<span class="ap-dots"><i>.</i><i>.</i><i>.</i></span></p>
+        <p class="ap-callsub">${A.calling}<span class="ap-dots"><i>.</i><i>.</i><i>.</i></span></p>
         <p class="ap-nudge" role="status"></p>
       </div>
       <div class="ap-call-bot">
-        <button type="button" class="ap-later">${ICON.hang}<span>Plus tard</span></button>
-        <div class="ap-slide"><span class="ap-slide-txt">Glisser pour décrocher</span><button type="button" class="ap-knob" aria-label="Décrocher">${ICON.phone}</button></div>
+        <button type="button" class="ap-later">${ICON.hang}<span>${A.later}</span></button>
+        <div class="ap-slide"><span class="ap-slide-txt">${A.slide}</span><button type="button" class="ap-knob" aria-label="${A.answer}">${ICON.phone}</button></div>
       </div>
     </section>
 
     <div class="ap-shell">
       <header class="ap-head">
         ${avatar()}
-        <div class="ap-who"><b>${p1} &amp; ${p2}</b><small><i></i>En appel · <span class="ap-timer">00:00</span></small></div>
-        <button type="button" class="ap-ic ap-theme" aria-label="Mode nuit">${ICON.moon}</button>
-        <button type="button" class="ap-ic ap-snd" aria-label="Couper le son">${ICON.sound}</button>
-        <button type="button" class="ap-ic ap-hang" aria-label="Raccrocher">${ICON.hang}</button>
+        <div class="ap-who"><b>${p1} &amp; ${p2}</b><small><i></i>${A.inCall}<span class="ap-timer">00:00</span></small></div>
+        <button type="button" class="ap-ic ap-theme" aria-label="${A.night}">${ICON.moon}</button>
+        <button type="button" class="ap-ic ap-snd" aria-label="${A.mute}">${ICON.sound}</button>
+        <button type="button" class="ap-ic ap-hang" aria-label="${A.hangUp}">${ICON.hang}</button>
       </header>
       <main class="ap-chat">
         ${before.join("")}
-        <p class="ap-gate-hint">Frotte le message pour découvrir la date ✨</p>
+        <p class="ap-gate-hint">${A.rub}</p>
         <div class="ap-after">${after.join("")}</div>
       </main>
     </div>
 
-    <section class="ap-end" hidden aria-label="Appel terminé">
+    <section class="ap-end" hidden aria-label="${A.ended}">
       <div class="ap-end-bg" style="background-image:${cssUrl(IMG.end)}"></div>
       <div class="ap-end-in">
         ${avatar("big")}
-        <small>Appel terminé · <span class="ap-dur">00:00</span></small>
+        <small>${A.endedAt}<span class="ap-dur">00:00</span></small>
         <h2>${p1} <span>&amp;</span> ${p2}</h2>
         <p>${when ? esc(when.full) : ""}</p>
-        <div class="ap-end-btns"><button type="button" class="ap-btn ap-recall">${ICON.phone} Rappeler</button><a class="ap-btn ghost" href="${calUrl}" target="_blank" rel="noopener">Ajouter à mon agenda</a></div>
+        <div class="ap-end-btns"><button type="button" class="ap-btn ap-recall">${ICON.phone} ${A.recall}</button><a class="ap-btn ghost" href="${calUrl}" target="_blank" rel="noopener">${esc(T.c.addCal)}</a></div>
       </div>
     </section>
     <canvas class="ap-fx" aria-hidden="true"></canvas>
@@ -191,7 +193,7 @@ export function mountAppel(root, INPUT, OPTS = {}) {
     const g = c.createLinearGradient(0, 0, w, h); g.addColorStop(0, "#CFAE72"); g.addColorStop(0.5, "#F1DCAE"); g.addColorStop(1, "#B98F4E");
     c.fillStyle = g; c.fillRect(0, 0, w, h);
     for (let i = 0; i < 900; i++) { c.fillStyle = `rgba(255,255,255,${Math.random() * 0.25})`; c.fillRect(Math.random() * w, Math.random() * h, 1.2, 1.2); }
-    c.fillStyle = "rgba(60,40,15,.75)"; c.font = "500 13px Jost, system-ui, sans-serif"; c.textAlign = "center"; c.fillText("FROTTEZ ICI ✨", w / 2, h / 2 + 5);
+    c.fillStyle = "rgba(60,40,15,.75)"; c.font = "500 13px Jost, system-ui, sans-serif"; c.textAlign = "center"; c.fillText(A.rubHere, w / 2, h / 2 + 5);
     c.globalCompositeOperation = "destination-out";
     let down = false, last = null, moves = 0;
     const pt = (e) => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
@@ -222,15 +224,15 @@ export function mountAppel(root, INPUT, OPTS = {}) {
   form.addEventListener("click", (e) => { const b = e.target.closest("[data-g]"); if (!b) return; guests = Math.min(20, Math.max(1, guests + +b.dataset.g)); form.querySelector("output").textContent = guests; });
   form.addEventListener("submit", async (e) => {
     e.preventDefault(); const inp = form.querySelector("input"), name = inp.value.trim();
-    if (!name) { inp.focus(); inp.placeholder = "Ton nom pour qu'on sache qui vient 😉"; return; }
+    if (!name) { inp.focus(); inp.placeholder = A.nameMissing; return; }
     const msg = form.querySelector("textarea").value.trim(), btn = form.querySelector(".ap-send"), err = form.querySelector(".ap-err");
     err.hidden = true;
-    if (OPTS.onRsvp) { btn.disabled = true; btn.querySelector("span").textContent = "Envoi…"; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg }); } catch (x) { btn.disabled = false; btn.querySelector("span").textContent = "Envoyer"; err.hidden = false; return; } }
+    if (OPTS.onRsvp) { btn.disabled = true; btn.querySelector("span").textContent = T.c.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg }); } catch (x) { btn.disabled = false; btn.querySelector("span").textContent = A.send; err.hidden = false; return; } }
     const first = esc(name.split(" ")[0]);
-    form.outerHTML = `<div class="ap-m me is-in ap-mine"><div class="ap-b">${attending ? `Je viens ✅ · ${guests} personne${guests > 1 ? "s" : ""}` : "Je ne pourrai pas venir 😢"}${msg ? `<br>${esc(msg)}` : ""}<span class="ap-time">Envoyé ✓✓</span></div></div>`;
+    form.outerHTML = `<div class="ap-m me is-in ap-mine"><div class="ap-b">${attending ? A.sentYes(guests) : A.sentNo}${msg ? `<br>${esc(msg)}` : ""}<span class="ap-time">${A.sent}</span></div></div>`;
     quick.remove();
-    const reply = attending ? `Merci ${first}&nbsp;! On a tellement hâte de te voir 🥂` : `Oh, tu vas nous manquer ${first}… Merci d'avoir répondu ❤️`;
-    const tail = [them(reply), OPTS.onRsvp ? "" : `<p class="ap-note">Aperçu : la réponse n'est pas enregistrée.</p>`, `<div class="ap-m ap-bye"><button type="button" class="ap-btn ap-hang2">${ICON.hang} Raccrocher</button></div>`].join("");
+    const reply = attending ? A.thanksYes(first) : A.thanksNo(first);
+    const tail = [them(reply), OPTS.onRsvp ? "" : `<p class="ap-note">${A.previewOnly}</p>`, `<div class="ap-m ap-bye"><button type="button" class="ap-btn ap-hang2">${ICON.hang} ${A.hangUp}</button></div>`].join("");
     q(".ap-thread-end").insertAdjacentHTML("beforebegin", tail);
     q(".ap-hang2").addEventListener("click", hangUp);
     observe();
@@ -269,7 +271,7 @@ export function mountAppel(root, INPUT, OPTS = {}) {
   knob.addEventListener("pointerup", release); knob.addEventListener("pointercancel", release);
   knob.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); answer(false); } });
 
-  const NUDGES = ["Vraiment&nbsp;? 🥺", "Ça ne prend qu'une minute…", "C'est important, promis 💍", "Allez, décroche&nbsp;! 😄"];
+  const NUDGES = A.nudges;
   let nudge = 0;
   q(".ap-later").addEventListener("click", () => { const n = q(".ap-nudge"); n.innerHTML = NUDGES[nudge++ % NUDGES.length]; n.classList.remove("is-on"); void n.offsetWidth; n.classList.add("is-on");
     call.classList.remove("is-shake"); void call.offsetWidth; call.classList.add("is-shake"); if (navigator.vibrate) navigator.vibrate([60, 40, 60]); });
@@ -277,7 +279,7 @@ export function mountAppel(root, INPUT, OPTS = {}) {
   q(".ap-hang").addEventListener("click", hangUp);
   q(".ap-recall").addEventListener("click", () => ring());
   q(".ap-theme").addEventListener("click", (e) => { const night = ap.dataset.theme !== "nuit"; ap.dataset.theme = night ? "nuit" : "clair"; e.currentTarget.setAttribute("aria-pressed", String(night)); });
-  q(".ap-snd").addEventListener("click", (e) => { soundOn = !soundOn; e.currentTarget.innerHTML = soundOn ? ICON.sound : ICON.mute; e.currentTarget.setAttribute("aria-label", soundOn ? "Couper le son" : "Remettre le son");
+  q(".ap-snd").addEventListener("click", (e) => { soundOn = !soundOn; e.currentTarget.innerHTML = soundOn ? ICON.sound : ICON.mute; e.currentTarget.setAttribute("aria-label", soundOn ? A.mute : A.unmute);
     if (soundOn) { audio(); loop(); } else clearTimeout(loopT); });
 
   if (OPTS.skipIntro) answer(true); else ring();

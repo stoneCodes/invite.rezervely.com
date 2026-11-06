@@ -3,6 +3,7 @@
 // mountOrigami(racine, données, options) → { replay, destroy }. Même contrat que les autres modèles.
 /* eslint-disable */
 import { esc, dateParts } from "../engine";
+import { inviteDict } from "../../../lib/i18n/invite";
 
 const IMG = { washi: "/img/origami-washi.webp", table: "/img/origami-table.webp", cranes: "/img/origami-grues.webp" };
 const ICON = {
@@ -30,7 +31,7 @@ const crane = (fill, id = "") => `<svg viewBox="22 20 152 132" aria-hidden="true
 
 // Tenues pliées (facettes recolorées par --gm / --gw)
 const shade = (pts, o) => `<polygon points="${pts}" fill="${o > 0 ? "#3A2516" : "#fff"}" opacity="${Math.abs(o)}"/>`;
-const SHIRT = `<svg viewBox="0 0 140 160" role="img" aria-label="Chemise pliée pour les hommes">
+const SHIRT = `<svg viewBox="0 0 140 160" role="img" aria-label="__SHIRT__">
   <polygon class="g-m" points="35,40 70,40 70,150 35,150"/><polygon class="g-m" points="70,40 105,40 105,150 70,150"/>${shade("70,40 105,40 105,150 70,150", 0.14)}
   <polygon class="g-m" points="35,40 8,80 22,94 35,72"/>${shade("35,40 8,80 22,94 35,72", 0.22)}
   <polygon class="g-m" points="105,40 132,80 118,94 105,72"/>${shade("105,40 132,80 118,94 105,72", 0.3)}
@@ -38,7 +39,7 @@ const SHIRT = `<svg viewBox="0 0 140 160" role="img" aria-label="Chemise pliée 
   <polygon points="50,40 70,66 58,34" fill="#FBF6EE"/><polygon points="90,40 70,66 82,34" fill="#EFE6DA"/>
   <polygon class="g-m" points="64,62 76,62 73,70 67,70"/>${shade("64,62 76,62 73,70 67,70", 0.35)}
   <path d="M70 70V150" stroke="#3A2516" stroke-opacity=".2"/></svg>`;
-const DRESS = `<svg viewBox="0 0 140 160" role="img" aria-label="Robe pliée pour les femmes">
+const DRESS = `<svg viewBox="0 0 140 160" role="img" aria-label="__DRESS__">
   <polygon points="56,32 60,12 63,32" fill="#C9A45C"/><polygon points="84,32 80,12 77,32" fill="#B08A4A"/>
   <polygon class="g-w" points="54,30 70,40 70,70 56,70"/><polygon class="g-w" points="86,30 70,40 70,70 84,70"/>${shade("86,30 70,40 70,70 84,70", 0.18)}
   <polygon class="g-w" points="56,70 66,70 46,150 18,150"/>${shade("56,70 66,70 46,150 18,150", 0.12)}
@@ -52,7 +53,9 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   // Aperçu de l'éditeur (sans ouverture ni enveloppe) : tout est déjà déplié, sans mouvement.
   const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches || (!!OPTS.skipIntro && !!OPTS.noGate);
   document.body.dataset.tpl = "origami";
-  const when = dateParts(D.dateISO);
+  const T = inviteDict(D.lang), O = T.origami;
+  const shirt = SHIRT.replace("__SHIRT__", O.shirt), dress = DRESS.replace("__DRESS__", O.dress);
+  const when = dateParts(D.dateISO, D.lang);
   const p1 = esc(D.partner1), p2 = esc(D.partner2);
   const ini = (s) => esc((String(s || "").trim()[0] || "").toUpperCase());
   const photo = typeof D.photoUrl === "string" && D.photoUrl ? D.photoUrl : null;
@@ -64,7 +67,7 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   const start = new Date(D.dateISO), end = new Date(start.getTime() + 10 * 3600e3);
   const gfmt = (d) => isNaN(d) ? "" : d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const venueQ = [D.venue?.name, D.venue?.address].filter(Boolean).join(", ");
-  const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Mariage de ${D.partner1} & ${D.partner2}`)}&dates=${gfmt(start)}/${gfmt(end)}&location=${encodeURIComponent(venueQ)}`;
+  const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(T.c.weddingOf(D.partner1, D.partner2))}&dates=${gfmt(start)}/${gfmt(end)}&location=${encodeURIComponent(venueQ)}`;
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueQ)}`;
 
   /* ---------- Pliages réutilisables ---------- */
@@ -82,54 +85,54 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   const story = (D.story || []).filter((s) => s.text || s.y);
   const dayLine = when ? esc(`${when.full.split(" ")[0]} · ${when.full.split(" · ")[1] || ""}`) : "";
   const monoHtml = `<span class="or-mono">${ini(D.partner1)}<i>&amp;</i>${ini(D.partner2)}</span>`;
-  const sheetText = `<small>Nous nous marions</small><h1><span>${p1}</span><i>&amp;</i><span>${p2}</span></h1>${D.intro ? `<p>${esc(D.intro)}</p>` : ""}`;
+  const sheetText = `<small>${O.married}</small><h1><span>${p1}</span><i>&amp;</i><span>${p2}</span></h1>${D.intro ? `<p>${esc(D.intro)}</p>` : ""}`;
   const MAP = `<svg viewBox="0 0 300 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="300" height="160" fill="#F3EADB"/><path d="M-10 118 C60 96 100 136 170 116 S270 74 320 88 L320 170 L-10 170Z" fill="#DDE6CF"/><path d="M200 -5 C210 40 240 52 310 46 L310 -5Z" fill="#D5E1EA"/><path d="M-5 64 H310 M124 -5 V170 M40 -5 L96 170 M214 64 L262 170" stroke="#fff" stroke-width="7" fill="none"/><path d="M-5 64 H310 M124 -5 V170 M40 -5 L96 170 M214 64 L262 170" stroke="#E2D3BC" stroke-width="1" fill="none"/><path d="M-5 30 H124 M124 100 H310 M166 -5 V64" stroke="#fff" stroke-width="3" fill="none"/></svg>`;
 
   const before = `
-    <section class="or-sec or-hero"><div class="or-sheet">${sheetText}</div><div class="or-cue" aria-hidden="true">Faites défiler<i></i></div></section>
+    <section class="or-sec or-hero"><div class="or-sheet">${sheetText}</div><div class="or-cue" aria-hidden="true">${O.scroll}<i></i></div></section>
     <section class="or-sec or-photo">
-      ${fold2(`<div class="or-pic">${photo ? `<img src="${esc(photo)}" alt="Photo de ${p1} et ${p2}">` : monoHtml}</div>`,
-        v ? `<div class="or-verse">${v.orig ? `<p class="or-orig" dir="auto">${esc(v.orig)}</p>` : ""}<p>${v.orig ? "" : "« "}${esc(v.text)}${v.orig ? "" : " »"}</p>${v.ref ? `<small>${esc(v.ref)}</small>` : ""}</div>`
+      ${fold2(`<div class="or-pic">${photo ? `<img src="${esc(photo)}" alt="${O.photoOf(p1, p2)}">` : monoHtml}</div>`,
+        v ? `<div class="or-verse">${v.orig ? `<p class="or-orig" dir="auto">${esc(v.orig)}</p>` : ""}<p>${v.orig ? esc(v.text) : esc(T.c.quote(v.text))}</p>${v.ref ? `<small>${esc(v.ref)}</small>` : ""}</div>`
           : `<div class="or-verse"><p class="or-script">${p1} &amp; ${p2}</p></div>`)}
     </section>
     <section class="or-sec or-envsec">
-      ${head("Le grand jour", "Une date bien pliée")}
+      ${head(O.dateEyebrow, O.dateTitle)}
       <div class="or-env">
-        <div class="or-env-in"><small>Réservez la date</small><b>${when ? esc(when.day) : ""}</b><span class="or-my">${when ? esc(`${when.month} ${when.year}`) : ""}</span><span class="or-wd">${dayLine}</span></div>
-        <button type="button" class="or-flap4 t" aria-label="Déplier le rabat du haut"></button>
-        <button type="button" class="or-flap4 r" aria-label="Déplier le rabat de droite"></button>
-        <button type="button" class="or-flap4 b" aria-label="Déplier le rabat du bas"></button>
-        <button type="button" class="or-flap4 l" aria-label="Déplier le rabat de gauche"></button>
+        <div class="or-env-in"><small>${O.saveDate}</small><b>${when ? esc(when.day) : ""}</b><span class="or-my">${when ? esc(`${when.month} ${when.year}`) : ""}</span><span class="or-wd">${dayLine}</span></div>
+        <button type="button" class="or-flap4 t" aria-label="${O.flapT}"></button>
+        <button type="button" class="or-flap4 r" aria-label="${O.flapR}"></button>
+        <button type="button" class="or-flap4 b" aria-label="${O.flapB}"></button>
+        <button type="button" class="or-flap4 l" aria-label="${O.flapL}"></button>
         <span class="or-seal" aria-hidden="true">${ini(D.partner1)}${ini(D.partner2)}</span>
       </div>
-      <p class="or-env-hint">Touchez les quatre rabats pour déplier l'enveloppe</p>
+      <p class="or-env-hint">${O.envHint}</p>
     </section>`;
 
   const after = [
-    `<section class="or-sec or-countsec"><div class="or-count" aria-label="Compte à rebours"><span><b data-c="0">0</b>jours</span><span><b data-c="1">00</b>heures</span><span><b data-c="2">00</b>min</span><span><b data-c="3">00</b>sec</span></div></section>`,
-    programme.length ? `<section class="or-sec">${head("Le déroulé", "Le programme")}<div class="or-fold or-acc">${accordion(programme.map((x, i) => `<div class="or-item"><span class="or-num">${i + 1}</span><div><time>${esc(x.t)}</time><h3>${esc(x.title)}</h3>${x.note ? `<p>${esc(x.note)}</p>` : ""}</div></div>`))}</div></section>` : "",
-    showDress ? `<section class="or-sec">${head("Dress code", dc.title ? esc(dc.title) : "Nos couleurs")}
-      ${fold2(`<div class="or-dress"><figure class="men">${SHIRT}</figure><figure class="women">${DRESS}</figure></div>
-        <div class="or-sw" role="group" aria-label="Couleurs">${colors.map((c, i) => { const m = c.men || c.hex, w = c.women || c.hex; return `<button type="button" data-i="${i}" aria-pressed="${i === 0}" aria-label="${esc(c.name)}" style="background:${m === w ? m : `linear-gradient(135deg,${m} 50%,${w} 50%)`}"></button>`; }).join("")}</div>
+    `<section class="or-sec or-countsec"><div class="or-count" aria-label="${O.countdown}"><span><b data-c="0">0</b>${O.days}</span><span><b data-c="1">00</b>${O.hours}</span><span><b data-c="2">00</b>${O.min}</span><span><b data-c="3">00</b>${O.sec}</span></div></section>`,
+    programme.length ? `<section class="or-sec">${head(O.progEyebrow, O.progTitle)}<div class="or-fold or-acc">${accordion(programme.map((x, i) => `<div class="or-item"><span class="or-num">${i + 1}</span><div><time>${esc(x.t)}</time><h3>${esc(x.title)}</h3>${x.note ? `<p>${esc(x.note)}</p>` : ""}</div></div>`))}</div></section>` : "",
+    showDress ? `<section class="or-sec">${head(O.dressEyebrow, dc.title ? esc(dc.title) : O.dressTitle)}
+      ${fold2(`<div class="or-dress"><figure class="men">${shirt}</figure><figure class="women">${dress}</figure></div>
+        <div class="or-sw" role="group" aria-label="${O.colors}">${colors.map((c, i) => { const m = c.men || c.hex, w = c.women || c.hex; return `<button type="button" data-i="${i}" aria-pressed="${i === 0}" aria-label="${esc(c.name)}" style="background:${m === w ? m : `linear-gradient(135deg,${m} 50%,${w} 50%)`}"></button>`; }).join("")}</div>
         <p class="or-cname">${esc(colors[0].name)}</p>`,
-        `<div class="or-dctext">${dc.note ? `<p>${esc(dc.note)}</p>` : ""}${dc.men?.text ? `<p><b>${esc(dc.men.label || "Messieurs")}</b>${esc(dc.men.text)}</p>` : ""}${dc.women?.text ? `<p><b>${esc(dc.women.label || "Mesdames")}</b>${esc(dc.women.text)}</p>` : ""}</div>`)}</section>` : "",
-    venueQ ? `<section class="or-sec">${head("Le lieu", esc(D.venue?.name))}
+        `<div class="or-dctext">${dc.note ? `<p>${esc(dc.note)}</p>` : ""}${dc.men?.text ? `<p><b>${esc(dc.men.label || O.men)}</b>${esc(dc.men.text)}</p>` : ""}${dc.women?.text ? `<p><b>${esc(dc.women.label || O.women)}</b>${esc(dc.women.text)}</p>` : ""}</div>`)}</section>` : "",
+    venueQ ? `<section class="or-sec">${head(O.venueEyebrow, esc(D.venue?.name))}
       <div class="or-fold or-h3"><div class="or-side l"><div class="or-mapc">${MAP}</div></div><div class="or-mid"><div class="or-mapc">${MAP}</div><span class="or-pin">${ICON.pin}</span></div><div class="or-side r"><div class="or-mapc">${MAP}</div></div></div>
       <p class="or-addr">${esc(D.venue?.address)}</p>
-      <div class="or-btns"><a class="or-btn" href="${mapUrl}" target="_blank" rel="noopener">${ICON.pin} Itinéraire</a><a class="or-btn ghost" href="${calUrl}" target="_blank" rel="noopener">Ajouter à mon agenda</a></div></section>` : "",
-    story.length ? `<section class="or-sec">${head("Il était une fois", "Notre histoire")}<div class="or-notes">${story.map((s, i) => fold2(`<b class="or-year">${esc(s.y)}</b>`, `<p>${esc(s.text)}</p>`, `or-note${i % 2 ? " alt" : ""}`)).join("")}</div></section>` : "",
-    `<section class="or-sec or-rsvpsec">${head("Votre réponse", "Serez-vous des nôtres&nbsp;?")}
+      <div class="or-btns"><a class="or-btn" href="${mapUrl}" target="_blank" rel="noopener">${ICON.pin} ${O.route}</a><a class="or-btn ghost" href="${calUrl}" target="_blank" rel="noopener">${esc(T.c.addCal)}</a></div></section>` : "",
+    story.length ? `<section class="or-sec">${head(O.storyEyebrow, O.storyTitle)}<div class="or-notes">${story.map((s, i) => fold2(`<b class="or-year">${esc(s.y)}</b>`, `<p>${esc(s.text)}</p>`, `or-note${i % 2 ? " alt" : ""}`)).join("")}</div></section>` : "",
+    `<section class="or-sec or-rsvpsec">${head(O.rsvpEyebrow, O.rsvpTitle)}
       <div class="or-rsvp">${D.rsvpBy ? `<p class="or-by">${esc(D.rsvpBy)}</p>` : ""}
         <form novalidate>
-          <div class="or-choice" role="group" aria-label="Présence"><button type="button" data-a="yes" aria-pressed="true">Oui, avec joie</button><button type="button" data-a="no" aria-pressed="false">Je ne pourrai pas</button></div>
-          <label>Votre nom<input name="name" autocomplete="name" placeholder="Ex. Marie Dupont" maxlength="120"></label>
-          <label class="or-guests">Nombre de personnes<span><button type="button" data-g="-1" aria-label="Moins">−</button><output>1</output><button type="button" data-g="1" aria-label="Plus">+</button></span></label>
-          <label>Un mot pour les mariés (facultatif)<textarea name="msg" rows="2" maxlength="1000"></textarea></label>
-          <p class="or-err" hidden>L'envoi n'a pas marché. Réessayez dans un instant.</p>
-          <button class="or-btn or-send" type="submit">Envoyer ma réponse</button>
+          <div class="or-choice" role="group" aria-label="${O.presence}"><button type="button" data-a="yes" aria-pressed="true">${O.yes}</button><button type="button" data-a="no" aria-pressed="false">${O.no}</button></div>
+          <label>${O.yourName}<input name="name" autocomplete="name" placeholder="${esc(T.c.namePh)}" maxlength="120"></label>
+          <label class="or-guests">${O.guests}<span><button type="button" data-g="-1" aria-label="${O.less}">−</button><output>1</output><button type="button" data-g="1" aria-label="${O.more}">+</button></span></label>
+          <label>${O.word}<textarea name="msg" rows="2" maxlength="1000"></textarea></label>
+          <p class="or-err" hidden>${O.err}</p>
+          <button class="or-btn or-send" type="submit">${O.send}</button>
         </form>
       </div>
-      <div class="or-fin"><div class="or-fin-crane">${crane("#F7EFE2")}</div><p class="or-fin-names">${p1} <i>&amp;</i> ${p2}</p><p>${when ? esc(when.full) : ""}</p><button type="button" class="or-btn ghost or-again">Replier et rejouer</button></div>
+      <div class="or-fin"><div class="or-fin-crane">${crane("#F7EFE2")}</div><p class="or-fin-names">${p1} <i>&amp;</i> ${p2}</p><p>${when ? esc(when.full) : ""}</p><button type="button" class="or-btn ghost or-again">${O.again}</button></div>
     </section>`,
   ];
 
@@ -139,23 +142,23 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
     <div class="or-bg" aria-hidden="true"></div>
     <div class="or-sky" aria-hidden="true">${sky.map(([c, x, y, dl], i) => `<span style="left:${x}%;top:${y}%;--d:${dl}s;--s:${0.7 + (i % 3) * 0.2}">${crane(c)}</span>`).join("")}</div>
 
-    <section class="or-intro" aria-label="Grue en papier : touchez-la pour déplier l'invitation de ${p1} et ${p2}">
+    <section class="or-intro" aria-label="${O.introAria(p1, p2)}">
       <div class="or-intro-bg" aria-hidden="true"></div>
-      <p class="or-kicker">Une invitation pliée pour vous</p>
-      <button type="button" class="or-crane" aria-label="Déplier la grue">
+      <p class="or-kicker">${O.kicker}</p>
+      <button type="button" class="or-crane" aria-label="${O.unfold}">
         <svg viewBox="20 20 160 160" aria-hidden="true"><defs><pattern id="orWashi" patternUnits="userSpaceOnUse" width="200" height="200"><image href="${IMG.washi}" width="200" height="200" preserveAspectRatio="xMidYMid slice"/></pattern></defs>
           ${FACETS.map(() => `<g class="or-f"><polygon class="p" fill="url(#orWashi)"/><polygon class="sh" fill="#4A2F1E"/></g>`).join("")}
         </svg>
         <span class="or-crane-text">${sheetText}</span>
       </button>
-      <p class="or-hint">Touchez la grue pour la déplier</p>
+      <p class="or-hint">${O.hint}</p>
     </section>
 
     <main class="or-main">
       ${before}
       <div class="or-after">${after.join("")}</div>
     </main>
-    <button type="button" class="or-snd" aria-label="Couper le son">${ICON.sound}</button>
+    <button type="button" class="or-snd" aria-label="${O.mute}">${ICON.sound}</button>
   </div>`;
 
   const or = q(".or"), intro = q(".or-intro"), craneBtn = q(".or-crane");
@@ -174,7 +177,7 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   const loop = () => { if (!actx || !soundOn || !alive) return; looping = true; const t0 = actx.currentTime + 0.05, st = 0.42; MEL.forEach((f, i) => f && tone(f, t0 + i * st, 1.8, i % 4 ? 0.14 : 0.2)); [294, 262, 220, 262].forEach((f, i) => tone(f, t0 + i * st * 8, 3, 0.1)); loopT = later(loop, MEL.length * st * 1000); };
   const chime = () => { if (!actx || !soundOn) return; const t = actx.currentTime; [1047, 1319, 1568, 2093].forEach((f, i) => tone(f, t + i * 0.08, 1.2, 0.16)); };
   const sndBtn = q(".or-snd");
-  sndBtn.addEventListener("click", () => { soundOn = !soundOn; sndBtn.innerHTML = soundOn ? ICON.sound : ICON.mute; sndBtn.setAttribute("aria-label", soundOn ? "Couper le son" : "Remettre le son");
+  sndBtn.addEventListener("click", () => { soundOn = !soundOn; sndBtn.innerHTML = soundOn ? ICON.sound : ICON.mute; sndBtn.setAttribute("aria-label", soundOn ? O.mute : O.unmute);
     if (soundOn) { audio(); if (or.classList.contains("is-open")) loop(); } else { clearTimeout(loopT); looping = false; } });
 
   /* ---------- Ouverture : la grue se déplie en une feuille ---------- */
@@ -235,7 +238,7 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
     audio(); paper(0.22, 0.55); f.classList.add("o"); env.classList.add("is-started"); if (navigator.vibrate) navigator.vibrate(15);
     if (qa(".or-flap4.o").length === 4) {
       env.classList.add("is-open"); later(() => env.classList.add("is-done"), REDUCE ? 0 : 700);
-      setGate(false); chime(); countUp(); observeFolds(); q(".or-env-hint").textContent = "Le grand jour est noté ✿";
+      setGate(false); chime(); countUp(); observeFolds(); q(".or-env-hint").textContent = O.envDone;
       later(() => scrollBy({ top: innerHeight * 0.6, behavior: REDUCE ? "auto" : "smooth" }), 1500);
     }
   });
@@ -255,10 +258,10 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   });
   form.addEventListener("submit", async (e) => {
     e.preventDefault(); const inp = form.querySelector("input"), name = inp.value.trim();
-    if (!name) { inp.focus(); inp.placeholder = "Votre nom, pour savoir qui vient"; return; }
+    if (!name) { inp.focus(); inp.placeholder = O.nameMissing; return; }
     const msg = form.querySelector("textarea").value.trim(), btn = form.querySelector(".or-send"), err = form.querySelector(".or-err");
     err.hidden = true;
-    if (OPTS.onRsvp) { btn.disabled = true; btn.textContent = "Envoi…"; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg }); } catch (x) { btn.disabled = false; btn.textContent = "Envoyer ma réponse"; err.hidden = false; return; } }
+    if (OPTS.onRsvp) { btn.disabled = true; btn.textContent = T.c.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg }); } catch (x) { btn.disabled = false; btn.textContent = O.send; err.hidden = false; return; } }
     audio(); paper(0.3, 0.6);
     const r = card.getBoundingClientRect();
     card.classList.add("is-folding");
@@ -267,7 +270,7 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
       plane.style.left = r.left + r.width / 2 - 60 + "px"; plane.style.top = clamp(r.top + r.height / 2, 80, innerHeight - 80) - 35 + "px";
       or.appendChild(plane); paper(0.5, 0.3); later(() => plane.remove(), 2400);
       const first = esc(name.split(" ")[0]);
-      card.innerHTML = `<div class="or-thanks"><small>Merci ${first}</small><h3>${attending ? "Votre réponse s'est envolée jusqu'à nous&nbsp;!" : "Merci d'avoir répondu"}</h3><p>${attending ? `${guests} personne${guests > 1 ? "s" : ""}. On a hâte de vous voir.` : "Vous allez nous manquer. On pensera à vous ce jour-là."}</p>${OPTS.onRsvp ? "" : `<p class="or-by">Aperçu : la réponse n'est pas enregistrée.</p>`}<a class="or-btn" href="${calUrl}" target="_blank" rel="noopener">Ajouter à mon agenda</a></div>`;
+      card.innerHTML = `<div class="or-thanks"><small>${T.c.thanks(first)}</small><h3>${attending ? O.flewYes : O.flewNo}</h3><p>${attending ? O.seeYou(guests) : O.missYou}</p>${OPTS.onRsvp ? "" : `<p class="or-by">${esc(T.c.previewOnly)}.</p>`}<a class="or-btn" href="${calUrl}" target="_blank" rel="noopener">${esc(T.c.addCal)}</a></div>`;
       card.classList.remove("is-folding"); card.classList.add("is-sent"); later(chime, 1200);
     };
     later(fly, REDUCE ? 0 : 650);

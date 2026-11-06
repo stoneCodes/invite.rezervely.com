@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   const t = siteDict(inv?.data.lang ?? "fr");
   if (!inv || inv.status !== "published") return { title: t.meta.invitation, robots: { index: false } };
   const d = inv.data;
-  const when = dateParts(d.dateISO);
+  const when = dateParts(d.dateISO, d.lang);
   return {
     title: { absolute: t.meta.invites(d.partner1, d.partner2) },
     description: when ? t.meta.weddingOn(`${when.day} ${when.month} ${when.year}`) : t.meta.openInvite,
