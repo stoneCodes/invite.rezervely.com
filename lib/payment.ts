@@ -3,6 +3,7 @@ import { after } from "next/server";
 import type { Lang } from "./i18n";
 import type { InvitationRow } from "./types";
 import { db, siteUrl } from "./supabase";
+import { updateOnPublish } from "./publish";
 import { publishedEmail, sendEmail } from "./email";
 import { siteDict } from "./i18n/site";
 
@@ -73,15 +74,15 @@ export async function applyPaidSession(s: Session): Promise<{ token: string } | 
   if (!inv) return null;
   const now = new Date().toISOString();
   // Condition « paid_at is null » : une seule des deux arrivées (retour, webhook) fait la mise à jour et envoie l'e-mail.
-  const { data: updated } = await db()
-    .from("invitations")
-    .update({ paid_at: now, paid_amount_cents: s.amount_total, stripe_session_id: s.id, status: "published", published_at: inv.published_at ?? now })
-    .eq("id", inv.id)
-    .is("paid_at", null)
-    .select("id");
-  if (updated?.length && !inv.published_at && inv.owner_email) {
+  // Publication + lien lisible définitif, une seule fois même si le retour et le webhook arrivent ensemble.
+  const { slug, updated } = await updateOnPublish(
+    inv,
+    { paid_at: now, paid_amount_cents: s.amount_total, stripe_session_id: s.id, status: "published", published_at: inv.published_at ?? now },
+    { onlyIfUnpaid: true },
+  );
+  if (updated && !inv.published_at && inv.owner_email) {
     const to = inv.owner_email;
-    after(() => sendEmail({ to, ...publishedEmail(inv.owner_lang, inv.data, inv.edit_token, inv.slug) }));
+    after(() => sendEmail({ to, ...publishedEmail(inv.owner_lang, inv.data, inv.edit_token, slug) }));
   }
   return { token };
 }

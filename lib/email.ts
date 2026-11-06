@@ -2,6 +2,7 @@ import "server-only";
 import { emailDict } from "./i18n/email";
 import type { Lang } from "./i18n";
 import { siteUrl } from "./supabase";
+import { invitePath } from "./slug";
 
 /* Envoi des e-mails aux mariés, par l'API transactionnelle de Brevo.
    Sans BREVO_API_KEY (en local par exemple), rien ne part : l'e-mail est affiché dans le terminal (mode test).
@@ -96,7 +97,7 @@ export function welcomeEmail(lang: Lang | null | undefined, d: Who, token: strin
 
 export function publishedEmail(lang: Lang | null | undefined, d: Who, token: string, slug: string): Omit<Mail, "to"> {
   const t = emailDict(lang), n = names(lang, d);
-  const pub = `${siteUrl()}/i/${slug}`, space = `${siteUrl()}/espace/${token}`;
+  const pub = `${siteUrl()}${invitePath(slug)}`, space = `${siteUrl()}/espace/${token}`;
   return {
     subject: t.published.subject(n),
     html: layout(lang, [h1(t.published.title), p(t.common.hello(n)), p(t.published.body), linkBox(t.published.share, pub), `<div style="margin:0 0 18px">${button(pub, t.published.open)}${button(space, t.common.openSpace, true)}</div>`, p(t.published.after), p(t.common.keep, true)]),

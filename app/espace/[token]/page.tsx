@@ -4,6 +4,7 @@ import Logo from "@/components/Logo";
 import { notFound } from "next/navigation";
 import { db, getByToken, siteUrl } from "@/lib/supabase";
 import CopyLink from "./CopyLink";
+import { invitePath } from "@/lib/slug";
 import { getLang } from "@/lib/i18n/server";
 import { siteDict } from "@/lib/i18n/site";
 import { LOCALE } from "@/lib/i18n";
@@ -28,7 +29,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
   const rsvps = (data ?? []) as Rsvp[];
   const yes = rsvps.filter((r) => r.attending);
   const guests = yes.reduce((n, r) => n + r.guests, 0);
-  const link = `${siteUrl()}/i/${inv.slug}`;
+  const link = `${siteUrl()}${invitePath(inv.slug)}`;
   const fmt = new Intl.DateTimeFormat(LOCALE[lang], { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Paris" });
   return (
     <main className="site">

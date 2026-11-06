@@ -8,6 +8,7 @@ import { sampleData } from "@/lib/sample";
 import { TEMPLATES, type InvitationData, type TemplateId } from "@/lib/types";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
+import { invitePath } from "@/lib/slug";
 import { getLastInvite, setLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 import { LANGS } from "@/lib/i18n";
 
@@ -158,6 +159,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
     if (!res.ok) { setMsg({ kind: "err", text: j.error ?? e_.msgPublishFail }); return; }
     // Paiement requis : on part sur la page sécurisée de Stripe ; la publication se fait au retour.
     if (j.checkoutUrl) { setMsg({ kind: "ok", text: pay.redirect }); setBusy(true); window.location.assign(j.checkoutUrl); return; }
+    if (j.slug) setSlug(j.slug);
     setStatus("published");
     setMsg({ kind: "ok", text: e_.msgPublished });
   }
@@ -349,7 +351,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
               {token && <a className="btn-s ghost" href={`/espace/${token}`}>{e_.mySpace}</a>}
             </div>
             {needPay && <p className="ed-help">{t.pay.note(payPrice!)}</p>}
-            {status === "published" && slug && <p className="ed-help">{e_.publicLink} <a href={`/i/${slug}`} target="_blank" rel="noopener">/i/{slug}</a></p>}
+            {status === "published" && slug && <p className="ed-help">{e_.publicLink} <a href={invitePath(slug)} target="_blank" rel="noopener">{invitePath(slug)}</a></p>}
           </div>
         </form>
 
