@@ -53,7 +53,7 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 - E-mails : lien de l'espace à l'enregistrement (ou quand l'adresse change), lien à partager à la 1re publication, **récapitulatif quotidien** des nouvelles réponses (`/api/cron/recap`, `vercel.json`, 17 h UTC, protégé par `CRON_SECRET`) plutôt qu'un e-mail par invité, et « Retrouver mon espace » (`/espace` → `/api/espace/lien`, réponse identique que l'adresse existe ou non).
 - Textes dans `lib/i18n/email.ts` (FR/EN), langue = `invitations.owner_lang` (langue du site au dernier enregistrement). Aperçu en local : `/api/dev/email?type=welcome|published|recap|links&lang=fr|en`.
 - Migration `005_emails.sql` (`owner_lang`, `rsvps.notified_at`) : à appliquer **avant** de déployer le code (sinon la création d'invitation échoue).
-- Variables Vercel (saisies par Glad) : `BREVO_API_KEY` (secret), `EMAIL_FROM` (`joyeuxevent <bonjour@joyeuxevent.com>`), `EMAIL_REPLY_TO` (facultatif), `CRON_SECRET` (secret). Domaine à authentifier dans Brevo (DNS chez Cloudflare).
+- Variables Vercel (saisies par Glad) : `BREVO_API_KEY` (secret), `EMAIL_FROM` (`joyeuxevent <hello@joyeuxevent.com>`), `EMAIL_REPLY_TO` (facultatif), `CRON_SECRET` (secret). Domaine à authentifier dans Brevo (DNS chez Cloudflare).
 
 ## À faire (par ordre)
 1. Stripe Checkout : quand `PAYMENTS_ENABLED=true`, `POST /api/invitations/[token]/publish` doit créer une session et publier sur webhook `checkout.session.completed`. Prix à définir avec Glad.
