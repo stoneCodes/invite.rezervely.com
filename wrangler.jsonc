@@ -16,6 +16,8 @@
 	"triggers": { "crons": ["0 17 * * *"] },
 	// Variables non secrètes. Les secrets (SUPABASE_SERVICE_ROLE_KEY, BREVO_API_KEY, CRON_SECRET)
 	// sont saisis par Glad dans le tableau de bord Cloudflare, jamais ici.
+	// keep_vars : un déploiement (push sur main) ne doit PAS effacer les secrets saisis dans le tableau de bord.
+	"keep_vars": true,
 	"vars": {
 		"NEXT_PUBLIC_SITE_URL": "https://joyeuxevent.com",
 		"SUPABASE_URL": "https://usolfegmepnazrporeec.supabase.co",
