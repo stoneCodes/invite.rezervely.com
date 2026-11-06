@@ -87,3 +87,6 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 /* Champ de saisie hors éditeur (ex. « Retrouver mon espace ») */
 .ed-input{font:inherit;font-size:1rem;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px 14px;width:100%;min-width:0}
 .ed-input:focus{outline:2px solid rgba(231,198,140,.35);border-color:var(--accent)}
+
+/* Messages de statut (éditeur, espace : paiement reçu…) */
+.ed-msg{margin:0;font-size:.88rem}.ed-msg.ok{color:var(--ok)}.ed-msg.err{color:var(--err)}
