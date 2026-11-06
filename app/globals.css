@@ -55,9 +55,23 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 .ed-full-name strong{font:400 1.25rem/1.15 var(--f-display);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ed-full-name small{font:300 .72rem/1.3 var(--f-ui);color:var(--muted)}
 .ed-full-bar>.btn-s{flex:none}
+/* Téléphone : barre sur une seule ligne, compacte (le plus de place possible pour l'invitation) */
 @media (max-width:700px){
-  .ed-full-bar{flex-wrap:wrap;gap:8px}
+  .ed-full-bar{gap:6px;padding:calc(6px + env(safe-area-inset-top,0px)) 8px 6px}
+  .ed-full-back{width:40px;min-height:40px;padding:0;justify-content:center;flex:none}
   .ed-full-back span:last-child{display:none}
-  .ed-full-back::after{content:"Retour"}
-  .ed-full-nav{order:3;flex-basis:100%}
+  .ed-full-nav{gap:4px}
+  .ed-full-nav>button{width:32px;height:32px;font-size:1.25rem}
+  .ed-full-name strong{font-size:1rem}
+  .ed-full-name small{display:none}
+  .ed-full-bar>.btn-s{padding:0 12px;min-height:38px;font-size:.66rem;letter-spacing:.08em;white-space:nowrap}
 }
+
+/* iPhone : une iframe prend sinon la largeur de son contenu (et déborde de l'écran). */
+.ed-full iframe{width:1px;min-width:100%;max-width:100%;height:100%;display:block}
+.lbl-sm{display:none}
+@media (max-width:700px){.ed-full .lbl-lg{display:none}.ed-full .lbl-sm{display:inline}}
+/* Bouton de sortie des démos réduit à « ← » quand on défile (et pendant la conversation d'Appel entrant) */
+.demo-exit{transition:padding .25s,width .25s}
+.demo-exit.is-mini,body:has(.ap.is-live) .demo-exit{width:40px;padding:0;justify-content:center}
+.demo-exit.is-mini .demo-exit-txt,body:has(.ap.is-live) .demo-exit .demo-exit-txt{display:none}

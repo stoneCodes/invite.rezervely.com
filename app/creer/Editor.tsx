@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { sampleData } from "@/lib/sample";
 import { TEMPLATES, type InvitationData, type TemplateId } from "@/lib/types";
+import { lockScroll } from "@/lib/scrollLock";
 
 /* ---------- Dates : l'éditeur saisit l'heure de Paris, on stocke un ISO avec décalage ---------- */
 function toParisISO(local: string) {
@@ -83,14 +84,13 @@ export default function Editor() {
   const fullFrame = useRef<HTMLIFrameElement>(null);
   useEffect(() => {
     if (!full) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockScroll();
     const esc = (e: KeyboardEvent) => {
       if (e.key === "Escape") setFull(null);
       else if (e.key === "ArrowRight" || e.key === "ArrowLeft") setFull((f) => (f ? cycle(f, e.key === "ArrowRight" ? 1 : -1) : f));
     };
     window.addEventListener("keydown", esc);
-    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", esc); };
+    return () => { unlock(); window.removeEventListener("keydown", esc); };
   }, [full !== null]);
 
   useEffect(() => {
@@ -352,7 +352,7 @@ export default function Editor() {
               </div>
               {isMine
                 ? status !== "published" && <button type="button" className="btn-s" disabled={busy} onClick={() => { setFull(null); publish(); }}>Publier</button>
-                : <button type="button" className="btn-s" onClick={() => { setTemplate(full); setFull(null); setMsg({ kind: "ok", text: `Modèle « ${shown.name} » choisi. Pensez à enregistrer.` }); }}>Choisir ce modèle</button>}
+                : <button type="button" className="btn-s" onClick={() => { setTemplate(full); setFull(null); setMsg({ kind: "ok", text: `Modèle « ${shown.name} » choisi. Pensez à enregistrer.` }); }}><span className="lbl-lg">Choisir ce modèle</span><span className="lbl-sm">Choisir</span></button>}
             </div>
             {/* key : chaque modèle recharge l'iframe, qui rejoue son ouverture. */}
             <iframe key={full} ref={fullFrame} src="/apercu?plein=1" title={`Démo du modèle ${shown.name}`} allow="accelerometer; gyroscope" />

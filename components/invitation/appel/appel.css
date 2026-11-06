@@ -208,4 +208,15 @@ html:has(.ap),body:has(.ap){background:#1A1016}
   .ap-m,.ap-sep,.ap-note,.ap-stickers figure,.ap-cal li{opacity:1;transform:none}
 }
 /* Démo : laisser la place au bouton « Accueil » en haut à gauche */
-body:has(.demo-exit) .ap-head{padding-left:118px}
+body:has(.demo-exit) .ap-head{padding-left:60px}
+/* Écrans courts : l'écran d'appel se resserre pour garder « Glisser pour décrocher » visible. */
+@media (max-height:640px){
+  .ap-call{padding-top:calc(12px + env(safe-area-inset-top,0px));padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+  .ap-ring,.ap-av.big{width:104px;height:104px}
+  .ap-ring{margin-bottom:14px}
+  .ap-slide{height:62px}
+}
+@media (max-height:540px){
+  .ap-ring,.ap-av.big{width:86px;height:86px}
+  .ap-ring{margin-bottom:10px}
+}

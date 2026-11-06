@@ -223,3 +223,7 @@ html:has(.or),body:has(.or){background:#E4CBA6}
 .or-still .or-head,.or-still .or-pin{opacity:1;translate:none;transform:none;transition:none}
 .or-still .or-sky span,.or-still .or-cue i,.or-still .or-fin-crane,.or-still .or-flap4{animation:none}
 @media (prefers-reduced-motion:reduce){.or *,.or *::before,.or *::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}}
+/* Écrans courts */
+@media (max-height:640px){
+  .or-kicker{font-size:clamp(1.2rem,min(6vw,4.4svh),1.9rem)}
+}

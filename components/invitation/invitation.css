@@ -421,3 +421,24 @@ body[data-tpl="nuit-doree"] .timeline li{transition:none;opacity:calc(var(--p,1)
 .instant,.instant *{transition:none!important}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01s!important;transition-delay:0s!important}}
 @media (max-width:370px){.names{font-size:3.4rem}.disc{width:74px;height:74px}}
+
+/* ===== Petits écrans et iPhone =====
+   Rien ne doit déborder en largeur : sur iPhone, une page intégrée (pop-up de démo, aperçu)
+   s'élargit sinon à la taille de son contenu et des boutons sortent de l'écran.
+   « clip » (et non « hidden ») pour ne pas casser les éléments collants (position:sticky). */
+body[data-tpl]{overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* Écrans courts (petits iPhone, Safari avec ses barres, pop-up de démo) : l'ouverture rétrécit au lieu de déborder. */
+@media (max-height:640px){
+  .hero{min-height:0}
+  .env3d{scale:.84}
+  .j-env{scale:.9}
+  #stage .tap{bottom:calc(6% + env(safe-area-inset-bottom,0px))}
+  #stage .tap .who{font-size:2.1rem}
+  .names{font-size:min(4.1rem,11svh,17vw)}
+}
+@media (max-height:540px){
+  .env3d{scale:.72;top:44%}
+  .j-env{scale:.8}
+  .seal,.door .half{scale:.85}
+  #stage .tap .who{font-size:1.8rem}
+}

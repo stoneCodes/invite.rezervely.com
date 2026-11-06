@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { TEMPLATES, type TemplateId } from "@/lib/types";
+import { lockScroll } from "@/lib/scrollLock";
 
 const TITLE = "Faites briller";
 
@@ -108,14 +109,13 @@ export default function HomeClient() {
   };
   useEffect(() => {
     if (!demo) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockScroll();
     const key = (e: KeyboardEvent) => {
       if (e.key === "Escape") setDemo(null);
       else if (e.key === "ArrowRight" || e.key === "ArrowLeft") setDemo((d) => (d ? cycle(d, e.key === "ArrowRight" ? 1 : -1) : d));
     };
     window.addEventListener("keydown", key);
-    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", key); };
+    return () => { unlock(); window.removeEventListener("keydown", key); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demo !== null]);
   const shown = demo ? TEMPLATES.find((t) => t.id === demo)! : null;
@@ -221,7 +221,7 @@ export default function HomeClient() {
               </div>
               <button type="button" aria-label="Modèle suivant" onClick={() => setDemo(cycle(demo, 1))}>›</button>
             </div>
-            <a className="btn-s" href={`/creer?t=${demo}`} onClick={celebrate(`/creer?t=${demo}`)}>Créer avec ce modèle</a>
+            <a className="btn-s" href={`/creer?t=${demo}`} onClick={celebrate(`/creer?t=${demo}`)}><span className="lbl-lg">Créer avec ce modèle</span><span className="lbl-sm">Créer</span></a>
           </div>
           {/* key : chaque modèle recharge la démo, qui rejoue son ouverture. */}
           <iframe key={demo} src={`/demo/${demo}?integre=1`} title={`Démo du modèle ${shown.name}`} allow="accelerometer; gyroscope" />

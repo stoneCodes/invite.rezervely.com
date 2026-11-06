@@ -226,3 +226,10 @@ html:has(.bn),body:has(.bn){background:#0A0C18}
 @media (prefers-reduced-motion:reduce){
   .bn *,.bn *::before,.bn *::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
+/* Écrans courts : titres et boutons à la mesure de la hauteur disponible. */
+@media (max-height:640px){
+  .bn-hero h1{font-size:clamp(2.6rem,min(16vw,10svh),4.8rem)}
+  .bn-hero p{font-size:1.02rem}
+  .bn-shake{padding:12px 24px}
+  .bn-date>b{font-size:clamp(4rem,min(30vw,17svh),8rem)}
+}
