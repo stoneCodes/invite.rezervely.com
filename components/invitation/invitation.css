@@ -442,3 +442,20 @@ body[data-tpl]{overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:10
   .seal,.door .half{scale:.85}
   #stage .tap .who{font-size:1.8rem}
 }
+/* Téléphone : écran d'ouverture calé sur la hauteur visible (hors barres de Safari), enveloppe et texte un peu plus petits. */
+@media (max-width:600px){
+  .fixed-frame{bottom:auto;height:100vh;height:100svh}
+  .env3d{scale:.9}
+  .j-env{scale:.94}
+  #stage .tap{bottom:calc(11% + env(safe-area-inset-bottom,0px))}
+  #stage .tap .who{font-size:2.1rem}
+}
+@media (max-width:600px) and (max-height:640px){
+  .env3d{scale:.78}
+  .j-env{scale:.86}
+  #stage .tap .who{font-size:1.85rem}
+}
+@media (max-width:600px) and (max-height:540px){
+  .env3d{scale:.68}
+  #stage .tap .who{font-size:1.7rem}
+}

@@ -233,3 +233,11 @@ html:has(.bn),body:has(.bn){background:#0A0C18}
   .bn-shake{padding:12px 24px}
   .bn-date>b{font-size:clamp(4rem,min(30vw,17svh),8rem)}
 }
+/* Téléphone : ouverture calée sur la hauteur visible, boule et bouton un peu plus petits. */
+@media (max-width:600px){
+  .bn-intro{bottom:auto;height:100vh;height:100svh;padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
+  .bn-globe-wrap{width:min(84vw,50svh,520px)}
+  .bn-shake{padding:12px 24px;font-size:.92rem}
+  .bn-hint{font-size:.8rem}
+  .bn-kicker{font-size:clamp(1.2rem,5.2vw,1.6rem)}
+}

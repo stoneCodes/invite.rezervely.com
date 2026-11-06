@@ -227,3 +227,9 @@ html:has(.or),body:has(.or){background:#E4CBA6}
 @media (max-height:640px){
   .or-kicker{font-size:clamp(1.2rem,min(6vw,4.4svh),1.9rem)}
 }
+/* Téléphone : ouverture calée sur la hauteur visible, grue un peu plus petite. */
+@media (max-width:600px){
+  .or-intro{bottom:auto;height:100vh;height:100svh;padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
+  .or-crane{width:min(76vw,44svh,400px)}
+  .or-hint{font-size:.84rem}
+}
