@@ -1,7 +1,5 @@
 import { PDFDocument, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import bidiFactory from "bidi-js";
-import reshaper from "arabic-persian-reshaper";
 import { LOCALE } from "@/lib/i18n";
 import { dateParts } from "@/components/invitation/engine";
 import { inviteDict } from "@/lib/i18n/invite";
@@ -23,7 +21,6 @@ const LEFT = 42;
 const RIGHT = PAGE_W - 42;
 const BOTTOM = 62;
 const ARABIC = /[\u0600-\u06ff\u0750-\u077f\u08a0-\u08ff\ufb50-\ufdff\ufe70-\ufeff]/u;
-const bidi = bidiFactory();
 
 function color(hex: string): Color {
   const value = hex.replace("#", "");
@@ -57,25 +54,25 @@ function safeText(font: FontShape, text: string): string {
     return font.hasGlyphForCodePoint(0x25a1) ? "□" : "?";
   }).join("");
 }
-function visualArabic(text: string): string {
-  if (!ARABIC.test(text)) return text;
-  const shaped = reshaper.ArabicShaper.convertArabic(text);
-  const levels = bidi.getEmbeddingLevels(shaped);
-  return bidi.getReorderedString(shaped, levels);
-}
-function wrapped(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
+/* Arabe : pdf-lib n'applique pas le positionnement OpenType (GPOS) ; les lettres arabes sortent détachées, points décalés.
+   Les lignes contenant de l'arabe sont donc dessinées par le navigateur (canvas : liaison des lettres et sens de lecture parfaits),
+   puis insérées en image haute définition dans le PDF. */
+/** Sens de la ligne = celui de sa première lettre (arabe → droite à gauche). */
+const isRtl = (line: string) => ARABIC.test(Array.from(line).find((character) => /\p{L}/u.test(character)) || "");
+const RASTER = 5; // définition des lignes arabes (pixels par point)
+function wrapped(text: string, widthOf: (value: string) => number, maxWidth: number): string[] {
   const lines: string[] = [];
   for (const paragraph of text.replace(/\r/g, "").split("\n")) {
     if (!paragraph) { lines.push(""); continue; }
     let line = "";
     for (const word of paragraph.split(/\s+/).filter(Boolean)) {
       const candidate = line ? `${line} ${word}` : word;
-      if (font.widthOfTextAtSize(candidate, size) <= maxWidth) { line = candidate; continue; }
+      if (widthOf(candidate) <= maxWidth) { line = candidate; continue; }
       if (line) lines.push(line);
       line = "";
       for (const character of Array.from(word)) {
         const test = line + character;
-        if (line && font.widthOfTextAtSize(test, size) > maxWidth) { lines.push(line); line = character; }
+        if (line && widthOf(test) > maxWidth) { lines.push(line); line = character; }
         else line = test;
       }
     }
@@ -104,7 +101,7 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
   const fontResources = [fontkit.create(titleBytes), fontkit.create(bodyBytes), fontkit.create(scriptBytes)] as FontShape[];
   const visibleText = [data.partner1, data.partner2, data.dateISO, data.venue.name, data.venue.address, ...replies.flatMap((reply) => [reply.name, reply.message || ""])].join("\n");
   const hasArabic = ARABIC.test(visibleText);
-  const nonArabic = Array.from(visibleText).filter((character) => !ARABIC.test(character)).join("");
+  const nonArabic = Array.from(visibleText).filter((character) => !ARABIC.test(character) && !/\s/u.test(character)).join(""); // sans les retours à la ligne, absents de toutes les polices
   const needsWideFallback = !fontHasText(fontResources[0], nonArabic) && !fontHasText(fontResources[1], nonArabic);
   const arabicBytes = hasArabic ? await asset("/fonts/pdf/NotoNaskhArabic-VF.ttf") : null;
   const wideBytes = needsWideFallback ? await asset("/fonts/pdf/NotoSans-VF.ttf") : null;
@@ -114,15 +111,14 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
   document.setTitle(`${t.title} · ${data.partner1} & ${data.partner2}`);
   document.setAuthor("joyeuxevent");
   document.setCreator("joyeuxevent");
-  const titleFont = await document.embedFont(titleBytes, { subset: true });
+  // Le sous-ensemble de pdf-lib abîme les polices de titre variables (Cormorant -VF : lettres manquantes) : intégrées entières.
+  const titleFont = await document.embedFont(titleBytes, { subset: !theme.titleFont.includes("-VF") });
   const bodyFont = await document.embedFont(bodyBytes, { subset: true });
   const scriptFont = await document.embedFont(scriptBytes, { subset: true });
-  const arabicFont = arabicBytes ? await document.embedFont(arabicBytes, { subset: false }) : null; // subset casse les polices variables (glyphes arabes illisibles)
-  const wideFont = wideBytes ? await document.embedFont(wideBytes, { subset: true }) : null;
+  const wideFont = wideBytes ? await document.embedFont(wideBytes, { subset: false }) : null;
   const titleShape = fontResources[0];
   const bodyShape = fontResources[1];
   const scriptShape = fontResources[2];
-  const arabicShape = arabicBytes ? fontkit.create(arabicBytes) as FontShape : null;
   const wideShape = wideBytes ? fontkit.create(wideBytes) as FontShape : null;
   const ink = color(theme.text), muted = color(theme.muted), accent = color(theme.accent), rule = color(theme.rule), paper = color(theme.background);
   const ornament = await document.embedPng(await rasterizeOrnament(ornamentSvg));
@@ -133,10 +129,56 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
 
   const pageFill = (target: PDFPage) => target.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: paper });
   pageFill(page);
+
+  // Polices chargées dans le navigateur pour dessiner les lignes arabes (latin du thème + arabe en secours).
+  const families = new Map<PDFFont, string>([[titleFont, "jePdfTitle"], [bodyFont, "jePdfBody"], [scriptFont, "jePdfScript"]]);
+  let arabicCanvas: CanvasRenderingContext2D | null = null;
+  if (arabicBytes) {
+    const faces = [new FontFace("jePdfArabic", arabicBytes.slice().buffer), new FontFace("jePdfTitle", titleBytes.slice().buffer), new FontFace("jePdfBody", bodyBytes.slice().buffer), new FontFace("jePdfScript", scriptBytes.slice().buffer)];
+    for (const face of faces) { await face.load(); window.document.fonts.add(face); }
+    arabicCanvas = window.document.createElement("canvas").getContext("2d");
+  }
+  const canvasFont = (font: PDFFont, size: number) => `${size * RASTER}px "${families.get(font) || "jePdfBody"}", "jePdfArabic"`;
+  function canvasWidth(text: string, font: PDFFont, size: number) {
+    if (!arabicCanvas) return 0;
+    arabicCanvas.font = canvasFont(font, size);
+    arabicCanvas.direction = isRtl(text) ? "rtl" : "ltr";
+    return arabicCanvas.measureText(text).width / RASTER;
+  }
+  const widthOf = (font: PDFFont, size: number) => (text: string) => {
+    if (arabicCanvas && ARABIC.test(text)) return canvasWidth(text, font, size);
+    const selected = fontFor(text, font);
+    return selected.pdf.widthOfTextAtSize(safeText(selected.shape, text), size);
+  };
+  // Images des lignes arabes, insérées à la fin (embedPng est asynchrone).
+  const rasterLines: { target: PDFPage; png: string; x: number; y: number; width: number; height: number }[] = [];
+  function rasterLine(target: PDFPage, line: string, x: number, baseline: number, maxWidth: number, font: PDFFont, size: number, textColor: Color, align: "left" | "center" | "right") {
+    if (!arabicCanvas) return;
+    const rtl = isRtl(line);
+    const natural = canvasWidth(line, font, size);
+    const width = Math.min(natural, maxWidth);
+    const pad = size * 0.3, above = size * 1.25, below = size * 0.55;
+    const canvas = window.document.createElement("canvas");
+    canvas.width = Math.ceil((width + pad * 2) * RASTER);
+    canvas.height = Math.ceil((above + below) * RASTER);
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.font = canvasFont(font, size);
+    context.direction = rtl ? "rtl" : "ltr";
+    context.textAlign = "left";
+    context.textBaseline = "alphabetic";
+    context.fillStyle = `rgb(${Math.round(textColor.red * 255)}, ${Math.round(textColor.green * 255)}, ${Math.round(textColor.blue * 255)})`;
+    context.translate(pad * RASTER, above * RASTER);
+    if (natural > maxWidth) context.scale(maxWidth / natural, 1); // ligne trop longue : légèrement resserrée plutôt que coupée
+    context.fillText(line, 0, 0);
+    const left = align === "center" ? x + (maxWidth - width) / 2 : (align === "right" || rtl) ? x + maxWidth - width : x;
+    rasterLines.push({ target, png: canvas.toDataURL("image/png"), x: left - pad, y: baseline - below, width: width + pad * 2, height: above + below });
+  }
+
   function runningHeader(target: PDFPage) {
     const couple = `${data.partner1}${data.partner2 ? ` & ${data.partner2}` : ""}`;
-    const clean = safeText(bodyShape, couple);
-    target.drawText(clean, { x: LEFT, y: PAGE_H - 34, size: 9, font: bodyFont, color: muted });
+    if (arabicCanvas && ARABIC.test(couple)) { rasterLine(target, couple, LEFT, PAGE_H - 34, RIGHT - LEFT, bodyFont, 9, muted, "left"); }
+    else target.drawText(safeText(bodyShape, couple), { x: LEFT, y: PAGE_H - 34, size: 9, font: bodyFont, color: muted });
     target.drawLine({ start: { x: LEFT, y: PAGE_H - 44 }, end: { x: RIGHT, y: PAGE_H - 44 }, color: rule, thickness: 0.7 });
   }
   function addPage() {
@@ -149,24 +191,26 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
   function fontFor(text: string, preferred: PDFFont = bodyFont): { pdf: PDFFont; shape: FontShape } {
     const shape = preferred === titleFont ? titleShape : preferred === scriptFont ? scriptShape : bodyShape;
     if (fontHasText(shape, text)) return { pdf: preferred, shape };
-    if (ARABIC.test(text) && arabicFont && arabicShape && fontHasText(arabicShape, visualArabic(text))) return { pdf: arabicFont, shape: arabicShape };
     if (wideFont && wideShape) return { pdf: wideFont, shape: wideShape };
-    if (arabicFont && arabicShape) return { pdf: arabicFont, shape: arabicShape };
     if (fontHasText(bodyShape, text)) return { pdf: bodyFont, shape: bodyShape };
     if (fontHasText(titleShape, text)) return { pdf: titleFont, shape: titleShape };
     return { pdf: preferred, shape };
   }
+  /** Une ligne : texte PDF normal, ou image dessinée par le navigateur si elle contient de l'arabe. */
+  function drawLine(target: PDFPage, line: string, x: number, baseline: number, maxWidth: number, preferred: PDFFont, size: number, textColor: Color, align: "left" | "center" | "right") {
+    if (!line.trim()) return;
+    if (arabicCanvas && ARABIC.test(line)) { rasterLine(target, line, x, baseline, maxWidth, preferred, size, textColor, align); return; }
+    const selected = fontFor(line, preferred);
+    const text = safeText(selected.shape, line);
+    const width = selected.pdf.widthOfTextAtSize(text, size);
+    const left = align === "center" ? x + (maxWidth - width) / 2 : align === "right" ? x + maxWidth - width : x;
+    target.drawText(text, { x: left, y: baseline, size, font: selected.pdf, color: textColor });
+  }
   function drawTextLines(target: PDFPage, text: string, x: number, top: number, maxWidth: number, preferred: PDFFont, size: number, textColor: Color, leading: number, align: "left" | "center" | "right" = "left", maxLines = Number.POSITIVE_INFINITY) {
-    const selected = fontFor(text, preferred);
-    const lines = wrapped(text, selected.pdf, size, maxWidth).slice(0, maxLines);
+    const lines = wrapped(text, widthOf(preferred, size), maxWidth).slice(0, maxLines);
     let currentTop = top;
     for (const logicalLine of lines) {
-      const visual = visualArabic(logicalLine);
-      const safe = safeText(selected.shape, visual);
-      const width = selected.pdf.widthOfTextAtSize(safe, size);
-      const rtl = ARABIC.test(logicalLine);
-      const drawX = align === "center" ? x + (maxWidth - width) / 2 : (align === "right" || rtl) ? x + maxWidth - width : x;
-      target.drawText(safe, { x: drawX, y: currentTop - size, size, font: selected.pdf, color: textColor, maxWidth });
+      drawLine(target, logicalLine, x, currentTop - size, maxWidth, preferred, size, textColor, align);
       currentTop -= leading;
     }
     return { height: lines.length * leading, lines: lines.length };
@@ -244,8 +288,8 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
     drawColumnHeader(presentColumns);
     for (const reply of present) {
       const note = reply.message?.trim() ? truncate(reply.message.trim(), 150) : "—";
-      const nameLines = wrapped(reply.name, bodyFont, 9, 180).length;
-      const messageLines = wrapped(note, bodyFont, 8.5, 218).length;
+      const nameLines = Math.min(3, wrapped(reply.name, widthOf(bodyFont, 9), 180).length);
+      const messageLines = Math.min(3, wrapped(note, widthOf(bodyFont, 8.5), 218).length);
       const rowHeight = Math.max(29, nameLines * 12 + 10, messageLines * 11 + 10);
       if (y - rowHeight < BOTTOM) { addPage(); drawSection(t.attending); drawColumnHeader(presentColumns); }
       page.drawLine({ start: { x: LEFT, y: y - rowHeight + 1 }, end: { x: RIGHT, y: y - rowHeight + 1 }, color: rule, thickness: 0.45 });
@@ -263,7 +307,7 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
     drawColumnHeader(absentColumns);
     for (const reply of absent) {
       const note = reply.message?.trim() || "—";
-      const rowHeight = Math.max(29, wrapped(reply.name, bodyFont, 9, 210).length * 12 + 10, wrapped(note, bodyFont, 8.5, 270).length * 11 + 10);
+      const rowHeight = Math.max(29, Math.min(3, wrapped(reply.name, widthOf(bodyFont, 9), 210).length) * 12 + 10, Math.min(3, wrapped(note, widthOf(bodyFont, 8.5), 270).length) * 11 + 10);
       if (y - rowHeight < BOTTOM) { addPage(); drawSection(t.absent); drawColumnHeader(absentColumns); }
       page.drawLine({ start: { x: LEFT, y: y - rowHeight + 1 }, end: { x: RIGHT, y: y - rowHeight + 1 }, color: rule, thickness: 0.45 });
       drawTableRowText(reply.name, LEFT + 8, 210, y - 5, 9, 3);
@@ -280,25 +324,19 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
   for (const reply of messages) {
     const label = `${t.from} ${reply.name}`;
     if (y - 34 < BOTTOM) { addPage(); drawSection(t.messages); }
-    page.drawRectangle({ x: LEFT, y: y - 1, width: 3, height: 25, color: accent });
-    drawTextLines(page, label, LEFT + 11, y - 2, RIGHT - LEFT - 20, bodyFont, 9, accent, 12, "left", 2);
-    y -= 29;
-    const arabicLine = ARABIC.test(reply.message || "");
-    const preferredFont = arabicLine && arabicFont ? arabicFont : bodyFont;
-    const preferredShape = arabicLine && arabicShape ? arabicShape : bodyShape;
-    const safeMessage = safeText(preferredShape, reply.message || "");
-    const contentLines = wrapped(safeMessage, preferredFont, 9, RIGHT - LEFT - 22);
+    // Filet d'accent à gauche, ligne par ligne (reste continu même si le message passe à la page suivante).
+    const bar = (height: number) => page.drawRectangle({ x: LEFT, y: y - height, width: 2.5, height, color: accent });
+    bar(16);
+    drawLine(page, label, LEFT + 11, y - 11, RIGHT - LEFT - 22, bodyFont, 9, accent, "left");
+    y -= 16;
+    const contentLines = wrapped(reply.message || "", widthOf(bodyFont, 9), RIGHT - LEFT - 22);
     for (const logicalLine of contentLines) {
       if (y - 14 < BOTTOM) { addPage(); drawSection(t.messages); }
-      const visual = visualArabic(logicalLine);
-      const selected = fontFor(visual, preferredFont);
-      const safe = safeText(selected.shape, visual);
-      const width = selected.pdf.widthOfTextAtSize(safe, 9);
-      const x = ARABIC.test(logicalLine) ? RIGHT - width - 11 : LEFT + 11;
-      page.drawText(safe, { x, y: y - 10, size: 9, font: selected.pdf, color: ink, maxWidth: RIGHT - LEFT - 22 });
+      bar(14);
+      drawLine(page, logicalLine, LEFT + 11, y - 10, RIGHT - LEFT - 22, bodyFont, 9, ink, "left");
       y -= 14;
     }
-    y -= 10;
+    y -= 14;
   }
 
   const generated = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Paris" }).format(new Date(generatedAt));
@@ -311,5 +349,9 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
     const pageNo = safeText(bodyShape, t.page(index + 1, pages.length));
     target.drawText(pageNo, { x: RIGHT - bodyFont.widthOfTextAtSize(pageNo, 7.2), y: 29, size: 7.2, font: bodyFont, color: muted });
   });
+  for (const line of rasterLines) {
+    const image = await document.embedPng(line.png);
+    line.target.drawImage(image, { x: line.x, y: line.y, width: line.width, height: line.height });
+  }
   return document.save({ useObjectStreams: true });
 }
