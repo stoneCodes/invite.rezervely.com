@@ -70,7 +70,7 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 - La valeur et la logique de `PAYMENTS_ENABLED` ne sont pas modifiées ; `/admin/prix` montre seulement son état actuel. L'interrupteur d'activation reste en attente de la consigne de Glad.
 - L'activation du paiement reste désactivée et inchangée (`PAYMENTS_ENABLED`).
 - Étape 4 : `/admin/statistiques` lit Cloudflare Web Analytics via GraphQL côté serveur, avec cache de 5 min, périodes 7/30 jours, visites/pages vues, pages, référents, pays, appareils, navigateurs et entonnoir avec les agrégats Supabase. Le beacon Cloudflare est chargé sur les pages publiques seulement, jamais sur `/admin` ni les API.
-- La navigation commune de l'admin donne accès au tableau de bord, aux statistiques, aux invitations et au prix depuis toutes les pages protégées.
+- La navigation commune de l'admin est une barre latérale à gauche sur grand écran et une rangée horizontale sur mobile ; elle donne accès au tableau de bord, aux statistiques, aux invitations et au prix, avec la page active mise en évidence.
 - Pour activer les statistiques, configurer `CF_ACCOUNT_ID` et `CF_WEB_ANALYTICS_SITE_TAG` comme variables non secrètes et `CF_API_TOKEN` comme secret (permission Account Analytics: Read) dans Cloudflare ; les noms sont aussi documentés dans `.env.example`. Sans ces variables, l'admin affiche les instructions de configuration.
 - La politique de confidentialité FR/EN mentionne Cloudflare Web Analytics dans « Cookies et stockage local ».
 

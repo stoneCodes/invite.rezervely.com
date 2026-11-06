@@ -12,6 +12,8 @@ const adminFr = {
   emailCodeIntro: "Votre code de connexion à l'administration est :",
   emailExpiry: "Il expire dans 10 minutes et ne peut être utilisé qu'une fois.",
   dashboard: "Tableau de bord",
+  navigation: "Navigation principale",
+  adminSection: "Administration",
   logout: "Se déconnecter",
   period: "Période",
   apply: "Appliquer",
