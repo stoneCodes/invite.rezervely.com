@@ -1,4 +1,5 @@
 "use client";
+import LegalLinks from "@/components/LegalLinks";
 import "./home.css";
 import Link from "next/link";
 import Logo from "@/components/Logo";
@@ -211,7 +212,7 @@ export default function HomeClient() {
         <h2>{h.finalTitle} <span className="gold-text">{h.finalGold}</span></h2>
         <a className="btn-s" href="/creer" onClick={celebrate("/creer")}>{h.ctaCreate}</a>
       </section>
-      <footer>{h.footer} · <a href="/espace">{t.find.title}</a></footer>
+      <footer>{h.footer} · <a href="/espace">{t.find.title}</a><LegalLinks className="gl-legal" /></footer>
 
       {demo && shown && (
         <div className="ed-full" role="dialog" aria-modal="true" aria-label={t.common.demoOf(shown.name)}>

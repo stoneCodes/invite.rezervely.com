@@ -3,9 +3,11 @@ import { db } from "@/lib/supabase";
 import { recapEmail, sendEmail, type RecapLine } from "@/lib/email";
 import type { InvitationData } from "@/lib/types";
 import type { Lang } from "@/lib/i18n";
+import { purgeExpired } from "@/lib/purge";
 
 /* Récapitulatif quotidien des nouvelles réponses, un e-mail par couple (pas un par invité : quotas gratuits).
-   Appelé une fois par jour par Vercel (vercel.json > crons), avec l'en-tête Authorization: Bearer <CRON_SECRET>. */
+   Appelé une fois par jour par la tâche planifiée Cloudflare (wrangler.jsonc > triggers, worker.ts), avec l'en-tête Authorization: Bearer <CRON_SECRET>.
+   Fait aussi le ménage : suppression des invitations expirées (lib/purge.ts). */
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -40,5 +42,6 @@ export async function GET(req: Request) {
     await db().from("rsvps").update({ notified_at: new Date().toISOString() }).in("id", rows.map((r) => r.id));
     sent++;
   }
-  return NextResponse.json({ couples: byInvite.size, sent, failed });
+  const purge = await purgeExpired();
+  return NextResponse.json({ couples: byInvite.size, sent, failed, purge });
 }

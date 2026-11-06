@@ -1,4 +1,5 @@
 "use client";
+import LegalLinks from "@/components/LegalLinks";
 import "./editor.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -50,6 +51,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
   const t = useT();
   const e_ = t.editor;
   const pay = t.pay;
+  const lg = t.legal;
   const siteLang = useLang();
   const [template, setTemplate] = useState<TemplateId>((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId);
   const [data, setData] = useState<InvitationData>(() => sampleData(siteLang));
@@ -69,6 +71,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
   const publishLabel = status === "published" ? e_.update : needPay ? t.pay.publish(payPrice!) : e_.publish;
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [agree, setAgree] = useState(false); // CGV + renonciation au droit de rétractation (avant paiement)
   const [tab, setTab] = useState<"form" | "preview">("form");
   const frame = useRef<HTMLIFrameElement>(null);
   const ready = useRef(false);
@@ -150,10 +153,15 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
   }
 
   async function publish() {
+    if (needPay && !agree) {
+      setMsg({ kind: "err", text: lg.acceptRequired });
+      document.getElementById("cgv-ok")?.focus();
+      return;
+    }
     const t = await save();
     if (!t) return;
     setBusy(true);
-    const res = await fetch(`/api/invitations/${t}/publish`, { method: "POST" });
+    const res = await fetch(`/api/invitations/${t}/publish`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ acceptTerms: agree }) });
     const j = await res.json().catch(() => ({}));
     setBusy(false);
     if (!res.ok) { setMsg({ kind: "err", text: j.error ?? e_.msgPublishFail }); return; }
@@ -351,7 +359,10 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
               {token && <a className="btn-s ghost" href={`/espace/${token}`}>{e_.mySpace}</a>}
             </div>
             {needPay && <p className="ed-help">{t.pay.note(payPrice!)}</p>}
+            {needPay && <label className="ed-check ed-cgv"><input id="cgv-ok" type="checkbox" checked={agree} onChange={(e) => { setAgree(e.target.checked); setMsg(null); }} /> <span>{lg.accept} <a href="/cgv" target="_blank" rel="noopener">{lg.cgv}</a></span></label>}
+            {!needPay && status !== "published" && <p className="ed-help">{lg.publishNote}</p>}
             {status === "published" && slug && <p className="ed-help">{e_.publicLink} <a href={invitePath(slug)} target="_blank" rel="noopener">{invitePath(slug)}</a></p>}
+            <LegalLinks className="ed-legal" />
           </div>
         </form>
 

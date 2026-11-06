@@ -7,12 +7,15 @@ import { updateOnPublish } from "@/lib/publish";
 import { invitePath } from "@/lib/slug";
 
 /** Publie l'invitation. Paiement activé et pas encore payée : renvoie l'adresse de paiement Stripe ; la publication se fait au retour du paiement. */
-export async function POST(_req: Request, { params }: { params: Promise<{ token: string }> }) {
+export async function POST(req: Request, { params }: { params: Promise<{ token: string }> }) {
   const t = await getT();
   const inv = await getByToken((await params).token);
   if (!inv) return NextResponse.json({ error: t.api.notFound }, { status: 404 });
   if (!inv.owner_email) return NextResponse.json({ error: t.api.emailRequired }, { status: 400 });
   if (needsPayment(inv)) {
+    // CGV acceptées + renonciation au droit de rétractation (art. L221-28 13°) : obligatoires avant le paiement.
+    const body = await req.json().catch(() => ({}));
+    if (body?.acceptTerms !== true) return NextResponse.json({ error: t.legal.acceptRequired }, { status: 400 });
     try {
       return NextResponse.json({ checkoutUrl: await createCheckout(inv, await getLang()) });
     } catch (e) {

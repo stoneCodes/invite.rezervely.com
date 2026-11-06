@@ -216,7 +216,7 @@ export const fr = {
   },
   pay: {
     publish: (price: string) => `Publier · ${price}`,
-    note: (price: string) => `${price} TTC, paiement unique et sécurisé par Stripe. Invités et réponses illimités, modifications gratuites ensuite.`,
+    note: (price: string) => `${price}, paiement unique et sécurisé par Stripe. Invités et réponses illimités, modifications gratuites ensuite.`,
     redirect: "Redirection vers le paiement sécurisé…",
     canceled: "Paiement annulé : votre invitation est bien enregistrée, vous pourrez la publier quand vous voudrez.",
     unavailable: "Le paiement est indisponible pour le moment. Réessayez dans un instant.",
@@ -224,6 +224,15 @@ export const fr = {
     pending: "Paiement en cours de confirmation. Actualisez cette page dans un instant.",
     product: (names: string) => (names ? `Invitation animée · ${names}` : "Invitation animée joyeuxevent"),
     productDesc: "Publication de l'invitation, invités et réponses illimités, modifications gratuites.",
+  },
+  legal: {
+    mentions: "Mentions légales",
+    cgv: "CGV",
+    privacy: "Confidentialité",
+    nav: "Informations légales",
+    accept: "J'accepte les CGV et je demande l'accès immédiat à mon invitation : je renonce ainsi à mon droit de rétractation.",
+    acceptRequired: "Cochez la case d'acceptation des CGV pour continuer vers le paiement.",
+    publishNote: "En publiant, vous acceptez les CGV et la politique de confidentialité.",
   },
 };
 

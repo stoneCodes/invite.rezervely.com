@@ -64,3 +64,6 @@
 /* E-mail obligatoire : champ en erreur, lien « déjà une invitation ? » */
 .ed input.ed-invalid{border-color:var(--err);outline:2px solid rgba(241,154,154,.3)}
 .ed-back{margin:-.4em 0 1.2em}
+.ed-cgv{align-items:flex-start!important;font-size:.85rem;line-height:1.45}
+.ed-cgv input{margin-top:3px;flex:none}
+.ed-legal{justify-content:flex-start;margin-top:6px}

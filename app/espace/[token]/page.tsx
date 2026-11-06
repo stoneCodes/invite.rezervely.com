@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import LegalLinks from "@/components/LegalLinks";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { notFound } from "next/navigation";
@@ -93,6 +94,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
             </div>
           )}
         </section>
+        <LegalLinks />
       </div>
     </main>
   );

@@ -217,7 +217,7 @@ export const en: SiteDict = {
   },
   pay: {
     publish: (price) => `Publish · ${price}`,
-    note: (price) => `${price} incl. VAT, one-time secure payment with Stripe. Unlimited guests and replies, free edits afterwards.`,
+    note: (price) => `${price}, one-time secure payment with Stripe. Unlimited guests and replies, free edits afterwards.`,
     redirect: "Redirecting to secure payment…",
     canceled: "Payment canceled: your invitation is saved, you can publish it whenever you like.",
     unavailable: "Payment is unavailable right now. Please try again in a moment.",
@@ -225,5 +225,14 @@ export const en: SiteDict = {
     pending: "Payment is being confirmed. Refresh this page in a moment.",
     product: (names) => (names ? `Animated invitation · ${names}` : "joyeuxevent animated invitation"),
     productDesc: "Invitation publishing, unlimited guests and replies, free edits.",
+  },
+  legal: {
+    mentions: "Legal notice",
+    cgv: "Terms",
+    privacy: "Privacy",
+    nav: "Legal information",
+    accept: "I accept the Terms of sale and ask for immediate access to my invitation, thereby waiving my right of withdrawal.",
+    acceptRequired: "Tick the box to accept the Terms of sale before going to payment.",
+    publishNote: "By publishing, you accept the Terms of sale and the privacy policy.",
   },
 };

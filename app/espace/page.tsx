@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import LegalLinks from "@/components/LegalLinks";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { LangSwitch } from "@/components/I18n";
@@ -24,6 +25,7 @@ export default async function Retrouver() {
           <p className="muted" style={{ margin: 0 }}>{t.find.lead}</p>
         </header>
         <FindForm />
+        <LegalLinks />
       </div>
     </main>
   );

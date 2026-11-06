@@ -89,3 +89,4 @@
 @media (max-width:480px){.gl-space span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.gl-space{padding:8px}}
 .gl-back{margin:18px 0 0;font-size:.88rem;color:var(--muted)}
 .gl-back a{color:var(--accent)}
+.gl-legal{margin-top:10px}

@@ -55,6 +55,8 @@ export async function createCheckout(inv: InvitationRow, lang: Lang): Promise<st
     client_reference_id: inv.id,
     "metadata[token]": inv.edit_token,
     "metadata[invitation_id]": inv.id,
+    // Preuve de l'acceptation des CGV et de la renonciation au droit de rétractation (case cochée dans l'éditeur).
+    "metadata[terms_accepted_at]": new Date().toISOString(),
     "payment_intent_data[description]": p.product(names),
     locale: lang,
     success_url: `${base}/api/stripe/retour?session_id={CHECKOUT_SESSION_ID}`,
