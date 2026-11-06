@@ -10,10 +10,11 @@ import { RETENTION } from "./legal";
 const daysAgo = (n: number) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 16);
 
 export async function purgeExpired(): Promise<{ deleted: number; errors: number }> {
+  const now = new Date().toISOString();
   const [past, drafts] = await Promise.all([
     // dateISO >= "2000" écarte les invitations sans date (chaîne vide), qui ne doivent pas être supprimées par ce critère.
-    db().from("invitations").select("id").gte("data->>dateISO", "2000").lt("data->>dateISO", daysAgo(RETENTION.afterEventDays)).limit(200),
-    db().from("invitations").select("id").eq("status", "draft").lt("updated_at", daysAgo(RETENTION.draftDays)).limit(200),
+    db().from("invitations").select("id").gte("data->>dateISO", "2000").lt("data->>dateISO", daysAgo(RETENTION.afterEventDays)).or(`keep_until.is.null,keep_until.lte.${now}`).limit(200),
+    db().from("invitations").select("id").eq("status", "draft").lt("updated_at", daysAgo(RETENTION.draftDays)).or(`keep_until.is.null,keep_until.lte.${now}`).limit(200),
   ]);
   if (past.error || drafts.error) {
     console.error("purge.select", past.error?.message ?? drafts.error?.message);
