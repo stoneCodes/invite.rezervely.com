@@ -71,8 +71,8 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
    - ✅ (fait, migration 003) `boule-neige` « Le monde miniature » : boule à neige à secouer (capteur de mouvement, autorisation demandée au toucher sur iPhone, repli au doigt), puis plongée dans des maquettes miniatures ; la date est de la buée à essuyer sur le verre.
    - ✅ (fait, migration 004) `origami` « Origami » : grue en papier qui se déplie en 3D, chaque section est un pliage dessiné en code, la date est une enveloppe origami à déplier, la réponse part en avion en papier.
    Images : Glad les génère avec ChatGPT (photographiques, naturelles, sans texte ni visage), puis conversion WebP dans `public/img`.
-8. **Espace administrateur** (`/admin`, connexion par code reçu par e-mail, tableau de bord, statistiques de visites, invitations, prix et codes promo, modèles, RGPD) : cahier des charges dans `docs/admin.md`, **développement confié à Codex** (consignes dans `AGENTS.md`). Décidé avec Glad le 6 nov. 2026.
 7. Cloudflare : passer en Workers Paid (5 $/mois) avant ou dès les premiers paiements. Prix validé : 9,90 € TTC, payé à la publication (invités/réponses illimités, modifications illimitées, en ligne jusqu'à 3 mois après la date).
+8. **Espace administrateur** (`/admin`, connexion par code reçu par e-mail, tableau de bord, statistiques de visites, invitations, prix et codes promo, modèles, RGPD) : cahier des charges dans `docs/admin.md`, **développement confié à Codex** (consignes dans `AGENTS.md`). Décidé avec Glad le 6 nov. 2026.
 
 ## Commandes
 - `npm run dev` → http://localhost:3000 (démo sans base : `/demo/jardin-nuit`)
