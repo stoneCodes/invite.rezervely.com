@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   const d = inv.data;
   const when = dateParts(d.dateISO);
   return {
-    title: `${d.partner1} & ${d.partner2} vous invitent`,
+    title: { absolute: `${d.partner1} & ${d.partner2} vous invitent` },
     description: when ? `Mariage le ${when.day} ${when.month} ${when.year}. Ouvrez votre invitation.` : "Ouvrez votre invitation.",
     robots: { index: false, follow: false },
   };

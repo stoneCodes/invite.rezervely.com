@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Invitations de mariage animées",
+  title: { default: "joyeuxevent · Invitations de mariage animées", template: "%s · joyeuxevent" },
+  applicationName: "joyeuxevent",
+  appleWebApp: { title: "joyeuxevent" },
   description: "Créez une invitation de mariage qui s'ouvre de façon spectaculaire, et envoyez-la par un simple lien.",
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };

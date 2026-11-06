@@ -36,7 +36,7 @@ body:has(.site){background:#0D0911}
 /* Démo : laisser la place au bouton « Accueil » au-dessus des titres d'ouverture */
 body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 
-/* Lien « ← Rezervely » vers l'accueil (éditeur, espace des mariés) */
+/* Lien « ← joyeuxevent » (logo) vers l'accueil (éditeur, espace des mariés) */
 .ed-home{display:inline-flex;align-items:center;gap:8px;font:400 1.4rem/1 var(--f-display);letter-spacing:.08em;color:var(--muted);text-decoration:none;padding:6px 0}
 .ed-home:hover{color:var(--ink)}
 

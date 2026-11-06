@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 import { notFound } from "next/navigation";
 import { db, getByToken, siteUrl } from "@/lib/supabase";
 import CopyLink from "./CopyLink";
@@ -22,7 +23,7 @@ export default async function Espace({ params }: { params: Promise<{ token: stri
   return (
     <main className="site">
       <div className="wrap-site" style={{ paddingBlock: "40px 64px", maxWidth: 860, display: "grid", gap: 22 }}>
-        <Link href="/" className="ed-home" style={{ justifySelf: "start" }} aria-label="Revenir à l'accueil"><span aria-hidden="true">←</span> <span className="gold-text">Rezervely</span></Link>
+        <Link href="/" className="ed-home" style={{ justifySelf: "start" }} aria-label="Revenir à l'accueil"><span aria-hidden="true">←</span> <Logo height={22} /></Link>
         <header>
           <p className="muted" style={{ letterSpacing: ".3em", textTransform: "uppercase", fontSize: ".72rem", margin: 0 }}>Votre espace</p>
           <h1 style={{ fontSize: "2.6rem", margin: ".2em 0" }}>{inv.data.partner1} & {inv.data.partner2}</h1>

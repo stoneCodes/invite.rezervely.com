@@ -1,6 +1,7 @@
 "use client";
 import "./home.css";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { TEMPLATES, type TemplateId } from "@/lib/types";
@@ -126,7 +127,7 @@ export default function HomeClient() {
       <canvas id="gl-fw" className="gl-canvas gl-fw" aria-hidden />
 
       <nav id="gl-nav" className="gl-nav">
-        <Link href="/" className="gl-logo gold-text">Rezervely</Link>
+        <Link href="/" className="gl-logo" aria-label="joyeuxevent, accueil"><Logo height={26} /></Link>
         <Link className="btn-s ghost" href="/creer">Créer</Link>
       </nav>
 
@@ -207,7 +208,7 @@ export default function HomeClient() {
         <h2>Que la fête <span className="gold-text">commence</span></h2>
         <a className="btn-s" href="/creer" onClick={celebrate("/creer")}>Créer mon invitation</a>
       </section>
-      <footer>Rezervely · Invitations de mariage animées</footer>
+      <footer>joyeuxevent · Invitations de mariage animées</footer>
 
       {demo && shown && (
         <div className="ed-full" role="dialog" aria-modal="true" aria-label={`Démo du modèle ${shown.name}`}>
