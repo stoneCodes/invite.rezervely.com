@@ -3,6 +3,7 @@ import "./globals.css";
 import Splash from "@/components/Splash";
 import { I18nProvider } from "@/components/I18n";
 import { getLang, getT } from "@/lib/i18n/server";
+import WebAnalytics from "@/components/WebAnalytics";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
@@ -30,6 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <I18nProvider lang={lang}>
           <Splash />
+          <WebAnalytics siteTag={process.env.CF_WEB_ANALYTICS_SITE_TAG || ""} />
           {children}
         </I18nProvider>
       </body>

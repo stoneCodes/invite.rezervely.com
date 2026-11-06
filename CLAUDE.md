@@ -69,6 +69,9 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 - Étape 3 (partie prix et codes promo) : `settings.price_cents` pilote l'affichage du prix et le montant Checkout ; lecture cachée 60 s, repli sur 990 centimes. Codes Stripe promotionnels listés/créés depuis `/admin/prix`, réduction unique avec pourcentage ou montant, échéance et limite d'utilisations. Checkout autorise la saisie des codes et `amount_total` reste la valeur enregistrée.
 - La valeur et la logique de `PAYMENTS_ENABLED` ne sont pas modifiées ; `/admin/prix` montre seulement son état actuel. L'interrupteur d'activation reste en attente de la consigne de Glad.
 - L'activation du paiement reste désactivée et inchangée (`PAYMENTS_ENABLED`).
+- Étape 4 : `/admin/statistiques` lit Cloudflare Web Analytics via GraphQL côté serveur, avec cache de 5 min, périodes 7/30 jours, visites/pages vues, pages, référents, pays, appareils, navigateurs et entonnoir avec les agrégats Supabase. Le beacon Cloudflare est chargé sur les pages publiques seulement, jamais sur `/admin` ni les API.
+- Pour activer les statistiques, configurer `CF_ACCOUNT_ID` et `CF_WEB_ANALYTICS_SITE_TAG` comme variables non secrètes et `CF_API_TOKEN` comme secret (permission Account Analytics: Read) dans Cloudflare ; les noms sont aussi documentés dans `.env.example`. Sans ces variables, l'admin affiche les instructions de configuration.
+- La politique de confidentialité FR/EN mentionne Cloudflare Web Analytics dans « Cookies et stockage local ».
 
 ## À faire (par ordre)
 1. 🟡 (code fait, migration 006, désactivé) Stripe Checkout, 9,90 € TTC payé à la 1re publication (`lib/payment.ts`, API REST sans SDK). `publish` renvoie `checkoutUrl` ; publication au retour (`/api/stripe/retour`, session revérifiée chez Stripe) ou par webhook signé (`/api/stripe/webhook`, `checkout.session.completed`). Déjà publiée ou déjà payée = gratuit. Reste : migration 006, secrets Cloudflare `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`, webhook dans Stripe, puis `PAYMENTS_ENABLED` à "true" dans `wrangler.jsonc`. Test local : carte 4242 4242 4242 4242 avec une clé sk_test dans .env.local.
@@ -83,7 +86,7 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
    - ✅ (fait, migration 004) `origami` « Origami » : grue en papier qui se déplie en 3D, chaque section est un pliage dessiné en code, la date est une enveloppe origami à déplier, la réponse part en avion en papier.
    Images : Glad les génère avec ChatGPT (photographiques, naturelles, sans texte ni visage), puis conversion WebP dans `public/img`.
 7. Cloudflare : passer en Workers Paid (5 $/mois) avant ou dès les premiers paiements. Prix validé : 9,90 € TTC, payé à la publication (invités/réponses illimités, modifications illimitées, en ligne jusqu'à 3 mois après la date).
-8. **Espace administrateur** (`/admin`, connexion par code reçu par e-mail, tableau de bord, statistiques de visites, invitations, prix et codes promo, modèles, RGPD) : cahier des charges dans `docs/admin.md`, **développement confié à Codex** (consignes dans `AGENTS.md`). Décidé avec Glad le 6 nov. 2026.
+8. **Espace administrateur** (`/admin`, connexion par code reçu par e-mail, tableau de bord, statistiques de visites, invitations, prix et codes promo, modèles, RGPD) : étapes 1 à 4 faites (commits `10b5e8e`, `6b47c94`, `15e7a2c`, puis étape 4 en cours de validation), étape 5 restante. Cahier des charges dans `docs/admin.md`, consignes dans `AGENTS.md`. Étape 4 : les variables Cloudflare Analytics décrites ci-dessus restent à configurer pour afficher les statistiques réelles.
 
 ## Commandes
 - `npm run dev` → http://localhost:3000 (démo sans base : `/demo/jardin-nuit`)

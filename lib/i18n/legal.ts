@@ -113,7 +113,8 @@ const fr: LegalDict = {
         "Certains de ces prestataires peuvent traiter des données hors de l'Union européenne ; ces transferts sont encadrés par les clauses contractuelles types de la Commission européenne ou le cadre de protection des données UE–États-Unis.",
       ] },
       { h: "Cookies et stockage local", p: [
-        "Aucun cookie publicitaire ni de mesure d'audience. Nous utilisons seulement :",
+        "Nous mesurons la fréquentation et les performances du site avec Cloudflare Web Analytics : pages vues, visites, pages consultées, provenance, pays, type d'appareil et navigateur. Selon Cloudflare, cet outil n'utilise ni cookie ni stockage local et ne collecte ni n'utilise de données personnelles.",
+        "Aucun cookie publicitaire ou de mesure d'audience n'est déposé. Nous utilisons seulement :",
         "• le cookie « lang » (langue choisie, 1 an) ;",
         "• le stockage local du navigateur, pour proposer de reprendre votre dernière invitation et ne montrer l'animation d'accueil qu'une fois.",
         "Ces éléments sont nécessaires au fonctionnement du site et ne demandent pas de consentement. La page de paiement Stripe dépose ses propres cookies, nécessaires à la sécurité du paiement.",
@@ -221,7 +222,8 @@ const en: LegalDict = {
         "Some of these providers may process data outside the European Union; such transfers are covered by the European Commission's standard contractual clauses or the EU–US Data Privacy Framework.",
       ] },
       { h: "Cookies and local storage", p: [
-        "No advertising or analytics cookies. We only use:",
+        "We measure site traffic and performance with Cloudflare Web Analytics: page views, visits, pages visited, referrals, country, device type and browser. According to Cloudflare, this tool uses neither cookies nor local storage and does not collect or use personal data.",
+        "No advertising or analytics cookies are set. We only use:",
         "• the “lang” cookie (chosen language, 1 year);",
         "• your browser's local storage, to offer to resume your last invitation and to show the welcome animation only once.",
         "These are needed for the site to work and do not require consent. Stripe's payment page sets its own cookies, needed for payment security.",
