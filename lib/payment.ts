@@ -6,21 +6,30 @@ import { db, siteUrl } from "./supabase";
 import { updateOnPublish } from "./publish";
 import { publishedEmail, sendEmail } from "./email";
 import { siteDict } from "./i18n/site";
+import { getAdminSetting } from "./admin/settings";
 
 /* Paiement Stripe Checkout, appelé directement par l'API REST (pas de SDK : le site reste léger sur Cloudflare).
    Prix unique par invitation, payé à la première publication ; modifications et republications gratuites ensuite. */
 
 export const PRICE_CENTS = 990;
 export const CURRENCY = "eur";
+const MIN_PRICE_CENTS = 50;
+const MAX_PRICE_CENTS = 1_000_000;
 
 const clean = (v?: string) => v?.trim().replace(/^["']|["']$/g, "").trim() || "";
 export const paymentsOn = () => clean(process.env.PAYMENTS_ENABLED) === "true";
 
+/** Prix en centimes, configurable depuis l'administration ; le défaut reste 9,90 €. */
+export async function getPriceCents(): Promise<number> {
+  const saved = await getAdminSetting<unknown>("price_cents");
+  return typeof saved === "number" && Number.isInteger(saved) && saved >= MIN_PRICE_CENTS && saved <= MAX_PRICE_CENTS ? saved : PRICE_CENTS;
+}
+
 /** Le paiement est-il exigé avant de publier cette invitation ? (déjà publiée avant le paiement = gratuite) */
 export const needsPayment = (inv: Pick<InvitationRow, "paid_at" | "published_at">) => paymentsOn() && !inv.paid_at && !inv.published_at;
 
-export function formatPrice(lang: Lang) {
-  return new Intl.NumberFormat(lang === "en" ? "en-IE" : "fr-FR", { style: "currency", currency: CURRENCY }).format(PRICE_CENTS / 100);
+export function formatPrice(lang: Lang, cents = PRICE_CENTS) {
+  return new Intl.NumberFormat(lang === "en" ? "en-IE" : "fr-FR", { style: "currency", currency: CURRENCY }).format(cents / 100);
 }
 
 /** Appel de l'API Stripe (formulaire encodé, comme l'attend Stripe). */
@@ -39,16 +48,51 @@ async function stripe<T>(path: string, params?: Record<string, string>, method =
 
 type Session = { id: string; url: string | null; payment_status: string; amount_total: number | null; metadata: Record<string, string> | null };
 
+export type PromotionCode = {
+  id: string; code: string; active: boolean; times_redeemed: number; max_redemptions: number | null; expires_at: number | null;
+  coupon: { id: string; name: string | null; percent_off: number | null; amount_off: number | null; currency: string | null; valid: boolean; times_redeemed: number; max_redemptions: number | null; redeem_by: number | null };
+};
+type StripeList<T> = { data: T[]; has_more: boolean };
+
+export const stripeKeyStatus = () => {
+  const key = clean(process.env.STRIPE_SECRET_KEY);
+  return { configured: !!key, mode: key.startsWith("sk_test_") ? "test" : key.startsWith("sk_live_") ? "live" : key ? "unknown" : "missing" } as const;
+};
+
+export async function listPromotionCodes(): Promise<PromotionCode[]> {
+  const page = await stripe<StripeList<PromotionCode>>("promotion_codes?limit=100&expand[]=data.coupon");
+  return page.data;
+}
+
+export async function createPromotionCode(input: {
+  code: string; kind: "percent" | "amount"; value: number; expiresAt?: number; maxRedemptions?: number;
+}): Promise<PromotionCode> {
+  const coupon = await stripe<{ id: string }>("coupons", {
+    duration: "once",
+    name: input.code,
+    ...(input.kind === "percent" ? { percent_off: String(input.value) } : { amount_off: String(input.value), currency: CURRENCY }),
+    ...(input.expiresAt ? { redeem_by: String(input.expiresAt) } : {}),
+    ...(input.maxRedemptions ? { max_redemptions: String(input.maxRedemptions) } : {}),
+  });
+  return stripe<PromotionCode>("promotion_codes", {
+    coupon: coupon.id,
+    code: input.code,
+    ...(input.expiresAt ? { expires_at: String(input.expiresAt) } : {}),
+    ...(input.maxRedemptions ? { max_redemptions: String(input.maxRedemptions) } : {}),
+  });
+}
+
 /** Crée la page de paiement Stripe pour cette invitation et renvoie son adresse. */
 export async function createCheckout(inv: InvitationRow, lang: Lang): Promise<string> {
   const p = siteDict(lang).pay;
   const base = siteUrl();
+  const priceCents = await getPriceCents();
   const names = [inv.data.partner1, inv.data.partner2].filter(Boolean).join(" & ");
   const s = await stripe<Session>("checkout/sessions", {
     mode: "payment",
     "line_items[0][quantity]": "1",
     "line_items[0][price_data][currency]": CURRENCY,
-    "line_items[0][price_data][unit_amount]": String(PRICE_CENTS),
+    "line_items[0][price_data][unit_amount]": String(priceCents),
     "line_items[0][price_data][product_data][name]": p.product(names),
     "line_items[0][price_data][product_data][description]": p.productDesc,
     ...(inv.owner_email ? { customer_email: inv.owner_email } : {}),
@@ -59,6 +103,7 @@ export async function createCheckout(inv: InvitationRow, lang: Lang): Promise<st
     "metadata[terms_accepted_at]": new Date().toISOString(),
     "payment_intent_data[description]": p.product(names),
     locale: lang,
+    allow_promotion_codes: "true",
     success_url: `${base}/api/stripe/retour?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${base}/creer?edit=${inv.edit_token}&paiement=annule`,
   });

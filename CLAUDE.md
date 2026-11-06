@@ -66,6 +66,8 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 - Migration `007_admin.sql` : à appliquer dans Supabase > SQL Editor **avant le déploiement** du code de l'étape 1. Elle ajoute les tables privées `settings`, `admin_codes`, `admin_events`, `comped_at`, `keep_until` et les agrégats du tableau de bord.
 - Secrets à saisir directement dans Cloudflare Worker `joyeuxevent` > Settings > Variables and secrets (type Secret) : `ADMIN_EMAILS` (adresses séparées par des virgules) et `ADMIN_SESSION_SECRET` (32 caractères aléatoires minimum). En local, les placer dans `.env.local`.
 - Étape 2 : liste paginée (50 invitations), filtres et recherche ; fiches détaillées avec réponses paginées ; actions offertes, renvoi du lien, dépublication, prolongation et suppression confirmée. Les mutations sont en POST, protégées par session + Origin et journalisées dans `admin_events`. La purge respecte `keep_until`.
+- Étape 3 (partie prix et codes promo) : `settings.price_cents` pilote l'affichage du prix et le montant Checkout ; lecture cachée 60 s, repli sur 990 centimes. Codes Stripe promotionnels listés/créés depuis `/admin/prix`, réduction unique avec pourcentage ou montant, échéance et limite d'utilisations. Checkout autorise la saisie des codes et `amount_total` reste la valeur enregistrée.
+- La valeur et la logique de `PAYMENTS_ENABLED` ne sont pas modifiées ; `/admin/prix` montre seulement son état actuel. L'interrupteur d'activation reste en attente de la consigne de Glad.
 - L'activation du paiement reste désactivée et inchangée (`PAYMENTS_ENABLED`).
 
 ## À faire (par ordre)
