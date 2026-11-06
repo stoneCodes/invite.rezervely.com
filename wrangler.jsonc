@@ -23,7 +23,7 @@
 		"SUPABASE_URL": "https://usolfegmepnazrporeec.supabase.co",
 		"EMAIL_FROM": "joyeuxevent <hello@joyeuxevent.com>",
 		// Paiement Stripe à la publication : passer à "true" une fois STRIPE_SECRET_KEY et STRIPE_WEBHOOK_SECRET saisis.
-		"PAYMENTS_ENABLED": "false"
+		"PAYMENTS_ENABLED": "true"
 	},
 	"observability": { "enabled": true }
 }
