@@ -59,7 +59,7 @@ Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à p
 - Variables (secrets saisis par Glad dans Cloudflare) : `BREVO_API_KEY` (secret), `EMAIL_FROM` (`joyeuxevent <hello@joyeuxevent.com>`), `EMAIL_REPLY_TO` (facultatif), `CRON_SECRET` (secret). Domaine à authentifier dans Brevo (DNS chez Cloudflare).
 
 ## À faire (par ordre)
-1. Stripe Checkout : quand `PAYMENTS_ENABLED=true`, `POST /api/invitations/[token]/publish` doit créer une session et publier sur webhook `checkout.session.completed`. Prix à définir avec Glad.
+1. 🟡 (code fait, migration 006, désactivé) Stripe Checkout, 9,90 € TTC payé à la 1re publication (`lib/payment.ts`, API REST sans SDK). `publish` renvoie `checkoutUrl` ; publication au retour (`/api/stripe/retour`, session revérifiée chez Stripe) ou par webhook signé (`/api/stripe/webhook`, `checkout.session.completed`). Déjà publiée ou déjà payée = gratuit. Reste : migration 006, secrets Cloudflare `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`, webhook dans Stripe, puis `PAYMENTS_ENABLED` à "true" dans `wrangler.jsonc`. Test local : carte 4242 4242 4242 4242 avec une clé sk_test dans .env.local.
 2. ✅ (code fait, migration 005) E-mails aux mariés via Brevo : reste à authentifier le domaine dans Brevo (fait).
 3. Anti-abus : limite de débit sur `/api/rsvp` et `/api/invitations` (ex. Upstash), honeypot sur le formulaire RSVP.
 4. Version allégée des effets pour les téléphones peu puissants (désactiver flou/3D si `navigator.hardwareConcurrency <= 4` ou FPS bas).
