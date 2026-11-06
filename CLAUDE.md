@@ -2,7 +2,7 @@
 
 Service en libre-service : les mariés choisissent un template, remplissent un formulaire avec aperçu en direct, publient, et envoient un lien privé (`/i/<slug>`). Les invités ouvrent une invitation animée et répondent (RSVP). Les mariés suivent les réponses dans leur espace (`/espace/<token>`).
 
-Marque visée : **joyeuxevent** (décidé avec Glad le 6 nov. 2026). Les mariages d'abord ; plus tard d'autres événements (anniversaires, baptêmes, fiançailles…) : éviter de figer « mariage » dans le code quand c'est facile. Le nom affiché « Rezervely » reste à remplacer quand le domaine sera branché.
+Marque visée : **joyeuxevent** (décidé avec Glad le 6 nov. 2026). Les mariages d'abord ; plus tard d'autres événements (anniversaires, baptêmes, fiançailles…) : éviter de figer « mariage » dans le code quand c'est facile. Logo choisi par Glad le 6 nov. 2026 : piste « Étincelle » (« joyeux » ivoire + « event » or en Jost, deux étincelles or et rose). Fichiers dans `public/brand` (texte vectorisé), composant `components/Logo.tsx`, icônes `app/icon.svg` et `app/apple-icon.png`.
 
 Propriétaire : Glad (francophone, veut des retours honnêtes et des listes à puces). Toute l'interface est en français.
 
