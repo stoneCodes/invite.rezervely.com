@@ -214,6 +214,17 @@ export const fr = {
     uploadFail: "Envoi impossible",
     emailRequired: "Une adresse e-mail valide est obligatoire.",
   },
+  pay: {
+    publish: (price: string) => `Publier · ${price}`,
+    note: (price: string) => `${price} TTC, paiement unique et sécurisé par Stripe. Invités et réponses illimités, modifications gratuites ensuite.`,
+    redirect: "Redirection vers le paiement sécurisé…",
+    canceled: "Paiement annulé : votre invitation est bien enregistrée, vous pourrez la publier quand vous voudrez.",
+    unavailable: "Le paiement est indisponible pour le moment. Réessayez dans un instant.",
+    paid: "Paiement reçu, merci ! Votre invitation est en ligne : envoyez le lien ci-dessous à vos invités.",
+    pending: "Paiement en cours de confirmation. Actualisez cette page dans un instant.",
+    product: (names: string) => (names ? `Invitation animée · ${names}` : "Invitation animée joyeuxevent"),
+    productDesc: "Publication de l'invitation, invités et réponses illimités, modifications gratuites.",
+  },
 };
 
 export type SiteDict = typeof fr;

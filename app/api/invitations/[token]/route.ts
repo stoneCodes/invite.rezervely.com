@@ -10,7 +10,7 @@ export async function GET(_req: Request, { params }: Ctx) {
   const t = await getT();
   const inv = await getByToken((await params).token);
   if (!inv) return NextResponse.json({ error: t.api.notFound }, { status: 404 });
-  return NextResponse.json({ slug: inv.slug, template: inv.template, data: inv.data, status: inv.status, email: inv.owner_email });
+  return NextResponse.json({ slug: inv.slug, template: inv.template, data: inv.data, status: inv.status, email: inv.owner_email, paid: !!inv.paid_at });
 }
 
 export async function PUT(req: Request, { params }: Ctx) {

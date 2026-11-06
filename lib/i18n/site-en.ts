@@ -215,4 +215,15 @@ export const en: SiteDict = {
     emailRequired: "A valid email address is required.",
     uploadFail: "Upload failed",
   },
+  pay: {
+    publish: (price) => `Publish · ${price}`,
+    note: (price) => `${price} incl. VAT, one-time secure payment with Stripe. Unlimited guests and replies, free edits afterwards.`,
+    redirect: "Redirecting to secure payment…",
+    canceled: "Payment canceled: your invitation is saved, you can publish it whenever you like.",
+    unavailable: "Payment is unavailable right now. Please try again in a moment.",
+    paid: "Payment received, thank you! Your invitation is live: send the link below to your guests.",
+    pending: "Payment is being confirmed. Refresh this page in a moment.",
+    product: (names) => (names ? `Animated invitation · ${names}` : "joyeuxevent animated invitation"),
+    productDesc: "Invitation publishing, unlimited guests and replies, free edits.",
+  },
 };

@@ -43,11 +43,12 @@ function cycle(id: TemplateId, step: number): TemplateId {
   return TEMPLATES[(i + step + TEMPLATES.length) % TEMPLATES.length].id as TemplateId;
 }
 
-export default function Editor() {
+export default function Editor({ payPrice = null }: { payPrice?: string | null }) {
   const router = useRouter();
   const sp = useSearchParams();
   const t = useT();
   const e_ = t.editor;
+  const pay = t.pay;
   const siteLang = useLang();
   const [template, setTemplate] = useState<TemplateId>((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId);
   const [data, setData] = useState<InvitationData>(() => sampleData(siteLang));
@@ -61,6 +62,10 @@ export default function Editor() {
   const setToken = (t: string) => { tokenRef.current = t; setTokenState(t); };
   const [slug, setSlug] = useState<string | null>(null);
   const [status, setStatus] = useState<"draft" | "published">("draft");
+  const [paid, setPaid] = useState(false);
+  // Paiement exigé à la première publication seulement (déjà payée ou déjà publiée : gratuit).
+  const needPay = !!payPrice && !paid && status !== "published";
+  const publishLabel = status === "published" ? e_.update : needPay ? t.pay.publish(payPrice!) : e_.publish;
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [tab, setTab] = useState<"form" | "preview">("form");
@@ -73,7 +78,7 @@ export default function Editor() {
     if (!t) return;
     fetch(`/api/invitations/${t}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((j) => { setTemplate(j.template); setData(j.data); setSlug(j.slug); setStatus(j.status); setEmail(j.email ?? ""); setToken(t); })
+      .then((j) => { setTemplate(j.template); setData(j.data); setSlug(j.slug); setStatus(j.status); setPaid(!!j.paid); setEmail(j.email ?? ""); setToken(t); if (sp.get("paiement") === "annule") setMsg({ kind: "err", text: pay.canceled }); })
       .catch(() => setMsg({ kind: "err", text: e_.msgBadLink }));
   }, [sp]);
 
@@ -151,6 +156,8 @@ export default function Editor() {
     const j = await res.json().catch(() => ({}));
     setBusy(false);
     if (!res.ok) { setMsg({ kind: "err", text: j.error ?? e_.msgPublishFail }); return; }
+    // Paiement requis : on part sur la page sécurisée de Stripe ; la publication se fait au retour.
+    if (j.checkoutUrl) { setMsg({ kind: "ok", text: pay.redirect }); setBusy(true); window.location.assign(j.checkoutUrl); return; }
     setStatus("published");
     setMsg({ kind: "ok", text: e_.msgPublished });
   }
@@ -338,9 +345,10 @@ export default function Editor() {
             <div className="ed-btns">
               <button className="btn-s ghost" type="button" onClick={() => setFull(template)}>{e_.seeRender}</button>
               <button className="btn-s ghost" type="submit" disabled={busy}>{e_.save}</button>
-              <button className="btn-s" type="button" disabled={busy} onClick={publish}>{status === "published" ? e_.update : e_.publish}</button>
+              <button className="btn-s" type="button" disabled={busy} onClick={publish}>{publishLabel}</button>
               {token && <a className="btn-s ghost" href={`/espace/${token}`}>{e_.mySpace}</a>}
             </div>
+            {needPay && <p className="ed-help">{t.pay.note(payPrice!)}</p>}
             {status === "published" && slug && <p className="ed-help">{e_.publicLink} <a href={`/i/${slug}`} target="_blank" rel="noopener">/i/{slug}</a></p>}
           </div>
         </form>
@@ -371,7 +379,7 @@ export default function Editor() {
                 <button type="button" aria-label={t.common.nextTpl} onClick={() => setFull(cycle(full, 1))}>›</button>
               </div>
               {isMine
-                ? status !== "published" && <button type="button" className="btn-s" disabled={busy} onClick={() => { setFull(null); publish(); }}>{e_.publish}</button>
+                ? status !== "published" && <button type="button" className="btn-s" disabled={busy} onClick={() => { setFull(null); publish(); }}>{publishLabel}</button>
                 : <button type="button" className="btn-s" onClick={() => { setTemplate(full); setFull(null); setMsg({ kind: "ok", text: e_.msgChosen(shown.name) }); }}><span className="lbl-lg">{e_.choose}</span><span className="lbl-sm">{e_.chooseShort}</span></button>}
             </div>
             {/* key : chaque modèle recharge l'iframe, qui rejoue son ouverture. */}

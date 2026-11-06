@@ -16,8 +16,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 type Rsvp = { id: string; name: string; attending: boolean; guests: number; message: string | null; created_at: string };
 
-export default async function Espace({ params }: { params: Promise<{ token: string }> }) {
+export default async function Espace({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<{ paiement?: string }> }) {
   const { token } = await params;
+  const { paiement } = await searchParams;
   const lang = await getLang();
   const t = siteDict(lang);
   const s = t.space;
@@ -38,6 +39,10 @@ export default async function Espace({ params }: { params: Promise<{ token: stri
           <h1 style={{ fontSize: "2.6rem", margin: ".2em 0" }}>{inv.data.partner1} & {inv.data.partner2}</h1>
           <p className="muted" style={{ margin: 0 }}>{s.keep}</p>
         </header>
+
+        {paiement && (
+          <p className={`ed-msg ${inv.status === "published" ? "ok" : "err"}`} role="status" style={{ margin: 0 }}>{inv.status === "published" ? t.pay.paid : t.pay.pending}</p>
+        )}
 
         <section className="card-s" style={{ padding: 20, display: "grid", gap: 12 }}>
           <strong>{s.linkTitle}</strong>

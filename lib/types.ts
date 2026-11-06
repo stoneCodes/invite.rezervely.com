@@ -54,4 +54,8 @@ export type InvitationRow = {
   created_at: string;
   updated_at: string;
   published_at: string | null;
+  /** Paiement Stripe (migration 006) : absent tant que la migration n'est pas appliquée. */
+  paid_at?: string | null;
+  paid_amount_cents?: number | null;
+  stripe_session_id?: string | null;
 };

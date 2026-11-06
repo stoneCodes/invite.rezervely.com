@@ -21,7 +21,9 @@
 	"vars": {
 		"NEXT_PUBLIC_SITE_URL": "https://joyeuxevent.com",
 		"SUPABASE_URL": "https://usolfegmepnazrporeec.supabase.co",
-		"EMAIL_FROM": "joyeuxevent <hello@joyeuxevent.com>"
+		"EMAIL_FROM": "joyeuxevent <hello@joyeuxevent.com>",
+		// Paiement Stripe à la publication : passer à "true" une fois STRIPE_SECRET_KEY et STRIPE_WEBHOOK_SECRET saisis.
+		"PAYMENTS_ENABLED": "false"
 	},
 	"observability": { "enabled": true }
 }
