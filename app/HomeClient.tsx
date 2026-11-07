@@ -79,15 +79,8 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
       track.style.transform = `translateX(${-prog(hz) * Math.max(0, max)}px)`;
       for (const c of cards) {
         const r = c.getBoundingClientRect(), d = (r.left + r.width / 2 - innerWidth / 2) / innerWidth;
-        const side = Math.max(-1.25, Math.min(1.25, d));
-        const focus = Math.max(0, Math.min(1, 1 - Math.abs(d) * 1.7));
-        c.style.setProperty("--focus", reduce ? "1" : String(focus));
-        c.style.setProperty("--ry", reduce ? "0deg" : `${side * -38}deg`);
-        c.style.setProperty("--scale", reduce ? "1" : String(0.68 + focus * 0.55));
-        c.style.setProperty("--depth", reduce ? "0px" : `${focus * 220 - 130}px`);
-        c.style.setProperty("--lift", reduce ? "0px" : `${(1 - focus) * 30}px`);
-        c.classList.toggle("is-focused", !reduce && focus > 0.72);
-        c.querySelector("img")?.style.setProperty("--px", reduce ? "0px" : `${side * -80}px`);
+        c.style.setProperty("--ry", `${d * -14}deg`);
+        c.querySelector("img")?.style.setProperty("--px", `${d * -30}px`);
       }
     };
     const sched = () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } };
@@ -134,13 +127,6 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demo !== null]);
   const shown = demo ? { id: demo, ...t.templates[demo] } : null;
-  const advanceTemplate = () => {
-    const section = document.getElementById("gl-hz");
-    if (!section) return;
-    const step = Math.max(240, (section.offsetHeight - window.innerHeight) / Math.max(1, TEMPLATES.length));
-    window.scrollBy({ top: step, behavior: "smooth" });
-  };
-
   return (
     <main className="site gl">
       <canvas id="gl-dust" className="gl-canvas gl-dust" aria-hidden />
@@ -196,7 +182,6 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
       <section id="gl-hz" className="gl-hz">
         <div className="gl-stick">
           <div className="gl-hz-head"><div className="gl-kicker">{h.worlds(TEMPLATES.length)}</div><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
-          <button className="gl-hz-next" type="button" onClick={advanceTemplate} aria-label={h.nextTemplate}><span aria-hidden="true">↓</span><span>{h.nextTemplate}</span></button>
           <div id="gl-track" className="gl-track">
             {TEMPLATES.map((tp, i) => (
               <article key={tp.id} className="gl-tpl">

@@ -50,7 +50,6 @@ export const fr = {
     worlds: (n: number) => `${n} univers`,
     chooseTitle: "Choisissez",
     chooseGold: "votre soirée",
-    nextTemplate: "Modèle suivant",
     createMine: "Créer la mienne",
     demo: "Démo",
     promoPercent: (value: number) => `−${value} %`,
