@@ -168,6 +168,7 @@ export const fr = {
     msgSaveFail: "Enregistrement impossible. Réessayez.",
     msgPublishFail: "Publication impossible.",
     msgPublished: "Invitation publiée. Retrouvez votre lien et vos réponses dans votre espace.",
+    msgPhotoLocal: "Photo ajoutée. Elle sera enregistrée avec votre invitation.",
     msgPhotoOk: "Photo ajoutée et enregistrée.",
     msgPhotoFail: "Envoi de la photo impossible.",
     msgChosen: (name: string) => `Modèle « ${name} » choisi. Pensez à enregistrer.`,

@@ -29,8 +29,19 @@ function toLocalInput(iso: string) {
 }
 
 /* ---------- Photo : redimensionnée dans le navigateur avant envoi ---------- */
+/** Décode la photo ; repli par <img> pour les navigateurs où createImageBitmap échoue (certains iPhone). */
+async function decode(file: File): Promise<CanvasImageSource & { width: number; height: number }> {
+  try { return await createImageBitmap(file); } catch {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = new Image(); img.src = url; await img.decode();
+      return Object.assign(img, { width: img.naturalWidth, height: img.naturalHeight });
+    } finally { setTimeout(() => URL.revokeObjectURL(url), 1000); }
+  }
+}
+
 async function shrink(file: File): Promise<Blob> {
-  const img = await createImageBitmap(file);
+  const img = await decode(file);
   const k = Math.min(1, 1600 / Math.max(img.width, img.height));
   const c = document.createElement("canvas");
   c.width = Math.round(img.width * k);
@@ -75,6 +86,14 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
   const [tab, setTab] = useState<"form" | "preview">("form");
   const frame = useRef<HTMLIFrameElement>(null);
   const ready = useRef(false);
+  // Photo choisie mais pas encore envoyée : elle reste dans le navigateur (aperçu par URL locale)
+  // et ne part sur le serveur qu'au moment d'« Enregistrer » ou « Publier ».
+  const pendingPhoto = useRef<{ blob: Blob; url: string } | null>(null);
+  useEffect(() => {
+    const warn = (e: BeforeUnloadEvent) => { if (pendingPhoto.current) { e.preventDefault(); e.returnValue = ""; } };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, []);
 
   /* Chargement d'une invitation existante */
   useEffect(() => {
@@ -129,18 +148,35 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
   const setDc = (patch: Partial<InvitationData["dressCode"]>) => set("dressCode", { ...dc, ...patch });
 
   async function save(d: InvitationData = data): Promise<string | null> {
-    // E-mail obligatoire avant tout enregistrement (et donc avant publication ou envoi de photo).
+    // E-mail obligatoire à l'enregistrement et à la publication (pas avant : on peut tout remplir, photo comprise, sans e-mail).
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setEmailErr(true); setTab("form"); setMsg({ kind: "err", text: e_.emailRequired });
       requestAnimationFrame(() => { const el = document.getElementById("email") as HTMLInputElement | null; el?.scrollIntoView({ block: "center", behavior: "smooth" }); el?.focus({ preventScroll: true }); });
       return null;
     }
     setBusy(true); setMsg(null);
-    const tk = tokenRef.current;
-    try {
-      const res = await fetch(tk ? `/api/invitations/${tk}` : "/api/invitations", { method: tk ? "PUT" : "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, data: d, email }) });
+    let tk = tokenRef.current;
+    const write = async (token: string | null, body: InvitationData) => {
+      const res = await fetch(token ? `/api/invitations/${token}` : "/api/invitations", { method: token ? "PUT" : "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, data: body, email }) });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error);
+      return j;
+    };
+    try {
+      const pending = pendingPhoto.current;
+      if (pending) {
+        // 1re fois : on crée d'abord l'invitation (sans la photo locale) pour obtenir le jeton, puis on envoie la photo.
+        if (!tk) { const j0 = await write(null, { ...d, photoUrl: null }); tk = j0.editToken as string; setToken(tk); setSlug(j0.slug); router.replace(`/creer?edit=${tk}`); }
+        const fd = new FormData();
+        fd.append("file", new File([pending.blob], "photo.jpg", { type: "image/jpeg" }));
+        const up = await fetch(`/api/upload?token=${tk}`, { method: "POST", body: fd });
+        const ju = await up.json().catch(() => ({}));
+        if (!up.ok) throw new Error(ju.error || e_.msgPhotoFail);
+        d = { ...d, photoUrl: ju.url };
+        pendingPhoto.current = null; URL.revokeObjectURL(pending.url);
+        setData((cur) => (cur.photoUrl === pending.url ? { ...cur, photoUrl: ju.url } : cur));
+      }
+      const j = await write(tk, d);
       setSlug(j.slug);
       if (!tk && j.editToken) { setToken(j.editToken); router.replace(`/creer?edit=${j.editToken}`); }
       setLastInvite({ token: tk ?? j.editToken, names: `${d.partner1} & ${d.partner2}` });
@@ -172,24 +208,19 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
     setMsg({ kind: "ok", text: e_.msgPublished });
   }
 
+  /** Photo choisie : réduite dans le navigateur et affichée tout de suite ; envoyée seulement à l'enregistrement. */
   async function upload(file: File) {
-    const t = tokenRef.current ?? (await save());
-    if (!t) return;
-    setBusy(true); setMsg(null);
+    setMsg(null);
     try {
-      const fd = new FormData();
-      fd.append("file", new File([await shrink(file)], "photo.jpg", { type: "image/jpeg" }));
-      const res = await fetch(`/api/upload?token=${t}`, { method: "POST", body: fd });
-      const j = await res.json();
-      if (!res.ok) throw new Error(j.error);
-      // Enregistrement immédiat : sinon la photo est perdue si l'on quitte la page sans enregistrer.
-      const next = { ...data, photoUrl: j.url };
-      setData(next);
-      setBusy(false);
-      if (await save(next)) setMsg({ kind: "ok", text: e_.msgPhotoOk });
-    } catch (e) {
-      setMsg({ kind: "err", text: e instanceof Error && e.message ? e.message : e_.msgPhotoFail });
-    } finally { setBusy(false); }
+      const blob = await shrink(file);
+      if (pendingPhoto.current) URL.revokeObjectURL(pendingPhoto.current.url);
+      const url = URL.createObjectURL(blob);
+      pendingPhoto.current = { blob, url };
+      set("photoUrl", url);
+      setMsg({ kind: "ok", text: e_.msgPhotoLocal });
+    } catch {
+      setMsg({ kind: "err", text: e_.msgPhotoFail });
+    }
   }
 
   const vh = data.verse ? e_.verseHints[data.verse.kind] : null;

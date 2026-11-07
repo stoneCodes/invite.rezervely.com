@@ -169,6 +169,7 @@ export const en: SiteDict = {
     msgSaveFail: "Couldn't save. Please try again.",
     msgPublishFail: "Couldn't publish.",
     msgPublished: "Invitation published. Find your link and replies in your space.",
+    msgPhotoLocal: "Photo added. It will be saved with your invitation.",
     msgPhotoOk: "Photo added and saved.",
     msgPhotoFail: "Couldn't upload the photo.",
     msgChosen: (name) => `“${name}” design chosen. Remember to save.`,
