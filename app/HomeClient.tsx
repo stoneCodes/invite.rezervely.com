@@ -32,16 +32,20 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
     resize();
 
     // Poussière d'or (moins de particules sur les petits écrans)
-    const n = innerWidth < 640 ? 40 : 70;
-    const P = Array.from({ length: n }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.8 + 0.4, s: Math.random() * 0.0004 + 0.0001, t: Math.random() * 6 }));
+    const n = innerWidth < 640 ? 56 : 88;
+    const P = Array.from({ length: n }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 3 + 1.4, s: Math.random() * 0.0004 + 0.0001, t: Math.random() * 6 }));
     const drawDust = (t: number) => {
       if (!alive) return;
       dx.clearRect(0, 0, W, H);
       for (const p of P) {
         p.y -= p.s; if (p.y < -0.02) p.y = 1.02;
         const y = (((p.y - scrollY0 * 0.00008) % 1) + 1) % 1;
-        dx.fillStyle = `rgba(243,215,155,${0.35 + 0.35 * Math.sin(t / 700 + p.t)})`;
-        dx.beginPath(); dx.arc(p.x * W, y * H, p.r * dpr, 0, 7); dx.fill();
+        const x = p.x * W, py = y * H, radius = p.r * dpr;
+        const alpha = 0.24 + 0.28 * (0.5 + 0.5 * Math.sin(t / 700 + p.t));
+        dx.fillStyle = `rgba(143,108,54,${alpha})`;
+        dx.beginPath(); dx.arc(x, py, radius, 0, 7); dx.fill();
+        dx.fillStyle = `rgba(255,255,255,${alpha * 0.62})`;
+        dx.beginPath(); dx.arc(x - radius * 0.3, py - radius * 0.32, radius * 0.3, 0, 7); dx.fill();
       }
       if (!reduce && !document.hidden) raf = requestAnimationFrame(drawDust);
     };
@@ -133,7 +137,7 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
       <canvas id="gl-fw" className="gl-canvas gl-fw" aria-hidden />
 
       <nav id="gl-nav" className="gl-nav">
-        <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={26} /></Link>
+        <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={26} onLight /></Link>
         <div className="gl-nav-r"><Link className="gl-space" href={spaceHref(last)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg><span>{t.find.mySpace}</span></Link><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
       </nav>
 

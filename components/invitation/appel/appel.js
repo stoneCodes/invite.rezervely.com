@@ -4,6 +4,7 @@
 /* eslint-disable */
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
+import { coupleHtml, mountCouple } from "../dresscode/couple";
 
 const IMG = { call: "/img/appel-fond-defaut.webp", end: "/img/appel-fin.webp" };
 const ICON = {
@@ -68,6 +69,7 @@ export function mountAppel(root, INPUT, OPTS = {}) {
     programme.length ? them(`<div class="ap-b ap-cal"><header>${ICON.cal}<div><small>${A.invitation}</small><b>${T.c.weddingOf(p1, p2).replace("&", "&amp;")}</b><span>${when ? esc(when.full.split(" · ")[0]) : ""}</span></div></header><ol>${programme.map((x) => `<li><time>${esc(x.t)}</time><div><b>${esc(x.title)}</b>${x.note ? `<span>${esc(x.note)}</span>` : ""}</div></li>`).join("")}</ol><a class="ap-btn" href="${calUrl}" target="_blank" rel="noopener">${esc(T.c.addCal)}</a></div>`, "ap-wide") : "",
     dc.enabled !== false && colors.length ? them(`${A.outfit} ${dc.title ? `<b>${esc(dc.title)}</b>` : ""}${dc.note ? `<br>${esc(dc.note)}` : ""}`) : "",
     dc.enabled !== false && colors.length ? `<div class="ap-m them ap-stickers">${colors.map((c, i) => { const m = c.men || c.hex, w = c.women || c.hex; return `<figure style="--i:${i}"><i style="background:${m === w ? m : `linear-gradient(135deg,${m} 50%,${w} 50%)`}"></i><figcaption>${esc(c.name)}</figcaption></figure>`; }).join("")}</div>` : "",
+    dc.enabled !== false && colors.length ? them(`<div class="ap-b ap-dcphoto">${coupleHtml(esc(A.outfit))}</div>`) : "",
     dc.enabled !== false && colors.length && dc.men?.text ? them(`<b>${esc(dc.men.label || A.men)}</b> · ${esc(dc.men.text)}`) : "",
     dc.enabled !== false && colors.length && dc.women?.text ? them(`<b>${esc(dc.women.label || A.women)}</b> · ${esc(dc.women.text)}`) : "",
     venueQ ? them(A.waitHere) : "",
@@ -282,10 +284,20 @@ export function mountAppel(root, INPUT, OPTS = {}) {
   q(".ap-snd").addEventListener("click", (e) => { soundOn = !soundOn; e.currentTarget.innerHTML = soundOn ? ICON.sound : ICON.mute; e.currentTarget.setAttribute("aria-label", soundOn ? A.mute : A.unmute);
     if (soundOn) { audio(); loop(); } else clearTimeout(loopT); });
 
+  /* Dress code : le couple change de tenue au fil des couleurs ; toucher une pastille la choisit. */
+  const dcEl = q(".ap-dcphoto .dcc"), couple = dcEl ? mountCouple(dcEl, dc.couple) : null;
+  let dcI = 0, dcManual = false, dcTimer = 0;
+  const setDc = (i) => { const c = colors[i]; if (!c || !couple) return; dcI = i; couple.set(c.men || c.hex, c.women || c.hex); qa(".ap-stickers figure").forEach((f, k) => f.classList.toggle("is-on", k === i)); };
+  if (couple) {
+    setDc(0);
+    qa(".ap-stickers figure").forEach((f, k) => f.addEventListener("click", () => { dcManual = true; setDc(k); }));
+    if (colors.length > 1) dcTimer = setInterval(() => { if (!dcManual) setDc((dcI + 1) % colors.length); }, 2800);
+  }
+
   if (OPTS.skipIntro) answer(true); else ring();
 
   return {
     replay() { ring(); },
-    destroy() { alive = false; timers.forEach(clearTimeout); clearInterval(timerI); clearInterval(countI); io && io.disconnect(); removeEventListener("resize", size); lock(false); try { actx && actx.close(); } catch (e) {} root.innerHTML = ""; },
+    destroy() { alive = false; couple?.destroy(); clearInterval(dcTimer); timers.forEach(clearTimeout); clearInterval(timerI); clearInterval(countI); io && io.disconnect(); removeEventListener("resize", size); lock(false); try { actx && actx.close(); } catch (e) {} root.innerHTML = ""; },
   };
 }

@@ -4,6 +4,7 @@
 /* eslint-disable */
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
+import { coupleHtml, mountCouple } from "../dresscode/couple";
 
 const IMG = { washi: "/img/origami-washi.webp", table: "/img/origami-table.webp", cranes: "/img/origami-grues.webp" };
 const ICON = {
@@ -31,21 +32,6 @@ const crane = (fill, id = "") => `<svg viewBox="22 20 152 132" aria-hidden="true
 
 // Tenues pliées (facettes recolorées par --gm / --gw)
 const shade = (pts, o) => `<polygon points="${pts}" fill="${o > 0 ? "#3A2516" : "#fff"}" opacity="${Math.abs(o)}"/>`;
-const SHIRT = `<svg viewBox="0 0 140 160" role="img" aria-label="__SHIRT__">
-  <polygon class="g-m" points="35,40 70,40 70,150 35,150"/><polygon class="g-m" points="70,40 105,40 105,150 70,150"/>${shade("70,40 105,40 105,150 70,150", 0.14)}
-  <polygon class="g-m" points="35,40 8,80 22,94 35,72"/>${shade("35,40 8,80 22,94 35,72", 0.22)}
-  <polygon class="g-m" points="105,40 132,80 118,94 105,72"/>${shade("105,40 132,80 118,94 105,72", 0.3)}
-  ${shade("35,136 105,136 105,150 35,150", 0.16)}${shade("35,40 70,40 70,150 35,150", -0.08)}
-  <polygon points="50,40 70,66 58,34" fill="#FBF6EE"/><polygon points="90,40 70,66 82,34" fill="#EFE6DA"/>
-  <polygon class="g-m" points="64,62 76,62 73,70 67,70"/>${shade("64,62 76,62 73,70 67,70", 0.35)}
-  <path d="M70 70V150" stroke="#3A2516" stroke-opacity=".2"/></svg>`;
-const DRESS = `<svg viewBox="0 0 140 160" role="img" aria-label="__DRESS__">
-  <polygon points="56,32 60,12 63,32" fill="#C9A45C"/><polygon points="84,32 80,12 77,32" fill="#B08A4A"/>
-  <polygon class="g-w" points="54,30 70,40 70,70 56,70"/><polygon class="g-w" points="86,30 70,40 70,70 84,70"/>${shade("86,30 70,40 70,70 84,70", 0.18)}
-  <polygon class="g-w" points="56,70 66,70 46,150 18,150"/>${shade("56,70 66,70 46,150 18,150", 0.12)}
-  <polygon class="g-w" points="66,70 74,70 96,150 46,150"/>${shade("66,70 74,70 96,150 46,150", -0.1)}
-  <polygon class="g-w" points="74,70 84,70 122,150 96,150"/>${shade("74,70 84,70 122,150 96,150", 0.28)}
-  ${shade("55,66 85,66 85,73 55,73", 0.3)}</svg>`;
 const PLANE = `<svg viewBox="0 0 120 70" aria-hidden="true"><polygon points="0,30 120,0 44,44" fill="#FBF5EA"/><polygon points="44,44 120,0 52,68" fill="#E9DDCB"/><polygon points="0,30 44,44 34,50" fill="#D9C9B2"/><path d="M44 44 120 0" stroke="#B9A487" stroke-width=".8"/></svg>`;
 
 export function mountOrigami(root, INPUT, OPTS = {}) {
@@ -54,7 +40,6 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches || (!!OPTS.skipIntro && !!OPTS.noGate);
   document.body.dataset.tpl = "origami";
   const T = inviteDict(D.lang), O = T.origami;
-  const shirt = SHIRT.replace("__SHIRT__", O.shirt), dress = DRESS.replace("__DRESS__", O.dress);
   const when = dateParts(D.dateISO, D.lang);
   const p1 = esc(D.partner1), p2 = esc(D.partner2);
   const ini = (s) => esc((String(s || "").trim()[0] || "").toUpperCase());
@@ -112,7 +97,7 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
     `<section class="or-sec or-countsec"><div class="or-count" aria-label="${O.countdown}"><span><b data-c="0">0</b>${O.days}</span><span><b data-c="1">00</b>${O.hours}</span><span><b data-c="2">00</b>${O.min}</span><span><b data-c="3">00</b>${O.sec}</span></div></section>`,
     programme.length ? `<section class="or-sec">${head(O.progEyebrow, O.progTitle)}<div class="or-fold or-acc">${accordion(programme.map((x, i) => `<div class="or-item"><span class="or-num">${i + 1}</span><div><time>${esc(x.t)}</time><h3>${esc(x.title)}</h3>${x.note ? `<p>${esc(x.note)}</p>` : ""}</div></div>`))}</div></section>` : "",
     showDress ? `<section class="or-sec">${head(O.dressEyebrow, dc.title ? esc(dc.title) : O.dressTitle)}
-      ${fold2(`<div class="or-dress"><figure class="men">${shirt}</figure><figure class="women">${dress}</figure></div>
+      ${fold2(`<div class="or-dress">${coupleHtml(O.dressEyebrow)}</div>
         <div class="or-sw" role="group" aria-label="${O.colors}">${colors.map((c, i) => { const m = c.men || c.hex, w = c.women || c.hex; return `<button type="button" data-i="${i}" aria-pressed="${i === 0}" aria-label="${esc(c.name)}" style="background:${m === w ? m : `linear-gradient(135deg,${m} 50%,${w} 50%)`}"></button>`; }).join("")}</div>
         <p class="or-cname">${esc(colors[0].name)}</p>`,
         `<div class="or-dctext">${dc.note ? `<p>${esc(dc.note)}</p>` : ""}${dc.men?.text ? `<p><b>${esc(dc.men.label || O.men)}</b>${esc(dc.men.text)}</p>` : ""}${dc.women?.text ? `<p><b>${esc(dc.women.label || O.women)}</b>${esc(dc.women.text)}</p>` : ""}</div>`)}</section>` : "",
@@ -222,9 +207,10 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
 
   /* ---------- Dress code ---------- */
   const dressEl = q(".or-dress");
-  const setColor = (i) => { const c = colors[i]; if (!c || !dressEl) return; dressEl.style.setProperty("--gm", c.men || c.hex); dressEl.style.setProperty("--gw", c.women || c.hex);
+  const couple = dressEl ? mountCouple(dressEl.querySelector(".dcc"), dc.couple) : null;
+  const setColor = (i) => { const c = colors[i]; if (!c || !dressEl) return; dressEl.style.setProperty("--gm", c.men || c.hex); dressEl.style.setProperty("--gw", c.women || c.hex); couple.set(c.men || c.hex, c.women || c.hex);
     q(".or-cname").textContent = c.name; qa(".or-sw button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.i === i)));
-    dressEl.classList.remove("is-pop"); void dressEl.offsetWidth; dressEl.classList.add("is-pop"); };
+  };
   if (dressEl) { setColor(0); q(".or-sw").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { setColor(+b.dataset.i); paper(0.12, 0.3); } }); }
 
   /* ---------- L'enveloppe : quatre rabats à déplier pour voir la date (obligatoire avant la suite) ---------- */
@@ -283,6 +269,6 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
 
   return {
     replay() { showIntro(); },
-    destroy() { alive = false; timers.forEach(clearTimeout); clearInterval(countI); cancelAnimationFrame(craneRaf); io && io.disconnect(); document.body.classList.remove("or-locked"); try { actx && actx.close(); } catch (e) {} root.innerHTML = ""; },
+    destroy() { alive = false; couple?.destroy(); timers.forEach(clearTimeout); clearInterval(countI); cancelAnimationFrame(craneRaf); io && io.disconnect(); document.body.classList.remove("or-locked"); try { actx && actx.close(); } catch (e) {} root.innerHTML = ""; },
   };
 }

@@ -4,6 +4,7 @@
 /* eslint-disable */
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
+import { coupleHtml, mountCouple } from "../dresscode/couple";
 
 const IMG = {
   globe: "/img/boule-globe.webp", domaine: "/img/boule-domaine.webp", easel: "/img/boule-jardin-chevalet.webp",
@@ -11,7 +12,9 @@ const IMG = {
 };
 // Repères mesurés sur les images (en % de l'image).
 const GLOBE = { cx: 0.496, cy: 0.391, r: 0.347, ground: 0.655 }; // sphère de verre dans boule-globe (image carrée)
-const FRAME = { l: 25, t: 21.8, w: 48.6, h: 41.7 };                // ouverture du cadre du chevalet (remesurée le 7 nov. 2026 : 257→753 px × 337→975 px sur 1024×1536)
+const FRAME = { l: 25.4, t: 22.1, w: 47.9, h: 41.1 };              // ouverture du cadre du chevalet, moulure exclue (260→750 px × 340→972 px sur 1024×1536)
+// Fleurs du cadre reposées par-dessus la photo (images-source/boule-chevalet-fleurs.py, découpe 240→770 × 320→990).
+const FLOWERS = { src: "/img/boule-chevalet-fleurs.webp", l: 23.44, t: 20.83, w: 51.76, h: 43.62 };
 const STOPS = [[31, 78], [61, 47], [33, 31], [67, 13]];           // chemin : chapelle → cocktail → tente → piste
 const MANOR = [70, 46.5];                                          // porte du domaine
 
@@ -23,8 +26,6 @@ const ICON = {
 };
 
 // Veste et robe (mêmes dessins que les autres modèles), recolorées par --gm / --gw.
-const JACKET = `<svg viewBox="0 0 140 210" role="img" aria-label="__JACKET__"><defs><clipPath id="bnJ"><path d="M70 30 L52 33 L26 46 Q18 50 17 60 L10 168 Q10 174 17 174 L28 174 L31 112 L33 196 Q70 204 107 196 L109 112 L112 174 L123 174 Q130 174 130 168 L123 60 Q122 50 114 46 L88 33 Z"/></clipPath><linearGradient id="bnShJ" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs><path d="M70 8 q9 0 9 7 q0 6 -9 9 v6" stroke="#C9A86A" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M70 29 L24 50 M70 29 L116 50" stroke="#C9A86A" stroke-width="4" stroke-linecap="round"/><path class="g-m" d="M70 30 L52 33 L26 46 Q18 50 17 60 L10 168 Q10 174 17 174 L28 174 L31 112 L33 196 Q70 204 107 196 L109 112 L112 174 L123 174 Q130 174 130 168 L123 60 Q122 50 114 46 L88 33 Z"/><g clip-path="url(#bnJ)"><path d="M10 40 L31 112 L28 180 L0 180 Z" fill="#000" opacity=".13"/><path d="M130 40 L109 112 L112 180 L140 180 Z" fill="#000" opacity=".09"/><rect width="140" height="210" fill="url(#bnShJ)"/></g><path fill="#F7F3EE" d="M56 33 L70 80 L84 33 L76 31 L70 36 L64 31 Z"/><path class="g-m" d="M67 38 L73 38 L74.5 72 L70 79 L65.5 72 Z"/><path d="M67 38 L73 38 L74.5 72 L70 79 L65.5 72 Z" fill="#000" opacity=".38"/><path class="g-m" d="M56 33 L46 40 L54 64 L47 68 L70 112 L70 82 Z"/><path d="M56 33 L46 40 L54 64 L47 68 L70 112 L70 82 Z" fill="#fff" opacity=".14"/><path class="g-m" d="M84 33 L94 40 L86 64 L93 68 L70 112 L70 82 Z"/><path d="M84 33 L94 40 L86 64 L93 68 L70 112 L70 82 Z" fill="#000" opacity=".1"/><path d="M70 112 L70 199" stroke="#000" stroke-opacity=".28" stroke-width="1"/><circle cx="70" cy="126" r="2.6" fill="#000" opacity=".45"/><circle cx="70" cy="146" r="2.6" fill="#000" opacity=".45"/><path d="M84 156 L104 154" stroke="#000" stroke-opacity=".3" stroke-width="2"/><path d="M38 154 L56 156" stroke="#000" stroke-opacity=".3" stroke-width="2"/><path d="M88 88 L104 86" stroke="#000" stroke-opacity=".3" stroke-width="2"/><path d="M92 87 L96 81 L100 86.5 Z" fill="#F7F3EE"/></svg>`;
-const DRESS = `<svg viewBox="0 0 140 210" role="img" aria-label="__DRESS__"><defs><clipPath id="bnD"><path d="M50 42 L55 42 L70 70 L85 42 L90 42 L94 92 Q112 150 128 200 Q70 212 12 200 Q28 150 46 92 Z"/></clipPath><linearGradient id="bnShD" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".2"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs><path d="M70 8 q9 0 9 7 q0 6 -9 9 v6" stroke="#C9A86A" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M70 29 L32 48 M70 29 L108 48" stroke="#C9A86A" stroke-width="4" stroke-linecap="round"/><path d="M50 42 L46 36 M90 42 L94 36" stroke="#C9A86A" stroke-width="1.4"/><path class="g-w" d="M50 42 L55 42 L70 70 L85 42 L90 42 L94 92 Q70 101 46 92 Z"/><path class="g-w" d="M46 97 Q70 106 94 97 Q112 150 128 200 Q70 212 12 200 Q28 150 46 97 Z"/><g clip-path="url(#bnD)"><path d="M58 104 Q50 150 36 204" stroke="#000" stroke-opacity=".16" stroke-width="7" fill="none"/><path d="M70 106 Q70 150 68 208" stroke="#fff" stroke-opacity=".14" stroke-width="5" fill="none"/><path d="M82 104 Q90 150 104 204" stroke="#000" stroke-opacity=".16" stroke-width="7" fill="none"/><rect width="140" height="210" fill="url(#bnShD)"/></g><path d="M46 92 Q70 101 94 92 L94 98 Q70 107 46 98 Z" fill="#000" opacity=".22"/></svg>`;
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
@@ -52,7 +53,6 @@ export function mountBoule(root, INPUT, OPTS = {}) {
   const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches || (!!OPTS.skipIntro && !!OPTS.noGate);
   document.body.dataset.tpl = "boule-neige";
   const T = inviteDict(D.lang), B = T.boule;
-  const jacket = JACKET.replace("__JACKET__", B.jacket), dress = DRESS.replace("__DRESS__", B.dress);
   const when = dateParts(D.dateISO, D.lang);
   const p1 = esc(D.partner1), p2 = esc(D.partner2);
   const ini = (s) => esc((String(s || "").trim()[0] || "").toUpperCase());
@@ -95,7 +95,7 @@ export function mountBoule(root, INPUT, OPTS = {}) {
       <div class="bn-hero"><small>${B.married}</small><h1><span>${p1}</span><i>&amp;</i><span>${p2}</span></h1>${D.intro ? `<p>${esc(D.intro)}</p>` : ""}</div>
       <div class="bn-cue" aria-hidden="true"><span>${B.dive}</span><i></i></div>`, "bn-s-hero"),
 
-    scene("photo", IMG.easel, `<div class="bn-frame" style="left:${FRAME.l}%;top:${FRAME.t}%;width:${FRAME.w}%;height:${FRAME.h}%">${photo ? `<img src="${esc(photo)}" alt="${B.photoOf(p1, p2)}">` : `<span class="bn-mono">${ini(D.partner1)}<i>&amp;</i>${ini(D.partner2)}</span>`}</div>`,
+    scene("photo", IMG.easel, `<div class="bn-frame" style="left:${FRAME.l}%;top:${FRAME.t}%;width:${FRAME.w}%;height:${FRAME.h}%">${photo ? `<img src="${esc(photo)}" alt="${B.photoOf(p1, p2)}">` : `<span class="bn-mono">${ini(D.partner1)}<i>&amp;</i>${ini(D.partner2)}</span>`}</div><img class="bn-flowers" src="${FLOWERS.src}" alt="" decoding="async" loading="lazy" style="left:${FLOWERS.l}%;top:${FLOWERS.t}%;width:${FLOWERS.w}%;height:${FLOWERS.h}%">`,
       `<div class="bn-spacer"></div>${v ? `<article class="bn-card bn-verse">${v.orig ? `<p class="bn-orig" dir="auto">${esc(v.orig)}</p>` : ""}<p>${v.orig ? esc(v.text) : esc(T.c.quote(v.text))}</p>${v.ref ? `<small>${esc(v.ref)}</small>` : ""}</article>` : ""}`, v ? "" : "bn-short"),
   ];
 
@@ -124,11 +124,11 @@ export function mountBoule(root, INPUT, OPTS = {}) {
       `<header class="bn-title"><small>${B.progEyebrow}</small><h2>${B.progTitle}</h2></header>
        ${programme.map((x, i) => `<div class="bn-step"><article class="bn-card bn-prog"><span class="bn-num">${i + 1}</span><div><time>${esc(x.t)}</time><h3>${esc(x.title)}</h3>${x.note ? `<p>${esc(x.note)}</p>` : ""}</div></article></div>`).join("")}`) : "",
 
-    showDress ? scene("dress", IMG.dress, `
-      <div class="bn-rack"><i class="bn-rod"></i><figure class="bn-g men">${jacket}</figure><figure class="bn-g women">${dress}</figure></div>`,
+    showDress ? scene("dress", IMG.dress, "",
       `<div class="bn-spacer"></div>
        <article class="bn-card bn-dc"><small>${B.dressEyebrow}</small>${dc.title ? `<h2>${esc(dc.title)}</h2>` : ""}${dc.note ? `<p>${esc(dc.note)}</p>` : ""}
          <div class="bn-sw" role="group" aria-label="${B.colors}">${colors.map((c, i) => { const m = c.men || c.hex, w = c.women || c.hex; return `<button type="button" data-i="${i}" aria-pressed="${i === 0}" aria-label="${esc(c.name)}" style="background:${m === w ? m : `linear-gradient(135deg,${m} 50%,${w} 50%)`}"></button>`; }).join("")}</div>
+         ${coupleHtml(B.dressEyebrow, "bn-couple")}
          <p class="bn-cname">${esc(colors[0].name)}</p>
          ${dc.men?.text ? `<p class="bn-dcl"><b>${esc(dc.men.label || B.men)}</b> ${esc(dc.men.text)}</p>` : ""}
          ${dc.women?.text ? `<p class="bn-dcl"><b>${esc(dc.women.label || B.women)}</b> ${esc(dc.women.text)}</p>` : ""}
@@ -391,11 +391,11 @@ export function mountBoule(root, INPUT, OPTS = {}) {
   addEventListener("resize", onResize);
 
   /* ---------- Dress code : les tenues se recolorent ---------- */
-  const rack = q(".bn-rack");
-  const setColor = (i) => { const c = colors[i]; if (!c || !rack) return; rack.style.setProperty("--gm", c.men || c.hex); rack.style.setProperty("--gw", c.women || c.hex);
+  const coupleEl = q(".bn-couple"), couple = coupleEl ? mountCouple(coupleEl, dc.couple) : null;
+  const setColor = (i) => { const c = colors[i]; if (!c || !couple) return; couple.set(c.men || c.hex, c.women || c.hex);
     q(".bn-cname").textContent = c.name; qa(".bn-sw button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.i === i)));
-    rack.classList.remove("is-swing"); void rack.offsetWidth; rack.classList.add("is-swing"); };
-  if (rack) { setColor(0); q(".bn-sw").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { setColor(+b.dataset.i); chime(2); } }); }
+  };
+  if (couple) { setColor(0); q(".bn-sw").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { setColor(+b.dataset.i); chime(2); } }); }
 
   /* ---------- La buée sur le verre : à essuyer pour voir la date (obligatoire avant la suite) ---------- */
   let gated = !OPTS.noGate, wiped = false, fogReady = false;
@@ -492,7 +492,7 @@ export function mountBoule(root, INPUT, OPTS = {}) {
   return {
     replay() { showIntro(); },
     destroy() {
-      alive = false; timers.forEach(clearTimeout); clearInterval(countI); cancelAnimationFrame(introRaf); cancelAnimationFrame(fRaf); cancelAnimationFrame(raf);
+      alive = false; couple?.destroy(); timers.forEach(clearTimeout); clearInterval(countI); cancelAnimationFrame(introRaf); cancelAnimationFrame(fRaf); cancelAnimationFrame(raf);
       cio && cio.disconnect(); removeEventListener("scroll", onScroll); removeEventListener("resize", onResize); removeEventListener("devicemotion", onMotion);
       document.body.classList.remove("bn-locked"); try { actx && actx.close(); } catch (e) {} root.innerHTML = "";
     },

@@ -243,3 +243,9 @@ body:has(.demo-exit) .ap-head{padding-left:60px}
   .ap-knob{width:48px;height:48px}
   .ap-call h1{font-size:clamp(1.8rem,8.5vw,2.4rem)}
 }
+
+/* Dress code : photo du couple envoyée dans la conversation, pastilles cliquables */
+.ap-dcphoto{padding:8px 8px 20px}
+.ap-dcphoto .dcc{width:min(64vw,250px);filter:drop-shadow(0 12px 12px rgba(0,0,0,.18))}
+.ap-stickers figure{cursor:pointer}
+.ap-stickers figure.is-on i{outline:2px solid var(--accent,#C9A46A);outline-offset:2px}

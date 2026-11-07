@@ -3,6 +3,8 @@ import "./invitation.css";
 import "./appel/appel.css";
 import "./boule/boule.css";
 import "./origami/origami.css";
+import "./velours/velours.css";
+import "./dresscode/couple.css";
 import { useEffect, useRef } from "react";
 import { markup } from "./markup";
 import { inviteDict } from "@/lib/i18n/invite";
@@ -10,6 +12,7 @@ import { mountInvitation, type MountOptions } from "./engine";
 import { mountAppel } from "./appel/appel";
 import { mountBoule } from "./boule/boule";
 import { mountOrigami } from "./origami/origami";
+import { mountVelours } from "./velours/velours";
 import type { InvitationData, TemplateId } from "@/lib/types";
 import { DEMO_PHOTOS } from "@/lib/demoPhotos";
 
@@ -43,6 +46,7 @@ export default function Invitation(input: Props) {
   if (props.template === "appel") return <OwnEngine {...props} mount={mountAppel} />;
   if (props.template === "boule-neige") return <OwnEngine {...props} mount={mountBoule} />;
   if (props.template === "origami") return <OwnEngine {...props} mount={mountOrigami} />;
+  if (props.template === "velours") return <OwnEngine {...props} mount={mountVelours} />;
   return <ClassicInvitation {...props} />;
 }
 

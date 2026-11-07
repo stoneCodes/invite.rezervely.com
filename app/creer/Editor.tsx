@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { useRouter, useSearchParams } from "next/navigation";
-import { sampleData } from "@/lib/sample";
+import { sampleData, veloursSampleData } from "@/lib/sample";
 import { TEMPLATES, type InvitationData, type TemplateId } from "@/lib/types";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
@@ -54,7 +54,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
   const lg = t.legal;
   const siteLang = useLang();
   const [template, setTemplate] = useState<TemplateId>((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId);
-  const [data, setData] = useState<InvitationData>(() => sampleData(siteLang));
+  const [data, setData] = useState<InvitationData>(() => sp.get("t") === "velours" ? veloursSampleData(siteLang) : sampleData(siteLang));
   const [email, setEmail] = useState("");
   const [emailErr, setEmailErr] = useState(false);
   const [last, setLast] = useState<LastInvite | null>(null);
@@ -393,7 +393,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
               </div>
               {isMine
                 ? status !== "published" && <button type="button" className="btn-s" disabled={busy} onClick={() => { setFull(null); publish(); }}>{publishLabel}</button>
-                : <button type="button" className="btn-s" onClick={() => { setTemplate(full); setFull(null); setMsg({ kind: "ok", text: e_.msgChosen(shown.name) }); }}><span className="lbl-lg">{e_.choose}</span><span className="lbl-sm">{e_.chooseShort}</span></button>}
+                : <button type="button" className="btn-s" onClick={() => { if (full === "velours" && !token && JSON.stringify(data) === JSON.stringify(sampleData(data.lang ?? siteLang))) setData(veloursSampleData(data.lang ?? siteLang)); setTemplate(full); setFull(null); setMsg({ kind: "ok", text: e_.msgChosen(shown.name) }); }}><span className="lbl-lg">{e_.choose}</span><span className="lbl-sm">{e_.chooseShort}</span></button>}
             </div>
             {/* key : chaque modèle recharge l'iframe, qui rejoue son ouverture. */}
             <iframe key={full} ref={fullFrame} src="/apercu?plein=1" title={t.common.demoOf(shown.name)} allow="accelerometer; gyroscope" />

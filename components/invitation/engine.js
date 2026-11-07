@@ -3,6 +3,7 @@
 /* eslint-disable */
 import { inviteDict } from "../../lib/i18n/invite";
 import { LOCALE } from "../../lib/i18n";
+import { mountCouple } from "./dresscode/couple";
 const CAP=s=>s.charAt(0).toUpperCase()+s.slice(1);
 export const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 export function dateParts(iso,lang="fr",tz="Europe/Paris"){
@@ -55,7 +56,7 @@ function render(){
 function renderVerse(){const v=DATA.verse&&DATA.verse.text?DATA.verse:null;$("verse").hidden=!v;if(!v)return;$("vOrig").textContent=v.orig||"";$("vOrig").hidden=!v.orig;$("vText").textContent=v.orig?v.text:T.c.quote(v.text);$("vRef").textContent=v.ref||"";}
 
 /* ===== Dress code ===== */
-let dcIdx=0, dcTimer, dcManual=false;
+let dcIdx=0, dcTimer, dcManual=false, couple=null;
 function renderDress(){
   const dc=DATA.dressCode, cols=dc.colors.slice(0,4);
   $("dress").hidden=dc.enabled===false||!cols.length; if($("dress").hidden)return;
@@ -67,9 +68,9 @@ function renderDress(){
   if(dcIdx>=cols.length)dcIdx=0; setDc(dcIdx); clearInterval(dcTimer);
   dcTimer=setInterval(()=>{ if(!dcManual && cols.length>1) setDc((dcIdx+1)%cols.length); },2800);
 }
-function setDc(i){ const c=DATA.dressCode.colors[i]; dcIdx=i; const f=$("dcFigs"); f.style.setProperty("--gm",c.men||c.hex); f.style.setProperty("--gw",c.women||c.hex);
-  $("dcName").textContent=c.name; $("dcSwatches").querySelectorAll(".dc-sw").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.i===i));
-  document.querySelectorAll(".dc-figs svg").forEach(v=>{v.classList.remove("swing");void v.getBoundingClientRect();v.classList.add("swing");}); }
+function setDc(i){ const c=DATA.dressCode.colors[i]; dcIdx=i; const f=$("dcFigs"); f.style.setProperty("--gm",c.men||c.hex); f.style.setProperty("--gw",c.women||c.hex); const ce=$("dcCouple"); if(couple?.el!==ce){couple?.destroy(); couple=mountCouple(ce,DATA.dressCode.couple);} couple.set(c.men||c.hex,c.women||c.hex);
+  $("dcName").innerHTML=c.name; $("dcSwatches").querySelectorAll(".dc-sw").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.i===i));
+   }
 
 /* ===== Date à gratter obligatoire ===== */
 function visibleScratches(){return [...document.querySelectorAll(".disc canvas,.heart canvas")].filter(c=>c.parentElement.offsetWidth>0);}
@@ -343,7 +344,7 @@ function skipIntro(){token++;opening=true;stage.hidden=true;stage.classList.add(
 if(OPTS.skipIntro)skipIntro();
 return{
   replay(){buildStage();},
-  destroy(){alive=false;token++;CLEAN.forEach(f=>f());clearInterval(dcTimer);musicOn=false;clearTimeout(loopTimer);try{actx&&actx.close();}catch(e){}
+  destroy(){alive=false;token++;CLEAN.forEach(f=>f());clearInterval(dcTimer);couple?.destroy();musicOn=false;clearTimeout(loopTimer);try{actx&&actx.close();}catch(e){}
     if(io)io.disconnect();document.body.classList.remove("locked","gated");}
 };
 

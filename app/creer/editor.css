@@ -2,7 +2,7 @@
 .ed-grid{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:32px;max-width:1180px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left,0px)) 40px}
 .ed-form{display:grid;gap:18px;min-width:0}
 .ed-form h1{font-size:2.6rem;margin:0}
-.ed select option{background:#171019;color:var(--ink)}
+.ed select option{background:#F9F6EF;color:var(--ink)}
 .ed input[type=checkbox]{accent-color:#C99A4B}
 .ed fieldset{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px 18px 18px;display:grid;gap:12px;margin:0;min-width:0}
 .ed legend{font:500 .72rem/1 var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--accent);padding:0 6px}
@@ -36,7 +36,7 @@
 .ed-tabs{display:none}
 @media (max-width:900px){
   .ed-grid{grid-template-columns:1fr;padding-top:64px}
-  .ed-tabs{display:flex;position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(13,9,17,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-left,0px));gap:8px}
+  .ed-tabs{display:flex;position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(242,237,227,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-left,0px));gap:8px}
   .ed-tabs button{flex:1;font:500 .8rem var(--f-ui);letter-spacing:.1em;text-transform:uppercase;padding:10px;border-radius:999px;border:1px solid var(--line);background:var(--field);color:var(--ink)}
   .ed-tabs button[aria-pressed=true]{background:var(--gold);border-color:transparent;color:var(--accent-ink)}
   .ed-hide-m{display:none!important}

@@ -32,6 +32,7 @@ export const en: SiteDict = {
     appel: { name: "Incoming Call", tagline: "Your guests get your call, pick up, and the conversation begins" },
     "boule-neige": { name: "Miniature World", tagline: "A snow globe to shake, then a dive into your wedding in miniature" },
     origami: { name: "Origami", tagline: "A paper crane unfolds, each section is a fold, the reply flies off as a plane" },
+    velours: { name: "Velvet Glow", tagline: "A seal glows, the envelope opens, and the celebration unfolds" },
   },
   home: {
     create: "Create",

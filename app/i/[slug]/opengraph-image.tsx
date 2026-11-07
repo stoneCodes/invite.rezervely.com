@@ -12,6 +12,7 @@ const THEME: Record<string, { bg: string; ink: string; accent: string }> = {
   appel: { bg: "linear-gradient(160deg,#3A2531,#120A10)", ink: "#FFFFFF", accent: "#5BE38B" },
   "boule-neige": { bg: "radial-gradient(circle at 50% 40%,#2C3462,#07080F)", ink: "#FBF3E6", accent: "#E9C98F" },
   origami: { bg: "linear-gradient(135deg,#FBF6EE,#EAD3BE)", ink: "#4B3A30", accent: "#D99AA5" },
+  velours: { bg: "linear-gradient(135deg,#32171D,#8A563B 52%,#E6C79B)", ink: "#FFF7EA", accent: "#E8C98D" },
 };
 
 /** Image d'aperçu affichée par WhatsApp, iMessage, etc. quand le lien est partagé. */

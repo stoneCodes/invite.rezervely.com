@@ -38,4 +38,8 @@ export const PDF_THEMES: Record<TemplateId, PdfTheme> = {
     background: "#FBF6EE", text: "#4B3A30", muted: "#8A7566", accent: "#A9823F", rule: "#E2D1B8",
     titleFont: "/fonts/pdf/CormorantGaramond-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/PinyonScript-Regular.ttf", ornament: "/pdf/ornaments/origami.svg",
   },
+  velours: {
+    background: "#FFF9F3", text: "#40252A", muted: "#80646A", accent: "#A87843", rule: "#E8D3C2",
+    titleFont: "/fonts/pdf/CormorantGaramond-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/PinyonScript-Regular.ttf", ornament: "/pdf/ornaments/velours.svg",
+  },
 };

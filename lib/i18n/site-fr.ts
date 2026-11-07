@@ -31,6 +31,7 @@ export const fr = {
     appel: { name: "Appel entrant", tagline: "Vos invités reçoivent votre appel, décrochent, et la conversation commence" },
     "boule-neige": { name: "Le monde miniature", tagline: "Une boule à neige à secouer, puis une plongée dans votre mariage en miniature" },
     origami: { name: "Origami", tagline: "Une grue en papier se déplie, chaque section est un pliage, la réponse part en avion" },
+    velours: { name: "Éclat de velours", tagline: "Un sceau s'illumine, l'enveloppe s'ouvre et la soirée se dévoile" },
   },
   home: {
     create: "Créer",

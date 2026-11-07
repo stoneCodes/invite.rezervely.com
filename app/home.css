@@ -1,18 +1,23 @@
 /* Page d'accueil « Nuit de gala ». Toutes les classes sont préfixées gl- : invitation.css utilise déjà .hero, .seal, .card… */
+/* Proposition de thème clair, limitée à l'accueil pour validation avant toute publication. */
+body:has(.gl){background:#EEE6D9}
+.gl{background-image:radial-gradient(ellipse at 12% 22%,rgba(255,255,255,.28),transparent 36%),radial-gradient(ellipse at 88% 54%,rgba(206,190,161,.2),transparent 38%),linear-gradient(135deg,rgba(255,255,255,.14),transparent 48%,rgba(186,164,126,.1))}
 .gl{overflow-x:clip;font-size:16px}
+.gl .btn-s.ghost{background:rgba(255,255,255,.58);color:var(--ink)!important;border-color:rgba(105,80,40,.28)}
+.gl .btn-s.ghost:hover{background:#FBF9F4;border-color:var(--accent)}
 .gl-kicker{font:400 .72rem/1 var(--f-ui);letter-spacing:.42em;text-transform:uppercase;color:var(--accent)}
 .gl-canvas{position:fixed;inset:0;pointer-events:none}
 .gl-dust{z-index:1}.gl-fw{z-index:30}
 .gl section,.gl .gl-marq,.gl footer{position:relative;z-index:2}
 
 .gl-nav{position:fixed;inset:0 0 auto;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:16px max(20px,env(safe-area-inset-left,0px));transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
-.gl-nav.is-scrolled{background:rgba(13,9,17,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:var(--line)}
+.gl-nav.is-scrolled{background:rgba(244,240,232,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:var(--line)}
 .gl-logo{display:inline-flex;align-items:center;text-decoration:none}
 .gl-nav .btn-s{padding:11px 18px}
-.gl-promo{position:relative;z-index:3;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 18px;margin:70px auto -70px;width:fit-content;max-width:calc(100% - 28px);border:1px solid rgba(243,215,155,.55);border-radius:999px;background:rgba(27,19,27,.92);box-shadow:0 8px 32px rgba(0,0,0,.3),0 0 28px rgba(243,215,155,.12);color:var(--ink);text-align:center}.gl-promo strong{color:#F3D79B;letter-spacing:.1em}
+.gl-promo{position:relative;z-index:3;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 18px;margin:70px auto -70px;width:fit-content;max-width:calc(100% - 28px);border:1px solid rgba(138,99,31,.25);border-radius:999px;background:rgba(251,249,244,.92);box-shadow:0 8px 32px rgba(62,45,26,.08),0 0 28px rgba(198,158,80,.1);color:var(--ink);text-align:center}.gl-promo strong{color:#705833;letter-spacing:.1em}
 
 /* Héros */
-.gl-hero{min-height:100svh;display:grid;place-items:center;text-align:center;padding:120px 20px 80px;background:radial-gradient(60% 50% at 50% 35%,rgba(201,154,75,.18),transparent 70%),radial-gradient(40% 40% at 80% 90%,rgba(231,166,182,.12),transparent 70%)}
+.gl-hero{min-height:100svh;display:grid;place-items:center;text-align:center;padding:120px 20px 80px;background:radial-gradient(60% 50% at 50% 35%,rgba(213,192,151,.2),transparent 70%),radial-gradient(40% 40% at 80% 90%,rgba(231,166,182,.11),transparent 70%)}
 .gl-hero h1{font-size:clamp(3rem,9vw,7.2rem);line-height:.95;margin:.35em 0 .25em}
 .gl-hero h1 .gl-script{font-family:var(--f-script);font-size:1.12em;display:block;margin-top:.08em}
 .gl-hero p{max-width:50ch;margin:0 auto 34px;color:var(--muted);font-size:1.08rem}
@@ -26,7 +31,7 @@
 @keyframes gl-cue{50%{transform:scaleY(.4);transform-origin:top}}
 
 /* Enveloppe épinglée : s'ouvre au défilement */
-.gl-pin{height:260vh}
+.gl-pin{height:260vh;background:linear-gradient(180deg,rgba(225,214,195,.72),rgba(240,233,220,.58) 48%,rgba(225,214,195,.72));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 0 rgba(112,85,46,.1)}
 .gl-stick{position:sticky;top:0;height:100svh;overflow:hidden}
 .gl-pin .gl-stick{display:grid;place-items:center;padding-top:12vh}
 .gl-env{position:relative;width:min(78vw,440px);aspect-ratio:1.45;perspective:1400px}
@@ -43,22 +48,22 @@
 .gl-pin-cap h2{font-size:clamp(1.6rem,5vw,3.4rem);margin:.3em 0 0}
 
 /* Bandeau défilant */
-.gl-marq{border-block:1px solid var(--line);padding:22px 0;overflow:hidden;white-space:nowrap;font:400 clamp(1.6rem,4vw,2.6rem)/1 var(--f-display)}
+.gl-marq{border-block:1px solid var(--line);padding:22px 0;overflow:hidden;white-space:nowrap;background:linear-gradient(110deg,rgba(226,216,199,.8),rgba(247,243,235,.78) 48%,rgba(226,216,199,.8));box-shadow:0 12px 30px rgba(74,56,31,.06),inset 0 1px rgba(255,255,255,.75),inset 0 -1px rgba(112,85,46,.08);font:400 clamp(1.6rem,4vw,2.6rem)/1 var(--f-display)}
 .gl-marq>div{display:inline-block;animation:gl-mq 30s linear infinite}
 .gl-marq i{font-family:var(--f-script);font-style:normal;color:var(--rose);margin:0 .6em}
 @keyframes gl-mq{to{transform:translateX(-50%)}}
 
 /* Modèles en défilement horizontal */
-.gl-hz{height:300vh}
+.gl-hz{height:300vh;background:linear-gradient(145deg,rgba(249,246,239,.76),rgba(233,224,208,.62) 52%,rgba(249,246,239,.78));box-shadow:inset 0 1px rgba(255,255,255,.72),inset 0 -1px rgba(112,85,46,.08)}
 .gl-hz .gl-stick{display:flex;flex-direction:column;justify-content:center;gap:28px}
 .gl-hz-head{padding:0 6vw}
 .gl-hz h2{font-size:clamp(2.2rem,5.5vw,4rem);margin:.2em 0 0}
 .gl-track{display:flex;gap:4vw;padding:0 6vw;will-change:transform}
-.gl-tpl{flex:0 0 auto;height:min(62svh,540px);aspect-ratio:3/4.3;max-width:80vw;border-radius:22px;position:relative;overflow:hidden;border:1px solid var(--line);transform:perspective(900px) rotateY(var(--ry,0deg))}
+.gl-tpl{flex:0 0 auto;height:min(62svh,540px);aspect-ratio:3/4.3;max-width:80vw;border-radius:22px;position:relative;overflow:hidden;border:1px solid var(--line);transform:perspective(900px) rotateY(var(--ry,0deg));color:#F6EBDD}
 .gl-tpl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.15) translateX(var(--px,0))}
 .gl-tpl-ov{position:absolute;inset:auto 0 0;padding:24px;background:linear-gradient(transparent,rgba(13,9,17,.95) 45%)}
 .gl-tpl h3{font:400 2rem/1 var(--f-display);margin:0 0 6px}
-.gl-tpl p{margin:0 0 16px;color:var(--muted);font-size:.92rem}
+.gl-tpl p{margin:0 0 16px;color:#E0D5C9;font-size:.92rem}
 .gl-tpl .gl-row{display:flex;gap:8px;flex-wrap:wrap}
 .gl-tpl .btn-s{padding:12px 16px}
 .gl-num{position:absolute;top:18px;left:22px;font:400 .7rem var(--f-ui);letter-spacing:.3em}
@@ -67,13 +72,15 @@
 /* Étapes */
 .gl-steps{padding-block:18vh;display:grid;gap:12vh}
 .gl-step{display:grid;grid-template-columns:auto 1fr;gap:5vw;align-items:center}
+.gl-step>div:last-child{padding:24px 28px;border:1px solid rgba(105,80,40,.14);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.68),rgba(237,229,214,.72));box-shadow:0 18px 36px rgba(62,45,26,.075),inset 0 1px rgba(255,255,255,.85);transform:perspective(1000px) rotateY(-1deg)}
+.gl-step:nth-child(even)>div:last-child{transform:perspective(1000px) rotateY(1deg)}
 .gl-step .gl-n{font:400 clamp(5rem,16vw,11rem)/.8 var(--f-display)}
 .gl-step h3{font:400 clamp(1.8rem,4vw,2.8rem)/1.05 var(--f-display);margin:0 0 10px}
 .gl-step p{color:var(--muted);margin:0;max-width:44ch}
 .gl-rv{opacity:0;transform:translateY(50px);transition:opacity 1s,transform 1s cubic-bezier(.2,.8,.2,1)}
 .gl-rv.is-on{opacity:1;transform:none}
 
-.gl-final{padding:22vh 20px;text-align:center;background:radial-gradient(50% 60% at 50% 50%,rgba(201,154,75,.2),transparent 70%)}
+.gl-final{padding:22vh 20px;text-align:center;background:radial-gradient(50% 60% at 50% 50%,rgba(199,176,132,.3),transparent 70%),linear-gradient(135deg,rgba(226,216,199,.86),rgba(243,238,228,.82));box-shadow:inset 0 1px rgba(255,255,255,.7)}
 .gl-final h2{font-size:clamp(2.6rem,8vw,6rem);margin:.2em 0 .5em}
 .gl-final .btn-s{padding:16px 28px}
 .gl footer{padding:30px 20px calc(30px + env(safe-area-inset-bottom,0px));text-align:center;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line)}
@@ -88,10 +95,10 @@
 .gl-space:hover{border-color:var(--line)}
 .gl-space svg{width:18px;height:18px}
 @media (max-width:480px){.gl-space span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.gl-space{padding:8px}}
-.gl-back{display:grid;justify-items:center;gap:10px;width:fit-content;max-width:100%;margin:30px auto 0;padding:14px 20px;border:1px solid rgba(243,215,155,.2);border-radius:16px;background:rgba(20,14,22,.56);color:var(--muted);font-size:.9rem;text-align:center}
+.gl-back{display:grid;justify-items:center;gap:10px;width:fit-content;max-width:100%;margin:30px auto 0;padding:14px 20px;border:1px solid rgba(105,80,40,.16);border-radius:16px;background:rgba(251,249,244,.78);box-shadow:0 8px 26px rgba(62,45,26,.045);color:var(--muted);font-size:.9rem;text-align:center}
 .gl-back-label{line-height:1.45}
-.gl-back-link{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:42px;padding:9px 16px;border:1px solid rgba(243,215,155,.42);border-radius:999px;background:rgba(243,215,155,.08);color:var(--accent);font-size:.92rem;text-decoration:none;transition:background .2s,border-color .2s,transform .2s}
-.gl-back-link:hover{background:rgba(243,215,155,.16);border-color:rgba(243,215,155,.7);transform:translateY(-1px)}
+.gl-back-link{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:42px;padding:9px 16px;border:1px solid rgba(129,100,58,.28);border-radius:999px;background:rgba(207,190,157,.2);color:#6F5937;font-size:.92rem;text-decoration:none;transition:background .2s,border-color .2s,transform .2s}
+.gl-back-link:hover{background:rgba(207,190,157,.32);border-color:rgba(129,100,58,.5);transform:translateY(-1px)}
 .gl-back-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .gl-back-link span{font-size:1.1em;transition:transform .2s}
 .gl-back-link:hover span{transform:translateX(3px)}

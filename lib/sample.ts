@@ -6,6 +6,37 @@ export function sampleData(lang: Lang = "fr"): InvitationData {
   return lang === "en" ? sampleEn() : sampleFr();
 }
 
+/** Jeu de données de la démo musulmane « Éclat de velours » ; toutes les valeurs restent éditables. */
+export function veloursSampleData(lang: Lang = "fr"): InvitationData {
+  const en = lang === "en";
+  const data = sampleData(lang);
+  return {
+    ...data,
+    partner1: "Ahmed",
+    partner2: "Fatima",
+    intro: en ? "Together with their families, Ahmed and Fatima invite you to celebrate their union." : "Avec leurs familles, Ahmed et Fatima vous invitent à célébrer leur union.",
+    programme: en ? [
+      { t: "3:00 pm", title: "Nikah ceremony", note: "A moment of prayer and blessing" },
+      { t: "5:00 pm", title: "Family gathering", note: "A warm welcome for everyone" },
+      { t: "7:00 pm", title: "Dinner", note: "An evening shared around the table" },
+      { t: "9:00 pm", title: "Celebration", note: "Music, joy and family traditions" },
+    ] : [
+      { t: "15h00", title: "Cérémonie du nikah", note: "Un moment de prière et de bénédiction" },
+      { t: "17h00", title: "Retrouvailles en famille", note: "Un accueil chaleureux pour tous" },
+      { t: "19h00", title: "Dîner", note: "Une soirée partagée autour de la table" },
+      { t: "21h00", title: "Célébration", note: "Musique, joie et traditions familiales" },
+    ],
+    venue: en ? { name: "The Orange Grove", address: "Toulouse, France" } : { name: "Le Jardin des Orangers", address: "Toulouse, France" },
+    verse: {
+      kind: "coran",
+      orig: "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ",
+      text: en ? "He created spouses so they may find comfort with one another, and placed affection and mercy between them." : "Il a créé les époux afin qu’ils trouvent la quiétude l’un auprès de l’autre, et a placé entre eux affection et miséricorde.",
+      ref: en ? "Qur’an, Ar-Rum, 30:21" : "Coran, Ar-Rûm, 30:21",
+    },
+    rsvpBy: en ? "Please reply before 1 May 2027" : "Merci de répondre avant le 1er mai 2027",
+  };
+}
+
 function sampleFr(): InvitationData {
   return {
     lang: "fr",

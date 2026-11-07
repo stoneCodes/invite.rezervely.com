@@ -8,6 +8,7 @@ export const TEMPLATES = [
   { id: "appel", name: "Appel entrant", tagline: "Vos invités reçoivent votre appel, décrochent, et la conversation commence", cover: "/img/appel-fond-defaut.webp" },
   { id: "boule-neige", name: "Le monde miniature", tagline: "Une boule à neige à secouer, puis une plongée dans votre mariage en miniature", cover: "/img/boule-domaine.webp" },
   { id: "origami", name: "Origami", tagline: "Une grue en papier se déplie, chaque section est un pliage, la réponse part en avion", cover: "/img/origami-grues.webp" },
+  { id: "velours", name: "Éclat de velours", tagline: "Un sceau s'illumine, l'enveloppe s'ouvre et la soirée se dévoile", cover: "/img/velours-enveloppe.webp" },
 ] as const;
 
 export type TemplateId = (typeof TEMPLATES)[number]["id"];

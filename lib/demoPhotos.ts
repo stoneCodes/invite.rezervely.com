@@ -10,4 +10,5 @@ export const DEMO_PHOTOS: Record<TemplateId, string> = {
   appel: "/img/demo-couple-appel.webp",
   "boule-neige": "/img/demo-couple-boule-neige.webp",
   origami: "/img/demo-couple-origami.webp",
+  velours: "/img/demo-couple-velours.webp",
 };

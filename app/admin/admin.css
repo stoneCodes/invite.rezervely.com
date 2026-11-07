@@ -59,3 +59,37 @@
 .ad-client-expand summary{width:fit-content;min-width:44px;padding:5px 9px;border:1px solid #594a5e;border-radius:8px;color:#e6c777;text-align:center;cursor:pointer;list-style:none}.ad-client-expand summary::-webkit-details-marker{display:none}.ad-client-expand summary::after{content:"⌄";padding-left:8px}.ad-client-expand[open] summary::after{content:"⌃"}
 .ad-client-expand>div{min-width:300px;max-width:480px;margin-top:8px;padding:8px 10px;border:1px solid #403342;border-radius:10px;background:#100b13}.ad-client-expand-count{margin:0 0 5px;color:#a99eaa;font-size:12px}.ad-client-expand ul{display:grid;gap:4px;max-height:300px;overflow:auto;margin:0;padding:0;list-style:none}.ad-client-expand li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #392e3c}.ad-client-expand li>div{display:grid;gap:3px;min-width:0}.ad-client-expand li small{color:#a99eaa;font-size:11px}.ad-client-suggestions p{max-width:850px;color:#c8bdc6;line-height:1.6}
 @media(max-width:480px){.ad-detail-content dl{grid-template-columns:1fr}.ad-detail-content li a{flex-direction:column;gap:3px}.ad-detail-content li a span:last-child{text-align:left}}
+
+/* Palette claire commune validée pour les pages du site, admin compris. */
+.ad-shell{background:radial-gradient(ellipse at 15% 10%,rgba(255,255,255,.85),transparent 45%),linear-gradient(135deg,#EEE6D9,#F5F1E9);color:#2B2520}
+.ad-card{border-color:rgba(105,80,40,.18);background:#F9F6EF;box-shadow:0 24px 80px rgba(62,45,26,.12)}
+.ad-card h1{color:#2B2520}.ad-kicker,.ad-price-kicker{color:#81643A}
+.ad-card input,.ad-main select,.ad-filters input,.ad-filters select,.ad-action-grid input,.ad-price-forms input,.ad-price-forms select,.ad-client-search input{border-color:rgba(105,80,40,.26);background:#F2EDE3;color:#2B2520}
+.ad-note{color:#746B63}.ad-error{color:#B64C4C}
+.ad-app{background:#F2EDE3;color:#2B2520}
+.ad-header,.ad-sidebar{border-color:rgba(105,80,40,.16);background:rgba(238,230,217,.94)}
+.ad-header>a,.ad-header nav a,.ad-main a{color:#765B35}
+.ad-header span,.ad-title form label,.ad-filters label,.ad-action-grid label,.ad-price-forms label,.ad-pagination,.ad-page-intro,.ad-client-search label{color:#746B63}
+.ad-header button,.ad-card button,.ad-filters button,.ad-action-grid button,.ad-title form button,.ad-price-forms button,.ad-payment-toggle button{border-color:#B9A47A;background:linear-gradient(110deg,#D0C1A3,#B9A47A);color:#302A20}
+.ad-stat,.ad-panel{border-color:rgba(105,80,40,.16);background:#F9F6EF;box-shadow:0 10px 28px rgba(62,45,26,.045)}
+.ad-stat span,.ad-stat small,.ad-panel p,.ad-price-intro p,.ad-price-current span,.ad-payment-toggle small,.ad-sample,.ad-chart-day small,.ad-funnel-step span,.ad-funnel-step small{color:#746B63}
+.ad-stat strong,.ad-detail-dialog,.ad-detail-content>header button{color:#2B2520}
+.ad-panel h2,.ad-panel h3,.ad-price-intro h1,.ad-price-current strong,.ad-price-section-heading h2,.ad-detail-content>header h2,.ad-detail-content section h3{color:#81643A}
+.ad-price-intro{border-color:rgba(105,80,40,.16);background:radial-gradient(ellipse at top right,rgba(208,193,163,.25),transparent 48%),#F9F6EF}
+.ad-price-current{border-color:rgba(105,80,40,.2)}
+.ad-sale-state small,.ad-stripe-mode small,.ad-price-message,.ad-muted,.ad-client-expand-count,.ad-client-expand li small,.ad-client-suggestions p{color:#746B63}
+.ad-period-links a,.ad-client-list-title>span,.ad-client-expand summary{border-color:rgba(105,80,40,.22);color:#765B35}
+.ad-period-links a[aria-current=page]{background:#D0C1A3;color:#302A20}
+.ad-chart,.ad-detail-content li,.ad-app th,.ad-app td{border-color:rgba(105,80,40,.18)}
+.ad-app th{color:#746B63}
+.ad-detail-content>header span,.ad-detail-content dt,.ad-detail-content li a span:last-child,.ad-detail-empty{color:#746B63}
+.ad-bar-views{background:#A89065}.ad-bar-visits{background:#C18A98}.ad-funnel-track{background:#E3DCCD}
+.ad-sidebar-label{color:#746B63}.ad-sidebar nav a{color:#5E554C}
+.ad-sidebar nav a:hover{background:rgba(207,190,157,.24);color:#302A20}
+.ad-sidebar nav a.active{border-color:rgba(129,100,58,.18);background:linear-gradient(100deg,rgba(208,193,163,.42),rgba(193,173,135,.2));color:#624D2E}
+.ad-sidebar-icon{color:#81643A}
+.ad-stat-button:hover,.ad-stat-button:focus-visible,.ad-detail-button:hover,.ad-detail-button:focus-visible{border-color:#B9A47A;background:#F1E9DB}
+.ad-detail-dialog{border-color:rgba(105,80,40,.22);background:#F9F6EF;box-shadow:0 24px 90px rgba(62,45,26,.24)}
+.ad-detail-dialog::backdrop{background:rgba(43,37,32,.42)}
+.ad-detail-content>header button,.ad-detail-content dl>div,.ad-client-expand>div{border-color:rgba(105,80,40,.18);background:#F2EDE3}
+.ad-detail-content li{border-color:rgba(105,80,40,.14)}
