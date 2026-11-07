@@ -9,6 +9,7 @@
 .gl-nav.is-scrolled{background:rgba(13,9,17,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:var(--line)}
 .gl-logo{display:inline-flex;align-items:center;text-decoration:none}
 .gl-nav .btn-s{padding:11px 18px}
+.gl-promo{position:relative;z-index:3;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 18px;margin:70px auto -70px;width:fit-content;max-width:calc(100% - 28px);border:1px solid rgba(243,215,155,.55);border-radius:999px;background:rgba(27,19,27,.92);box-shadow:0 8px 32px rgba(0,0,0,.3),0 0 28px rgba(243,215,155,.12);color:var(--ink);text-align:center}.gl-promo strong{color:#F3D79B;letter-spacing:.1em}
 
 /* Héros */
 .gl-hero{min-height:100svh;display:grid;place-items:center;text-align:center;padding:120px 20px 80px;background:radial-gradient(60% 50% at 50% 35%,rgba(201,154,75,.18),transparent 70%),radial-gradient(40% 40% at 80% 90%,rgba(231,166,182,.12),transparent 70%)}
@@ -52,10 +53,11 @@
 .gl-hz .gl-stick{display:flex;flex-direction:column;justify-content:center;gap:28px}
 .gl-hz-head{padding:0 6vw}
 .gl-hz h2{font-size:clamp(2.2rem,5.5vw,4rem);margin:.2em 0 0}
-.gl-track{display:flex;gap:4vw;padding:0 6vw;will-change:transform}
-.gl-tpl{flex:0 0 auto;height:min(62svh,540px);aspect-ratio:3/4.3;max-width:80vw;border-radius:22px;position:relative;overflow:hidden;border:1px solid var(--line);transform:perspective(900px) rotateY(var(--ry,0deg))}
-.gl-tpl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.15) translateX(var(--px,0))}
-.gl-tpl-ov{position:absolute;inset:auto 0 0;padding:24px;background:linear-gradient(transparent,rgba(13,9,17,.95) 45%)}
+.gl-track{display:flex;gap:4vw;padding:0 6vw;perspective:900px;transform-style:preserve-3d;will-change:transform}
+.gl-tpl{--focus:0;flex:0 0 auto;height:min(62svh,540px);aspect-ratio:3/4.3;max-width:80vw;border-radius:22px;position:relative;overflow:hidden;border:1px solid rgba(243,215,155,calc(.08 + var(--focus)*.72));opacity:calc(.24 + var(--focus)*.76);box-shadow:0 22px 58px rgba(0,0,0,calc(.32 + var(--focus)*.3)),0 0 42px rgba(243,215,155,calc(var(--focus)*.38));transform:perspective(760px) translateZ(var(--depth,0)) rotateY(var(--ry,0deg)) translateY(var(--lift,0)) scale(var(--scale,1));transition:opacity .3s ease-out,border-color .3s ease-out,box-shadow .3s ease-out,transform .3s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.gl-tpl.is-focused{z-index:2}
+.gl-tpl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(calc(.58 + var(--focus)*.42)) saturate(calc(.55 + var(--focus)*.45)) blur(calc((1 - var(--focus))*3px));transform:scale(calc(1.08 + var(--focus)*.14)) translateX(var(--px,0));transition:filter .3s ease-out,transform .3s ease-out}
+.gl-tpl-ov{position:absolute;inset:auto 0 0;padding:24px;background:linear-gradient(transparent,rgba(13,9,17,.95) 45%);transform:translateY(calc((1 - var(--focus))*24px));transition:transform .3s ease-out}
 .gl-tpl h3{font:400 2rem/1 var(--f-display);margin:0 0 6px}
 .gl-tpl p{margin:0 0 16px;color:var(--muted);font-size:.92rem}
 .gl-tpl .gl-row{display:flex;gap:8px;flex-wrap:wrap}

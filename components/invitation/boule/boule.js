@@ -11,7 +11,7 @@ const IMG = {
 };
 // Repères mesurés sur les images (en % de l'image).
 const GLOBE = { cx: 0.496, cy: 0.391, r: 0.347, ground: 0.655 }; // sphère de verre dans boule-globe (image carrée)
-const FRAME = { l: 26, t: 23.6, w: 45.6, h: 38.6 };                // cadre vide du chevalet
+const FRAME = { l: 25, t: 21.8, w: 48.6, h: 41.7 };                // ouverture du cadre du chevalet (remesurée le 7 nov. 2026 : 257→753 px × 337→975 px sur 1024×1536)
 const STOPS = [[31, 78], [61, 47], [33, 31], [67, 13]];           // chemin : chapelle → cocktail → tente → piste
 const MANOR = [70, 46.5];                                          // porte du domaine
 

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Invitation from "@/components/invitation/Invitation";
 import type { InvitationData, TemplateId } from "@/lib/types";
 
-type Msg = { type: "invite-preview"; data: InvitationData; template: TemplateId; replay?: boolean; full?: boolean };
+type Msg = { type: "invite-preview"; data: InvitationData; template: TemplateId; replay?: boolean; full?: boolean; demoPhoto?: boolean };
 
 /** Aperçu affiché dans l'iframe de l'éditeur : reçoit les données par postMessage. */
 export default function Apercu() {
@@ -25,7 +25,7 @@ export default function Apercu() {
   if (!state) return null;
   return (
     <>
-      <Invitation key={state.v} data={state.msg.data} template={state.msg.template} skipIntro={!state.msg.replay} noGate={!state.msg.replay} />
+      <Invitation key={state.v} data={state.msg.data} template={state.msg.template} skipIntro={!state.msg.replay} noGate={!state.msg.replay} demoPhoto={state.msg.demoPhoto} />
       {!state.msg.full && <div style={{ position: "fixed", top: 12, left: 12, zIndex: 80, font: "500 10px/1 Jost,system-ui,sans-serif", letterSpacing: ".2em", padding: "7px 10px", borderRadius: 999, background: "rgba(0,0,0,.55)", color: "#fff", pointerEvents: "none" }}>
         APERÇU
       </div>}

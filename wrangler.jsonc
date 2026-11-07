@@ -23,7 +23,11 @@
 		"SUPABASE_URL": "https://usolfegmepnazrporeec.supabase.co",
 		"EMAIL_FROM": "joyeuxevent <hello@joyeuxevent.com>",
 		// Paiement Stripe à la publication : passer à "true" une fois STRIPE_SECRET_KEY et STRIPE_WEBHOOK_SECRET saisis.
-		"PAYMENTS_ENABLED": "true"
+		"PAYMENTS_ENABLED": "true",
+		// Statistiques de l'admin (Cloudflare Web Analytics, site « Automatic setup » : le script est injecté par Cloudflare,
+		// donc CF_WEB_ANALYTICS_TOKEN reste vide pour ne pas compter deux fois). CF_API_TOKEN est un secret saisi dans le tableau de bord.
+		"CF_ACCOUNT_ID": "4a119a4ba99c3c4374be69e577a105b7",
+		"CF_WEB_ANALYTICS_SITE_TAG": "a0e758c1ef0f4c3e8e8343b3f5cf667c"
 	},
 	"observability": { "enabled": true }
 }

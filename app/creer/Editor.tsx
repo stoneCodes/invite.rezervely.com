@@ -111,7 +111,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
       if (e.origin !== window.location.origin || e.data?.type !== "invite-preview-ready") return;
       const fw = fullFrame.current?.contentWindow;
       if (fw && e.source === fw) {
-        fw.postMessage({ type: "invite-preview", data, template: full ?? template, replay: true, full: true }, window.location.origin);
+        fw.postMessage({ type: "invite-preview", data, template: full ?? template, replay: true, full: true, demoPhoto: !!full && full !== template }, window.location.origin);
         return;
       }
       ready.current = true; send();

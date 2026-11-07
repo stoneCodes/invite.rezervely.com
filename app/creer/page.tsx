@@ -9,7 +9,7 @@ export async function generateMetadata() {
 
 export default async function CreerPage() {
   // Prix affiché sur le bouton « Publier » seulement quand le paiement est activé.
-  const payPrice = paymentsOn() ? formatPrice(await getLang(), await getPriceCents()) : null;
+  const payPrice = await paymentsOn() ? formatPrice(await getLang(), await getPriceCents()) : null;
   return (
     <Suspense>
       <Editor payPrice={payPrice} />

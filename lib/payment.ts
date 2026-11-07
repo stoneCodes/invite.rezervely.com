@@ -17,7 +17,10 @@ const MIN_PRICE_CENTS = 50;
 const MAX_PRICE_CENTS = 1_000_000;
 
 const clean = (v?: string) => v?.trim().replace(/^["']|["']$/g, "").trim() || "";
-export const paymentsOn = () => clean(process.env.PAYMENTS_ENABLED) === "true";
+export async function paymentsOn(): Promise<boolean> {
+  const saved = await getAdminSetting<unknown>("payments_enabled");
+  return typeof saved === "boolean" ? saved : clean(process.env.PAYMENTS_ENABLED) === "true";
+}
 
 /** Prix en centimes, configurable depuis l'administration ; le défaut reste 9,90 €. */
 export async function getPriceCents(): Promise<number> {
@@ -26,7 +29,9 @@ export async function getPriceCents(): Promise<number> {
 }
 
 /** Le paiement est-il exigé avant de publier cette invitation ? (déjà publiée avant le paiement = gratuite) */
-export const needsPayment = (inv: Pick<InvitationRow, "paid_at" | "published_at">) => paymentsOn() && !inv.paid_at && !inv.published_at;
+export async function needsPayment(inv: Pick<InvitationRow, "paid_at" | "published_at">) {
+  return await paymentsOn() && !inv.paid_at && !inv.published_at;
+}
 
 export function formatPrice(lang: Lang, cents = PRICE_CENTS) {
   return new Intl.NumberFormat(lang === "en" ? "en-IE" : "fr-FR", { style: "currency", currency: CURRENCY }).format(cents / 100);

@@ -20,7 +20,7 @@ export default function DemoClient({ template, embedded = false }: { template: T
   }, [embedded]);
   return (
     <>
-      <Invitation data={sampleData(lang)} template={template} />
+      <Invitation data={sampleData(lang)} template={template} demoPhoto />
       {/* Sortie de la démo : toujours visible, au-dessus des ouvertures plein écran (sauf dans la pop-up de l'accueil). */}
       {!embedded && (
         <Link href="/" className={`demo-exit${mini ? " is-mini" : ""}`} aria-label={t.demo.exitAria}>

@@ -11,7 +11,7 @@ import { LangSwitch, useT } from "@/components/I18n";
 import { getLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 
 /** Page d'accueil « Nuit de gala » : poussière d'or, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal. */
-export default function HomeClient() {
+export default function HomeClient({publicPromo}:{publicPromo?:{code:string;label:string}}) {
   const router = useRouter();
   const t = useT();
   const h = t.home;
@@ -79,8 +79,15 @@ export default function HomeClient() {
       track.style.transform = `translateX(${-prog(hz) * Math.max(0, max)}px)`;
       for (const c of cards) {
         const r = c.getBoundingClientRect(), d = (r.left + r.width / 2 - innerWidth / 2) / innerWidth;
-        c.style.setProperty("--ry", `${d * -14}deg`);
-        c.querySelector("img")?.style.setProperty("--px", `${d * -30}px`);
+        const side = Math.max(-1.25, Math.min(1.25, d));
+        const focus = Math.max(0, Math.min(1, 1 - Math.abs(d) * 1.7));
+        c.style.setProperty("--focus", reduce ? "1" : String(focus));
+        c.style.setProperty("--ry", reduce ? "0deg" : `${side * -38}deg`);
+        c.style.setProperty("--scale", reduce ? "1" : String(0.68 + focus * 0.55));
+        c.style.setProperty("--depth", reduce ? "0px" : `${focus * 220 - 130}px`);
+        c.style.setProperty("--lift", reduce ? "0px" : `${(1 - focus) * 30}px`);
+        c.classList.toggle("is-focused", !reduce && focus > 0.72);
+        c.querySelector("img")?.style.setProperty("--px", reduce ? "0px" : `${side * -80}px`);
       }
     };
     const sched = () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } };
@@ -137,6 +144,8 @@ export default function HomeClient() {
         <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={26} /></Link>
         <div className="gl-nav-r"><Link className="gl-space" href={spaceHref(last)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg><span>{t.find.mySpace}</span></Link><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
       </nav>
+
+      {publicPromo&&<aside className="gl-promo" role="status"><span>{h.promoLine(publicPromo.label)}</span><strong>{publicPromo.code}</strong></aside>}
 
       <section className="gl-hero">
         <div>

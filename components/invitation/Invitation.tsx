@@ -11,6 +11,7 @@ import { mountAppel } from "./appel/appel";
 import { mountBoule } from "./boule/boule";
 import { mountOrigami } from "./origami/origami";
 import type { InvitationData, TemplateId } from "@/lib/types";
+import { DEMO_PHOTOS } from "@/lib/demoPhotos";
 
 type Props = {
   data: InvitationData;
@@ -19,6 +20,8 @@ type Props = {
   slug?: string;
   skipIntro?: boolean;
   noGate?: boolean;
+  /** Démo : sans photo des mariés, affiche la photo de couple du modèle (jamais pour une invitation publiée). */
+  demoPhoto?: boolean;
   onReady?: (api: { replay(): void }) => void;
 };
 
@@ -34,7 +37,8 @@ function options(slug: string | undefined, skipIntro?: boolean, noGate?: boolean
 }
 
 /** Monte une invitation animée. Le balisage est remonté à chaque changement de données (key côté parent). */
-export default function Invitation(props: Props) {
+export default function Invitation(input: Props) {
+  const props = input.demoPhoto && !input.data.photoUrl ? { ...input, data: { ...input.data, photoUrl: DEMO_PHOTOS[input.template] } } : input;
   // « Appel entrant » et « Le monde miniature » ont leur propre moteur ; les autres partagent engine.js + markup.ts.
   if (props.template === "appel") return <OwnEngine {...props} mount={mountAppel} />;
   if (props.template === "boule-neige") return <OwnEngine {...props} mount={mountBoule} />;

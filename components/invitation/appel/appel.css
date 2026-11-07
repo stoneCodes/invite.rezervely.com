@@ -106,7 +106,7 @@ html:has(.ap),body:has(.ap){background:#1A1016}
 @keyframes ap-gold{to{background-position:-200% 0}}
 /* Photo */
 .ap-photo{padding:5px!important;border-radius:20px 20px 20px 6px}
-.ap-photo img,.ap-photo-ph{display:block;width:min(64vw,260px);aspect-ratio:4/5;object-fit:cover;border-radius:16px 16px 16px 4px}
+.ap-photo img,.ap-photo-ph{display:block;width:min(72vw,300px);aspect-ratio:4/5;object-fit:cover;border-radius:16px 16px 16px 4px}
 .ap-photo-ph{display:grid;place-items:center;background:linear-gradient(135deg,#F3DCD4,#C9B9A0);font:400 3rem var(--f-script);color:#5E3E41}
 .ap-photo .ap-time{color:#fff;opacity:.9;text-shadow:0 1px 4px rgba(0,0,0,.5);bottom:10px;right:14px}
 /* Verset */

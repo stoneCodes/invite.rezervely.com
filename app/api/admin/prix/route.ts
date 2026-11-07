@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { requireAdmin, originAllowed } from "@/lib/admin/auth";
 import { recordAdminEvent, updateAdminEvent } from "@/lib/admin/audit";
 import { setAdminSetting } from "@/lib/admin/settings";
-import { createPromotionCode } from "@/lib/payment";
+import { createPromotionCode, paymentsOn as getPaymentsOn, stripeKeyStatus } from "@/lib/payment";
 import adminFr from "@/lib/i18n/admin-fr";
 
 export const dynamic = "force-dynamic";
-type Body = { action?: unknown; priceCents?: unknown; code?: unknown; kind?: unknown; value?: unknown; expires?: unknown; maxRedemptions?: unknown };
+type Body = { action?: unknown; priceCents?: unknown; enabled?: unknown; code?: unknown; kind?: unknown; value?: unknown; expires?: unknown; maxRedemptions?: unknown };
 const fail=(status:number)=>NextResponse.json({error:adminFr.formError},{status});
 export async function POST(req:Request){
   const actor=await requireAdmin();
@@ -23,7 +23,21 @@ export async function POST(req:Request){
       catch(error){await updateAdminEvent(eventId,{stage:"failed",priceCents:cents});throw error;}
       return NextResponse.json({ok:true});
     }
+    if(body.action==="payments"){
+      if(typeof body.enabled!=="boolean")return fail(400);
+      if(body.enabled){
+        const key=stripeKeyStatus();
+        if(key.mode!=="test"&&key.mode!=="live")return NextResponse.json({error:adminFr.stripeNeedsSecret},{status:409});
+      }
+      const previous=await getPaymentsOn();
+      const eventId=await recordAdminEvent({actor,action:adminFr.paymentToggleAction,details:{stage:"started",previous,enabled:body.enabled}});
+      try{await setAdminSetting("payments_enabled",body.enabled);await updateAdminEvent(eventId,{stage:"completed",previous,enabled:body.enabled});}
+      catch(error){await updateAdminEvent(eventId,{stage:"failed",previous,enabled:body.enabled});throw error;}
+      return NextResponse.json({ok:true,enabled:body.enabled});
+    }
     if(body.action==="promotion"){
+      const key=stripeKeyStatus();
+      if(key.mode!=="test"&&key.mode!=="live")return NextResponse.json({error:adminFr.stripeNeedsSecret},{status:409});
       const code=typeof body.code==="string"?body.code.trim():"";
       const kind=body.kind;
       const value=body.value;
@@ -43,8 +57,11 @@ export async function POST(req:Request){
       let promo;
       try{promo=await createPromotionCode({code,kind,value,expiresAt,maxRedemptions:typeof max==="number"?max:undefined});}
       catch(error){await updateAdminEvent(eventId,{stage:"failed",code,kind,value,expiresAt});throw error;}
+      let publicBanner=true;
+      try { await setAdminSetting("public_promo", {code:promo.code,kind,value,expiresAt:promo.expires_at}); }
+      catch(error) { publicBanner=false;console.error("admin.promo.public",error instanceof Error?error.message:error); }
       await updateAdminEvent(eventId,{stage:"completed",code:promo.code,promotionCodeId:promo.id,couponId:promo.coupon.id,kind,value,expiresAt:promo.expires_at,maxRedemptions:promo.max_redemptions});
-      return NextResponse.json({ok:true,promotionCode:promo});
+      return NextResponse.json({ok:true,promotionCode:promo,publicBanner});
     }
   }catch(error){
     console.error("admin.price",error instanceof Error?error.message:error);
