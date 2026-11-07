@@ -33,6 +33,13 @@ export async function needsPayment(inv: Pick<InvitationRow, "paid_at" | "publish
   return await paymentsOn() && !inv.paid_at && !inv.published_at;
 }
 
+/** Liste des invités en PDF : payée, offerte, accordée depuis l'admin, ou publiée tant que les paiements sont désactivés
+   (la publication est alors gratuite, le PDF ne doit pas rester verrouillé). */
+export async function pdfAllowed(inv: Pick<InvitationRow, "paid_at" | "status"> & { comped_at?: string | null; pdf_granted_at?: string | null }) {
+  if (inv.paid_at || inv.comped_at || inv.pdf_granted_at) return true;
+  return inv.status === "published" && !(await paymentsOn());
+}
+
 export function formatPrice(lang: Lang, cents = PRICE_CENTS) {
   return new Intl.NumberFormat(lang === "en" ? "en-IE" : "fr-FR", { style: "currency", currency: CURRENCY }).format(cents / 100);
 }

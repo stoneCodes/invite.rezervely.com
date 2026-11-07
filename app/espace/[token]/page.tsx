@@ -11,6 +11,8 @@ import { siteDict } from "@/lib/i18n/site";
 import { LOCALE } from "@/lib/i18n";
 import { LangSwitch } from "@/components/I18n";
 import PdfDownloadButton from "./PdfDownloadButton";
+import PublishButton from "./PublishButton";
+import { formatPrice, getPriceCents, needsPayment, paymentsOn, pdfAllowed as canPdf } from "@/lib/payment";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,15 +21,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
 type Rsvp = { id: string; name: string; attending: boolean; guests: number; message: string | null; created_at: string };
 
-export default async function Espace({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<{ paiement?: string }> }) {
+export default async function Espace({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<{ paiement?: string; enregistre?: string }> }) {
   const { token } = await params;
-  const { paiement } = await searchParams;
+  const { paiement, enregistre } = await searchParams;
   const lang = await getLang();
   const t = siteDict(lang);
   const s = t.space;
   const inv = await getByToken(token);
   if (!inv) notFound();
-  const pdfAllowed = !!inv.paid_at || !!inv.comped_at || !!inv.pdf_granted_at;
+  const pdfAllowed = await canPdf(inv);
+  const payOn = await paymentsOn();
+  const needPay = inv.status !== "published" && await needsPayment(inv);
+  const price = needPay ? formatPrice(lang, await getPriceCents()) : null;
   const { data } = await db().from("rsvps").select("*").eq("invitation_id", inv.id).order("created_at", { ascending: false });
   const rsvps = (data ?? []) as Rsvp[];
   const yes = rsvps.filter((r) => r.attending);
@@ -44,6 +49,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
           <p className="muted" style={{ margin: 0 }}>{s.keep}</p>
         </header>
 
+        {enregistre && !paiement && <p className="ed-msg ok" role="status" style={{ margin: 0 }}>{s.saved}</p>}
         {paiement && (
           <p className={`ed-msg ${inv.status === "published" ? "ok" : "err"}`} role="status" style={{ margin: 0 }}>{inv.status === "published" ? t.pay.paid : t.pay.pending}</p>
         )}
@@ -55,10 +61,16 @@ export default async function Espace({ params, searchParams }: { params: Promise
           ) : (
             <p className="muted" style={{ margin: 0 }}>{s.notPublished}</p>
           )}
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <Link className="btn-s" href={`/creer?edit=${token}`}>{s.edit}</Link>
-            <Link className="btn-s ghost" href={`/espace/${token}/voir`}>{s.see}</Link>
-          </div>
+          {inv.status !== "published" ? (
+            <PublishButton token={token} needPay={needPay} label={price ? t.pay.publish(price) : t.editor.publish}
+              copy={{ accept: t.legal.accept, cgv: t.legal.cgv, acceptRequired: t.legal.acceptRequired, fail: t.editor.msgPublishFail, redirect: t.pay.redirect, done: s.publishedNow }}
+              extra={<><Link className="btn-s ghost" href={`/creer?edit=${token}`}>{s.edit}</Link><Link className="btn-s ghost" href={`/espace/${token}/voir`}>{s.see}</Link></>} />
+          ) : (
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <Link className="btn-s" href={`/creer?edit=${token}`}>{s.edit}</Link>
+              <Link className="btn-s ghost" href={`/espace/${token}/voir`}>{s.see}</Link>
+            </div>
+          )}
         </section>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
@@ -74,7 +86,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
             <strong>{s.repliesTitle}</strong>
             <div className="space-export-actions">
-              <PdfDownloadButton token={token} allowed={pdfAllowed} partner1={inv.data.partner1} partner2={inv.data.partner2} dateISO={inv.data.dateISO} copy={{ download: s.pdfDownload, reserved: s.pdfReserved, preparing: s.pdfPreparing, error: s.pdfError }} />
+              <PdfDownloadButton token={token} allowed={pdfAllowed} partner1={inv.data.partner1} partner2={inv.data.partner2} dateISO={inv.data.dateISO} copy={{ download: s.pdfDownload, reserved: payOn ? s.pdfReserved : s.pdfAfterPublish, preparing: s.pdfPreparing, error: s.pdfError }} />
               {rsvps.length > 0 && <a className="btn-s ghost" href={`/espace/${token}/csv`}>{s.export}</a>}
             </div>
           </div>

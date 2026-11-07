@@ -238,7 +238,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
       </div>
 
       <div className="ed-grid">
-        <form className={`ed-form ${tab === "form" ? "" : "ed-hide-m"}`} onSubmit={(e) => { e.preventDefault(); save(); }}>
+        <form className={`ed-form ${tab === "form" ? "" : "ed-hide-m"}`} onSubmit={async (e) => { e.preventDefault(); const tk = await save(); if (tk) router.push(`/espace/${tk}?enregistre=1`); }}>
           <h1>{e_.title}</h1>
           {!token && <p className="ed-help ed-back">{e_.already} {last ? <a href={spaceHref(last)}>{t.find.resume(last.names)}</a> : <a href="/espace">{t.find.title}</a>}</p>}
 

@@ -1,5 +1,6 @@
 import { db, getByToken } from "@/lib/supabase";
 import { inviteDict } from "@/lib/i18n/invite";
+import { pdfAllowed } from "@/lib/payment";
 
 export const dynamic = "force-dynamic";
 const noStore = { "cache-control": "private, no-store, max-age=0" };
@@ -11,7 +12,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
   if (!invitation) return Response.json({ error: "not_found" }, { status: 404, headers: noStore });
   const access = invitation as typeof invitation & PdfAccessRow;
   const dictionary = inviteDict(invitation.data.lang);
-  if (!access.paid_at && !access.comped_at && !access.pdf_granted_at) {
+  if (!(await pdfAllowed(access))) {
     return Response.json({ error: dictionary.pdf.reserved }, { status: 403, headers: noStore });
   }
   const { data: replies, error } = await db().from("rsvps")
