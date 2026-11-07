@@ -51,6 +51,7 @@ export const en: SiteDict = {
     worlds: (n) => `${n} worlds`,
     chooseTitle: "Choose",
     chooseGold: "your evening",
+    nextTemplate: "Next design",
     createMine: "Create mine",
     demo: "Demo",
     promoPercent: (value) => `−${value}%`,

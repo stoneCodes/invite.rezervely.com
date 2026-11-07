@@ -50,7 +50,7 @@
 
 /* Modèles en défilement horizontal */
 .gl-hz{height:300vh}
-.gl-hz .gl-stick{display:flex;flex-direction:column;justify-content:center;gap:28px}
+.gl-hz .gl-stick{display:flex;flex-direction:column;justify-content:center;gap:28px;position:relative}
 .gl-hz-head{padding:0 6vw}
 .gl-hz h2{font-size:clamp(2.2rem,5.5vw,4rem);margin:.2em 0 0}
 .gl-track{display:flex;gap:4vw;padding:0 6vw;perspective:900px;transform-style:preserve-3d;will-change:transform}
@@ -64,6 +64,10 @@
 .gl-tpl .btn-s{padding:12px 16px}
 .gl-num{position:absolute;top:18px;left:22px;font:400 .7rem var(--f-ui);letter-spacing:.3em}
 .gl-tpl.is-end{display:grid;place-items:center;text-align:center;background:var(--card);padding:30px}
+.gl-hz-next{position:absolute;z-index:4;right:6vw;bottom:8px;display:flex;align-items:center;gap:10px;border:1px solid rgba(243,215,155,.45);border-radius:999px;padding:10px 16px;background:rgba(13,9,17,.78);color:var(--gold);font:500 .85rem var(--f-ui);cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:background .2s,transform .2s}
+.gl-hz-next:hover{background:rgba(243,215,155,.15);transform:translateY(2px)}
+.gl-hz-next>span:first-child{font-size:1.2rem;animation:gl-hint-down 1.2s ease-in-out infinite alternate}
+@keyframes gl-hint-down{to{transform:translateY(4px)}}
 
 /* Étapes */
 .gl-steps{padding-block:18vh;display:grid;gap:12vh}
@@ -80,6 +84,19 @@
 .gl footer{padding:30px 20px calc(30px + env(safe-area-inset-bottom,0px));text-align:center;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line)}
 
 @media (max-width:640px){.gl-step{grid-template-columns:1fr;gap:8px}}
+@media (max-width:640px){
+  .gl-hz{height:420svh}
+  .gl-hz .gl-stick{gap:16px}
+  .gl-hz-head{padding:0 6vw}
+  .gl-hz h2{font-size:clamp(2rem,8vw,2.8rem)}
+  .gl-track{gap:5vw;padding:0 8vw}
+  .gl-tpl{height:min(48svh,390px);max-width:72vw;border-radius:18px}
+  .gl-tpl-ov{padding:16px}
+  .gl-tpl h3{font-size:1.65rem}
+  .gl-tpl p{font-size:.82rem;margin-bottom:10px}
+  .gl-tpl .btn-s{padding:10px 12px;font-size:.78rem}
+  .gl-hz-next{right:6vw;bottom:4px;padding:9px 14px;font-size:.8rem}
+}
 @media (prefers-reduced-motion:reduce){
   .gl *{animation:none!important;transition:none!important}
   .gl-letter,.gl-rise,.gl-rv{opacity:1;transform:none;filter:none}

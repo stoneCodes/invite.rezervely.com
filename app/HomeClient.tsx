@@ -134,6 +134,12 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demo !== null]);
   const shown = demo ? { id: demo, ...t.templates[demo] } : null;
+  const advanceTemplate = () => {
+    const section = document.getElementById("gl-hz");
+    if (!section) return;
+    const step = Math.max(240, (section.offsetHeight - window.innerHeight) / Math.max(1, TEMPLATES.length));
+    window.scrollBy({ top: step, behavior: "smooth" });
+  };
 
   return (
     <main className="site gl">
@@ -190,6 +196,7 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
       <section id="gl-hz" className="gl-hz">
         <div className="gl-stick">
           <div className="gl-hz-head"><div className="gl-kicker">{h.worlds(TEMPLATES.length)}</div><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
+          <button className="gl-hz-next" type="button" onClick={advanceTemplate} aria-label={h.nextTemplate}><span aria-hidden="true">↓</span><span>{h.nextTemplate}</span></button>
           <div id="gl-track" className="gl-track">
             {TEMPLATES.map((tp, i) => (
               <article key={tp.id} className="gl-tpl">
