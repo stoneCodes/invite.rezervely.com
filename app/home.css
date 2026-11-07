@@ -88,6 +88,12 @@
 .gl-space:hover{border-color:var(--line)}
 .gl-space svg{width:18px;height:18px}
 @media (max-width:480px){.gl-space span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.gl-space{padding:8px}}
-.gl-back{margin:18px 0 0;font-size:.88rem;color:var(--muted)}
-.gl-back a{color:var(--accent)}
+.gl-back{display:grid;justify-items:center;gap:10px;width:fit-content;max-width:100%;margin:30px auto 0;padding:14px 20px;border:1px solid rgba(243,215,155,.2);border-radius:16px;background:rgba(20,14,22,.56);color:var(--muted);font-size:.9rem;text-align:center}
+.gl-back-label{line-height:1.45}
+.gl-back-link{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:42px;padding:9px 16px;border:1px solid rgba(243,215,155,.42);border-radius:999px;background:rgba(243,215,155,.08);color:var(--accent);font-size:.92rem;text-decoration:none;transition:background .2s,border-color .2s,transform .2s}
+.gl-back-link:hover{background:rgba(243,215,155,.16);border-color:rgba(243,215,155,.7);transform:translateY(-1px)}
+.gl-back-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.gl-back-link span{font-size:1.1em;transition:transform .2s}
+.gl-back-link:hover span{transform:translateX(3px)}
+@media (max-width:480px){.gl-back{gap:8px;margin-top:26px;padding:13px 15px;font-size:.85rem}.gl-back-link{min-height:44px;padding:10px 15px}}
 .gl-legal{margin-top:10px}

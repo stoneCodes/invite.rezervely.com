@@ -155,7 +155,7 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
             <a className="btn-s" href="/creer" onClick={celebrate("/creer")}>{h.ctaCreate}</a>
             <a className="btn-s ghost" href="#gl-hz">{h.ctaModels}</a>
           </div>
-          <p className="gl-back">{last ? <Link href={spaceHref(last)}>{t.find.resume(last.names)} →</Link> : <>{t.editor.already} <Link href="/espace">{t.find.title}</Link></>}</p>
+          <div className="gl-back">{last ? <Link className="gl-back-link" href={spaceHref(last)}>{t.find.resume(last.names)} <span aria-hidden="true">→</span></Link> : <><span className="gl-back-label">{t.editor.already}</span><Link className="gl-back-link" href="/espace">{t.find.title} <span aria-hidden="true">→</span></Link></>}</div>
         </div>
         <div className="gl-cue" aria-hidden />
       </section>
