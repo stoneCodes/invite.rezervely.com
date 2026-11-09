@@ -12,7 +12,7 @@ type Mail = { to: string; subject: string; html: string; text: string };
 
 const clean = (v?: string) => v?.trim().replace(/^["']|["']$/g, "").trim() || "";
 
-/** "E-carte Studio <hello@joyeuxevent.com>" → { name, email } */
+/** "E-carte Studio <hello@ecartestudio.com>" → { name, email } */
 function parseFrom(v: string) {
   const m = v.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
   return m ? { name: m[1] || "E-carte Studio", email: m[2] } : { name: "E-carte Studio", email: v };
@@ -20,7 +20,7 @@ function parseFrom(v: string) {
 
 export async function sendEmail(mail: Mail): Promise<{ ok: boolean; test?: boolean }> {
   const key = clean(process.env.BREVO_API_KEY);
-  const from = parseFrom(clean(process.env.EMAIL_FROM) || "E-carte Studio <hello@joyeuxevent.com>");
+  const from = parseFrom(clean(process.env.EMAIL_FROM) || "E-carte Studio <hello@ecartestudio.com>");
   const replyTo = clean(process.env.EMAIL_REPLY_TO);
   if (!key) {
     console.info(`\n[e-mail · mode test] à ${mail.to} · « ${mail.subject} »\n${mail.text}\n`);

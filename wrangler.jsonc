@@ -21,7 +21,7 @@
 	"vars": {
 		"NEXT_PUBLIC_SITE_URL": "https://ecartestudio.com",
 		"SUPABASE_URL": "https://usolfegmepnazrporeec.supabase.co",
-		"EMAIL_FROM": "E-carte Studio <hello@joyeuxevent.com>",
+		"EMAIL_FROM": "E-carte Studio <hello@ecartestudio.com>",
 		// Paiement Stripe à la publication : passer à "true" une fois STRIPE_SECRET_KEY et STRIPE_WEBHOOK_SECRET saisis.
 		"PAYMENTS_ENABLED": "true",
 		// Statistiques de l'admin (Cloudflare Web Analytics, site « Automatic setup » : le script est injecté par Cloudflare,
