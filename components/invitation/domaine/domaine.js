@@ -18,7 +18,7 @@ const FRAME = { l: 63.44, t: 31.58, w: 30.39, h: 25.84, clip: "polygon(7.3% 5.6%
 
 // Point de fuite de chaque image (en %) : la caméra « marche » vers ce point pour passer au lieu suivant.
 const FOCAL = { portail: [50, 60], allee: [32, 52], orangerie: [50, 58], cour: [60, 48], arche: [50, 52], vestibule: [50, 52], facade: [50, 64], terrasse: [52, 46], table: [60, 40], "table-flou": [50, 50],
-  "lieu-mairie": [50, 50], "lieu-eglise": [50, 44], "lieu-mosquee": [50, 47], "lieu-temple": [50, 46], "lieu-ceremonie": [49, 46], "lieu-cocktail": [50, 41] };
+  "lieu-mairie": [50, 50], "lieu-eglise": [50, 44], "lieu-mosquee": [50, 47], "lieu-temple": [50, 46], "lieu-ceremonie": [49, 46], "lieu-cocktail": [50, 41], "lieu-reception": [50, 43], "lieu-soiree": [53, 50] };
 // Lieu d'une étape du programme : choisi par les mariés (data.programme[i].place), sinon deviné d'après le titre.
 const GUESS = [
   ["mairie", /mairie|civil|town hall|city hall|registry/i], ["mosquee", /mosqu|nikah|nikkah/i],
@@ -31,7 +31,7 @@ const ORDER = ["ceremonie", "cocktail", "reception", "soiree"];
 const PLACE_IDS = ["mairie", "eglise", "mosquee", "temple", "ceremonie", "cocktail", "reception", "soiree"];
 const placeOf = (x, i) => PLACE_IDS.includes(x.place) ? x.place : (GUESS.find(([, re]) => re.test(`${x.title} ${x.note}`))?.[0] || ORDER[Math.min(i, 3)]);
 // Images des lieux du programme (domaine-lieu-<type>.webp) déjà livrées ; les autres empruntent un lieu du domaine.
-const LIEUX_PRETS = new Set(["mairie", "eglise", "mosquee", "temple", "ceremonie", "cocktail"]);
+const LIEUX_PRETS = new Set(["mairie", "eglise", "mosquee", "temple", "ceremonie", "cocktail", "reception", "soiree"]);
 const LIEU_REPLI = { mairie: "facade", eglise: "arche", mosquee: "arche", temple: "arche", ceremonie: "arche", cocktail: "terrasse", reception: "table", soiree: "table-flou" };
 const placeImg = (p) => (LIEUX_PRETS.has(p) ? `lieu-${p}` : LIEU_REPLI[p]);
 
