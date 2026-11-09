@@ -1,4 +1,4 @@
-import type { InvitationData } from "./types";
+import { isBirthday, isKids, type InvitationData, type TemplateId, type Wishlist } from "./types";
 import type { Lang } from "./i18n";
 
 /** Données d'exemple : démo publique et point de départ de l'éditeur, dans la langue demandée. */
@@ -118,5 +118,83 @@ function sampleEn(): InvitationData {
     ],
     rsvpBy: "Please reply before 1 May 2027",
     photoUrl: null,
+  };
+}
+
+/** Exemple de départ d'un modèle : mariage, mariage musulman (velours) ou anniversaire. */
+export function sampleFor(template: TemplateId, lang: Lang = "fr"): InvitationData {
+  if (template === "velours") return veloursSampleData(lang);
+  if (isBirthday(template)) return birthdaySample(template, lang);
+  return sampleData(lang);
+}
+
+/** Exemples d'anniversaire : adulte (vinyle, toast) ou enfant (gâteau, piñata). */
+export function birthdaySample(template: TemplateId, lang: Lang = "fr"): InvitationData {
+  const en = lang === "en";
+  const kids = isKids(template);
+  const base = sampleData(lang);
+  const who = { vinyle: ["Nadia", 40], toast: ["Karim", 30], gateau: ["Léo", 6], pinata: ["Inès", 5] }[template as "vinyle"] ?? ["Nadia", 40];
+  const [name, age] = who as [string, number];
+  return {
+    ...base,
+    partner1: name,
+    partner2: "",
+    intro: kids
+      ? (en ? `Come and celebrate with ${name}: games, cake and surprises!` : `Viens faire la fête avec ${name} : jeux, gâteau et surprises !`)
+      : (en ? "A night of music, laughter and good food with the people I love." : "Une soirée de musique, de rires et de bonne cuisine avec ceux que j'aime."),
+    dateISO: kids ? "2027-04-17T14:00:00+02:00" : "2027-06-12T19:30:00+02:00",
+    venue: kids
+      ? (en ? { name: "Fun Park", address: "12 rue des Lilas, 31000 Toulouse" } : { name: "La Cabane des Loisirs", address: "12 rue des Lilas, 31000 Toulouse" })
+      : (en ? { name: "The Velvet Lounge", address: "8 place du Capitole, 31000 Toulouse" } : { name: "Le Salon de Velours", address: "8 place du Capitole, 31000 Toulouse" }),
+    programme: kids
+      ? (en ? [
+          { t: "2:00 pm", title: "Welcome", note: "Face painting and balloons" },
+          { t: "2:30 pm", title: "Magic show", note: "With the Great Zigoto" },
+          { t: "4:00 pm", title: "Cake time", note: "And the candles!" },
+        ] : [
+          { t: "14h00", title: "Accueil", note: "Maquillage et ballons" },
+          { t: "14h30", title: "Spectacle de magie", note: "Avec le Grand Zigoto" },
+          { t: "16h00", title: "Le goûter", note: "Et les bougies !" },
+        ])
+      : (en ? [
+          { t: "7:30 pm", title: "Welcome drinks", note: "On the terrace" },
+          { t: "9:00 pm", title: "Dinner", note: "Seated dinner" },
+          { t: "11:00 pm", title: "Dance floor", note: "Until late" },
+        ] : [
+          { t: "19h30", title: "Apéritif", note: "Sur la terrasse" },
+          { t: "21h00", title: "Dîner", note: "Dîner assis" },
+          { t: "23h00", title: "Piste de danse", note: "Jusqu'au bout de la nuit" },
+        ]),
+    dressCode: kids
+      ? { enabled: true, title: en ? "Superheroes" : "Super-héros", note: en ? "Come dressed as your favourite hero!" : "Viens déguisé en ton héros préféré !", men: { label: "", text: "" }, women: { label: "", text: "" }, colors: [] }
+      : { enabled: true, title: en ? "Chic and gold" : "Chic et doré", note: en ? "Black and gold, with a touch of shine." : "Du noir et de l'or, avec une touche de brillant.", men: { label: "", text: "" }, women: { label: "", text: "" },
+          colors: [{ name: en ? "Black" : "Noir", hex: "#1C1A1A" }, { name: en ? "Gold" : "Or", hex: "#C9A24A" }, { name: en ? "Burgundy" : "Bordeaux", hex: "#6E1F2E" }] },
+    verse: null,
+    story: [],
+    rsvpBy: en ? "Please reply before 1 April 2027" : "Merci de répondre avant le 1er avril 2027",
+    photoUrl: null,
+    bday: {
+      age,
+      surprise: template === "toast",
+      gifts: kids ? "" : (en ? "Your presence is the best gift!" : "Votre présence est le plus beau des cadeaux !"),
+      endTime: kids ? (en ? "6:00 pm" : "18h00") : "",
+      parentPhone: kids ? "06 12 34 56 78" : "",
+      palette: template === "gateau" ? "bleu" : "rose",
+    },
+  };
+}
+
+/** Liste de souhaits d'exemple, montrée seulement dans les démos (jamais pré-remplie dans l'éditeur). Liens example.com. */
+export function demoWishlist(template: TemplateId, lang: Lang = "fr"): Wishlist {
+  const en = lang === "en";
+  const names = isKids(template)
+    ? (en ? ["Illustrated story book", "Wooden building blocks", "Watercolour paint set"] : ["Livre d'histoires illustré", "Jeu de construction en bois", "Coffret de peinture"])
+    : isBirthday(template)
+      ? (en ? ["Signed vinyl record", "Cooking class for two", "Linen throw"] : ["Vinyle dédicacé", "Cours de cuisine pour deux", "Plaid en lin"])
+      : (en ? ["Porcelain tea set", "Weekend getaway for two", "Linen bedding set"] : ["Service à thé en porcelaine", "Week-end en amoureux", "Parure de lit en lin"]);
+  return {
+    note: en ? "Your presence is the best gift. If you would like to spoil us, here are a few ideas." : "Votre présence est notre plus beau cadeau. Si vous souhaitez nous gâter, voici quelques idées.",
+    items: names.map((name, i) => ({ name, url: `https://example.com/${en ? "gift" : "cadeau"}-${i + 1}` })),
+    fund: "https://example.com/cagnotte",
   };
 }

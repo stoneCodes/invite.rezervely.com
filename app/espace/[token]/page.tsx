@@ -12,6 +12,7 @@ import { LOCALE } from "@/lib/i18n";
 import { LangSwitch } from "@/components/I18n";
 import PdfDownloadButton from "./PdfDownloadButton";
 import PublishButton from "./PublishButton";
+import { displayNames } from "@/lib/types";
 import { formatPrice, getPriceCents, needsPayment, paymentsOn, pdfAllowed as canPdf } from "@/lib/payment";
 
 export const dynamic = "force-dynamic";
@@ -45,7 +46,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
         <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}><Link href="/" className="ed-home" aria-label={t.common.backHome}><span aria-hidden="true">←</span> <Logo height={22} /></Link><LangSwitch /></nav>
         <header>
           <p className="muted" style={{ letterSpacing: ".3em", textTransform: "uppercase", fontSize: ".72rem", margin: 0 }}>{s.kicker}</p>
-          <h1 style={{ fontSize: "2.6rem", margin: ".2em 0" }}>{inv.data.partner1} & {inv.data.partner2}</h1>
+          <h1 style={{ fontSize: "2.6rem", margin: ".2em 0" }}>{displayNames(inv.data)}</h1>
           <p className="muted" style={{ margin: 0 }}>{s.keep}</p>
         </header>
 

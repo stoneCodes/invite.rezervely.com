@@ -83,7 +83,8 @@ const text = (lines: (string | false | null | undefined)[]) => lines.filter(Bool
 /* ---------- Les e-mails ---------- */
 
 type Who = { partner1: string; partner2: string };
-const names = (lang: Lang | null | undefined, d: Who) => emailDict(lang).common.couple(d.partner1 || "…", d.partner2 || "…");
+// Anniversaire : un seul prénom (partner2 vide).
+const names = (lang: Lang | null | undefined, d: Who) => (d.partner2 ? emailDict(lang).common.couple(d.partner1 || "…", d.partner2) : d.partner1 || "…");
 
 export function welcomeEmail(lang: Lang | null | undefined, d: Who, token: string): Omit<Mail, "to"> {
   const t = emailDict(lang), n = names(lang, d);

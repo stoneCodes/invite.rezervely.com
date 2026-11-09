@@ -5,6 +5,7 @@
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
+import { wishHtml } from "../wishlist";
 
 const IMG = { call: "/img/appel-fond-defaut.webp", end: "/img/appel-fin.webp" };
 const ICON = {
@@ -76,6 +77,8 @@ export function mountAppel(root, INPUT, OPTS = {}) {
     venueQ ? them(`<div class="ap-b ap-map"><div class="ap-mapview" aria-hidden="true"><svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice"><rect width="300" height="150" class="g0"/><path class="g1" d="M-10 110 C60 90 90 130 160 112 S260 70 320 84 L320 160 L-10 160Z"/><path class="g2" d="M190 -5 C200 40 230 50 300 46 L300 -5Z"/><path class="rd" d="M-5 62 H310 M120 -5 V160 M40 -5 L95 160 M210 60 L260 160"/><path class="rd2" d="M-5 30 H120 M120 96 H310 M160 -5 V62"/></svg><span class="ap-pin">${ICON.pin}</span></div><div class="ap-mapinfo"><b>${esc(D.venue?.name)}</b><span>${esc(D.venue?.address)}</span><a class="ap-btn" href="${mapUrl}" target="_blank" rel="noopener">${A.route}</a></div></div>`, "ap-wide") : "",
     (D.story || []).length ? them(A.flashback) : "",
     ...(D.story || []).flatMap((s) => [sep(esc(s.y)), them(esc(s.text))]),
+    wishHtml(D) ? them(esc(inviteDict(D.lang).wish.say)) : "",
+    wishHtml(D) ? them(`<div class="ap-b ap-wish">${wishHtml(D)}</div>`, "ap-wide") : "",
     sep(A.now),
     them(A.coming),
     D.rsvpBy ? `<p class="ap-note">${esc(D.rsvpBy)}</p>` : "",

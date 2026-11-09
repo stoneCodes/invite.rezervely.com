@@ -4,6 +4,7 @@
 // → dress code → lieu → histoire → réponse.
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
+import { wishHtml } from "../wishlist";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 
 const ICON = {
@@ -55,6 +56,7 @@ export function mountVelours(root, data, OPTS = {}) {
     venueQ ? `<section class="ve-place ve-reveal"><small>${V.venue}</small><h2>${esc(D.venue?.name)}</h2><p>${esc(D.venue?.address)}</p>
       <div class="ve-btns"><a class="ve-link" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${ICON.pin}${V.route}</a><a class="ve-link ghost" href="${calUrl}" target="_blank" rel="noopener noreferrer">${esc(T.c.addCal)}</a></div></section>` : "",
     story.length ? `<section class="ve-story">${head(V.story, C.storyTitle)}${story.map((s) => `<article class="ve-story-item ve-reveal"><time>${esc(s.y)}</time><p>${esc(s.text)}</p></article>`).join("")}</section>` : "",
+    wishHtml(D) ? `<section class="ve-wish">${head(inviteDict(D.lang).wish.eyebrow, inviteDict(D.lang).wish.title)}<div class="ve-reveal">${wishHtml(D)}</div></section>` : "",
     `<section class="ve-rsvp ve-reveal"><small>${V.presence}</small><h2>${V.rsvp}</h2>${D.rsvpBy ? `<p class="ve-rsvp-by">${esc(D.rsvpBy)}</p>` : ""}
       <form class="ve-form" novalidate>
         <div class="ve-choice" role="group" aria-label="${V.presence}"><button type="button" data-a="yes" aria-pressed="true">${V.yes}</button><button type="button" data-a="no" aria-pressed="false">${V.no}</button></div>

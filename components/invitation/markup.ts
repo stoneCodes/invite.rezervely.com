@@ -73,6 +73,11 @@ export const markup = (T: InviteDict) => String.raw`<div class="backdrop fixed-f
       <h2>${T.classic.storyTitle}</h2>
       <div class="story" id="story"></div>
     </section>
+    <section id="wishSec">
+      <div class="eyebrow">${T.wish.eyebrow}</div>
+      <h2>${T.wish.title}</h2>
+      <div id="wish"></div>
+    </section>
     <section>
       <div class="bouquet bq2"></div>
       <div class="eyebrow">RSVP</div>

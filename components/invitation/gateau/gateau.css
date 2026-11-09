@@ -1,0 +1,109 @@
+/* « Le gâteau magique » : préfixe gt-, palette par [data-pal]. */
+body[data-tpl="gateau"]{background:#FFF0F5}
+.fx-gateau[data-pal="rose"]{--ink:#6b2a45;--bg:#FFF0F5;--bg2:#FFE3EC;--accent:#E2557F;--photo-bg:#fcc8d5}
+.fx-gateau[data-pal="bleu"]{--ink:#1f3f63;--bg:#EEF7FF;--bg2:#DDEEFF;--accent:#2F7FC8;--photo-bg:#fde999}
+.fx-gateau{--fx-ink:var(--ink);--fx-muted:color-mix(in srgb,var(--ink) 72%,#fff);--fx-accent:var(--accent);--fx-accent-ink:#fff;--fx-line:color-mix(in srgb,var(--ink) 18%,transparent);--fx-field:#fff;--fx-card:rgba(255,255,255,.85);--fx-title:Fredoka,Jost,sans-serif;
+  background:radial-gradient(circle at 12% 18%,var(--c1) 0 5px,transparent 6px) 0 0/120px 140px,radial-gradient(circle at 70% 60%,var(--c2) 0 4px,transparent 5px) 0 0/150px 120px,radial-gradient(circle at 40% 85%,var(--c3) 0 3px,transparent 4px) 0 0/110px 130px,var(--bg)}
+.fx-gateau h1,.fx-gateau h2,.fx-gateau h3{font-weight:600}
+.fx-gateau small{font-family:Fredoka,sans-serif;font-weight:500;color:var(--accent);letter-spacing:.16em}
+
+/* ---------- ouverture ---------- */
+.gt-intro{position:fixed;inset:0;z-index:50;overflow:hidden;text-align:center;background:var(--photo-bg);transition:opacity .8s ease}
+.gt-intro[hidden]{display:none}
+.gt-intro.is-out{opacity:0;pointer-events:none}
+.gt-head{position:absolute;z-index:2;left:0;right:0;top:0;padding:max(28px,env(safe-area-inset-top)) 16px 0;pointer-events:none}
+.gt-head h1{font-size:clamp(2.8rem,14vw,4.4rem);line-height:1;text-shadow:0 2px 0 rgba(255,255,255,.6)}
+.gt-head p{margin:.25rem auto 0;max-width:none;font-family:Fredoka,sans-serif;font-size:1.25rem;color:var(--accent)}
+/* photo du gâteau calée sur la hauteur de l'écran, descendue pour laisser la place au prénom */
+.gt-stage{position:absolute;left:50%;top:clamp(110px,17svh,170px);height:min(84svh,178vw);aspect-ratio:941/1672;translate:-50% 0;cursor:pointer;touch-action:manipulation;outline:none;transform-origin:50% 15%;transition:transform 1.1s cubic-bezier(.3,1.4,.5,1);-webkit-user-select:none;user-select:none}
+.gt-stage:focus-visible{outline:3px solid var(--accent);outline-offset:-8px}
+.gt-intro.is-done .gt-stage{transform:scale(1.08)}
+.gt-photo-cake,.gt-cake{position:absolute;inset:0;width:100%;height:100%;display:block}
+.gt-cake{overflow:visible}
+.gt-flame{transform-box:fill-box;transform-origin:50% 100%;animation:gt-flick .45s ease-in-out infinite alternate;transition:transform .25s ease,opacity .25s ease}
+.gt-candle:nth-child(2n) .gt-flame{animation-duration:.55s}
+@keyframes gt-flick{to{transform:scale(1.1,.88) skewX(4deg)}}
+.gt-candle.is-out .gt-flame{animation:none;transform:scale(0);opacity:0}
+.gt-smoke{opacity:0;stroke-dasharray:110;stroke-dashoffset:110;transform-box:fill-box}
+.gt-candle.is-out .gt-smoke{animation:gt-smoke 1.5s ease-out forwards}
+@keyframes gt-smoke{0%{opacity:.85;stroke-dashoffset:110;transform:translateY(0)}100%{opacity:0;stroke-dashoffset:0;transform:translateY(-50px)}}
+.gt-hit{cursor:pointer}
+.gt-actions{position:absolute;z-index:2;left:0;right:0;bottom:0;display:grid;justify-items:center;gap:6px;padding:40px 16px max(24px,env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(255,255,255,.75) 45%)}
+.gt-hint{margin:0;max-width:none;font-family:Fredoka,sans-serif;font-weight:600;font-size:1.45rem}
+.gt-touch{margin:0;max-width:none;color:var(--fx-muted);font-size:.9rem}
+.gt-blow{margin-top:4px;padding:11px 20px;border-radius:999px;border:0;background:var(--accent);color:#fff;font:inherit;font-family:Fredoka,sans-serif;font-weight:500;font-size:1rem;cursor:pointer;box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 70%,#000)}
+.gt-blow.is-on{animation:gt-pulse 1s ease-in-out infinite}
+@keyframes gt-pulse{50%{transform:scale(1.06)}}
+
+/* ---------- intérieur : le gâteau ---------- */
+.gt-main{padding-bottom:30px}
+.gt-top{min-height:92svh;display:grid;align-content:center;justify-items:center;text-align:center;gap:6px;padding:60px 16px 30px}
+.gt-photo{width:150px;aspect-ratio:1;border-radius:50%;overflow:hidden;border:6px solid #fff;box-shadow:0 0 0 5px var(--c1),0 16px 30px rgba(0,0,0,.12);margin-bottom:8px}
+.gt-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.gt-top h1{font-size:clamp(3rem,15vw,5rem);line-height:1}
+.gt-age{margin:0;font-family:Fredoka,sans-serif;font-weight:600;font-size:clamp(7rem,44vw,12rem);line-height:.9;
+  background:repeating-linear-gradient(-35deg,var(--c1) 0 18px,#fff 18px 28px,var(--c2) 28px 46px,#fff 46px 56px);-webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-stroke:3px color-mix(in srgb,var(--ink) 55%,transparent);filter:drop-shadow(0 7px 0 rgba(0,0,0,.07))}
+.gt-sub{margin:0;font-family:Fredoka,sans-serif;font-size:1.3rem;color:var(--accent)}
+.gt-txt{max-width:32ch;margin:.4rem 0 0}
+.fx-gateau .fx-surprise{margin-top:12px;padding:10px 16px;border-radius:18px;background:#fff;border:2px dashed var(--accent)}
+.gt-cue{margin-top:18px;width:26px;height:40px;border-radius:14px;border:2px solid var(--fx-line);position:relative}
+.gt-cue i{position:absolute;left:50%;top:8px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--accent);animation:gt-cue 1.6s ease-in-out infinite}
+@keyframes gt-cue{60%{transform:translateY(14px);opacity:0}}
+.gt-cakebody{display:grid;justify-items:center;padding:0 10px}
+.gt-cakebody>.fx-after{display:contents}
+.fx-gateau.is-gated .gt-cakebody>.fx-after{display:none}
+.gt-tier{position:relative;container-type:inline-size;width:var(--w);max-width:640px;margin-top:-4px;padding:34cqw 20px 38cqw;text-align:center;border-radius:20px 20px 10px 10px;transform-origin:50% 100%;
+  background:var(--top) top center/100% auto no-repeat,var(--bot) bottom center/100% auto no-repeat,var(--tc);box-shadow:0 10px 0 rgba(0,0,0,.05),0 18px 30px rgba(0,0,0,.08)}
+.gt-in{position:relative;z-index:1}
+.fx-gateau .gt-tier.fx-r{opacity:0;transform:translateY(-70px);transition:none}
+.fx-gateau .gt-tier.fx-r.is-in{opacity:1;transform:none;animation:gt-land .85s cubic-bezier(.3,1.3,.5,1) both}
+@keyframes gt-land{0%{opacity:0;transform:translateY(-80px)}55%{opacity:1;transform:translateY(5px) scaleY(.93)}80%{transform:translateY(-3px) scaleY(1.02)}100%{transform:none}}
+.gt-tier h2{font-size:clamp(1.7rem,7vw,2.2rem);margin-top:.35rem}
+.gt-tier p{margin:.5rem auto 0;max-width:36ch}
+.gt-cream{position:relative;max-width:330px;min-height:170px;margin:16px auto 0;border-radius:26px;overflow:hidden;background:#fffaf3;display:grid;place-items:center;box-shadow:0 8px 0 rgba(0,0,0,.06)}
+.gt-cream canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab;transition:opacity .6s ease}
+.gt-cream.is-done canvas{opacity:0;pointer-events:none}
+.gt-date{display:grid;justify-items:center;gap:2px;padding:22px 16px}
+.gt-date b{font-family:Fredoka,sans-serif;font-weight:600;font-size:4.4rem;line-height:1;color:var(--accent)}
+.gt-date span{font-family:Fredoka,sans-serif;font-size:1.25rem}
+.gt-date em{font-style:normal;font-size:.85rem;color:var(--fx-muted)}
+.gt-gh{color:var(--ink)}
+.fx-gateau .gt-candies{gap:10px;margin-top:14px}
+.fx-gateau .gt-candies span{aspect-ratio:1;border-radius:50%;place-content:center;background:#fff;box-shadow:inset 0 0 0 5px color-mix(in srgb,var(--tc) 70%,#fff),0 6px 0 rgba(0,0,0,.07)}
+.fx-gateau .gt-candies b{font-family:Fredoka,sans-serif;font-weight:600;font-size:clamp(1.4rem,7vw,2.2rem);color:var(--accent)}
+.fx-gateau .gt-candies i{font-size:.6rem;color:var(--ink)}
+.gt-prog{list-style:none;padding:0;margin:16px auto 0;max-width:390px;text-align:left;display:grid;gap:10px}
+.gt-prog li{display:grid;grid-template-columns:auto auto 1fr;gap:10px;align-items:center;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.62)}
+.gt-prog i{width:22px;height:22px;border-radius:50%;background:var(--b);box-shadow:inset -3px -3px 0 rgba(0,0,0,.1),0 0 0 2px #fff}
+.gt-prog time{font-family:Fredoka,sans-serif;font-weight:600;color:var(--accent);white-space:nowrap}
+.gt-prog b{display:block;font-weight:500}
+.gt-prog em{display:block;font-style:normal;font-size:.86rem;color:var(--fx-muted)}
+.gt-balloons{display:flex;flex-wrap:wrap;justify-content:center;gap:22px;margin-top:20px}
+.gt-balloons span{display:grid;justify-items:center;gap:36px;font-size:.88rem;animation:gt-bob 3s ease-in-out var(--d) infinite}
+.gt-balloons i{position:relative;width:54px;height:64px;border-radius:50% 50% 48% 48%/58% 58% 42% 42%;background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.65) 0 7%,transparent 20%),var(--sw);box-shadow:inset -6px -8px 0 rgba(0,0,0,.08)}
+.gt-balloons i::after{content:"";position:absolute;left:50%;top:100%;width:1.5px;height:30px;background:rgba(0,0,0,.28)}
+@keyframes gt-bob{50%{transform:translateY(-8px) rotate(3deg)}}
+.gt-gifts{margin-top:16px;padding:14px;border-radius:18px;background:rgba(255,255,255,.62)}
+.fx-gateau .fx-link.ghost{background:rgba(255,255,255,.6)}
+.fx-gateau .fx-choice button{font-family:Fredoka,sans-serif;font-weight:500;font-size:1rem;background:rgba(255,255,255,.6);border-radius:18px}
+.fx-gateau .fx-choice button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.fx-gateau .fx-field{color:var(--ink)}
+.fx-gateau .fx-submit{font-family:Fredoka,sans-serif;font-size:1.1rem;box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 70%,#000)}
+.fx-gateau .fx-thanks h3{font-size:2rem}
+.gt-sent{display:none;margin-top:10px}
+.gt-rsvp.is-sent .gt-sent{display:block}
+.gt-sent svg{width:120px;animation:gt-fly 1.6s cubic-bezier(.3,1.2,.4,1) both}
+.gt-sent p{font-family:Fredoka,sans-serif;font-weight:600;font-size:1.3rem;margin:0}
+@keyframes gt-fly{0%{transform:translateY(60px) rotate(-20deg) scale(.4);opacity:0}100%{transform:none;opacity:1}}
+.gt-plate{width:min(100% - 12px,680px);margin:-4px auto 0;padding:0 16px 30px;text-align:center}
+.gt-plate::before{content:"";display:block;height:36px;margin:0 -12px 26px;border-radius:50%;background:#fff;box-shadow:0 10px 18px rgba(0,0,0,.08),inset 0 -6px 0 #f1ece6}
+.gt-foot-name{font-family:Fredoka,sans-serif;font-weight:600;font-size:2.4rem;margin:0}
+.gt-plate p{margin:.3rem 0 0}
+@media (max-height:640px){.gt-head h1{font-size:2.4rem}.gt-head p{font-size:1.05rem}.gt-stage{top:92px}}
+.fx-gateau.is-still *,.fx-gateau.is-still *::before,.fx-gateau.is-still *::after{animation:none!important;transition:none!important}
+.fx-gateau.is-still .gt-tier.fx-r{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.fx-gateau *{animation:none!important}.fx-gateau .gt-tier.fx-r{opacity:1;transform:none}}
+.fx-gateau.is-gated .gt-plate{display:none}
+.gt-cream,.gt-stage{-webkit-user-select:none;user-select:none}
+.gt-gh{-webkit-user-select:none;user-select:none}

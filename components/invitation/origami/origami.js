@@ -5,6 +5,7 @@
 /* eslint-disable */
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
+import { wishHtml } from "../wishlist";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 
 const IMG = { washi: "/img/origami-washi.webp", table: "/img/origami-table.webp", cranes: "/img/origami-grues.webp" };
@@ -124,6 +125,7 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
       <p class="or-addr">${esc(D.venue?.address)}</p>
       <div class="or-btns"><a class="or-btn" href="${mapUrl}" target="_blank" rel="noopener">${ICON.pin} ${O.route}</a><a class="or-btn ghost" href="${calUrl}" target="_blank" rel="noopener">${esc(T.c.addCal)}</a></div></section>` : "",
     story.length ? `<section class="or-sec">${head(O.storyEyebrow, O.storyTitle)}<div class="or-notes">${story.map((s, i) => fold2(`<b class="or-year">${esc(s.y)}</b>`, `<p>${esc(s.text)}</p>`, `or-note${i % 2 ? " alt" : ""}`)).join("")}</div></section>` : "",
+    wishHtml(D) ? `<section class="or-sec or-wishsec">${head(inviteDict(D.lang).wish.eyebrow, inviteDict(D.lang).wish.title)}<div class="or-wish">${wishHtml(D)}</div></section>` : "",
     `<section class="or-sec or-rsvpsec">${head(O.rsvpEyebrow, O.rsvpTitle)}
       <div class="or-rsvp">${D.rsvpBy ? `<p class="or-by">${esc(D.rsvpBy)}</p>` : ""}
         <form novalidate>

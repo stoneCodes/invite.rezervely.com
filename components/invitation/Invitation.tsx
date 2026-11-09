@@ -5,6 +5,12 @@ import "./origami/origami.css";
 import "./velours/velours.css";
 import "./domaine/domaine.css";
 import "./dresscode/couple.css";
+import "./wishlist.css";
+import "./fete/fete.css";
+import "./vinyle/vinyle.css";
+import "./toast/toast.css";
+import "./gateau/gateau.css";
+import "./pinata/pinata.css";
 import { useEffect, useRef, useState } from "react";
 import { markup } from "./markup";
 import { inviteDict } from "@/lib/i18n/invite";
@@ -13,6 +19,10 @@ import { mountAppel } from "./appel/appel";
 import { mountOrigami } from "./origami/origami";
 import { mountVelours } from "./velours/velours";
 import { mountDomaine } from "./domaine/domaine";
+import { mountVinyle } from "./vinyle/vinyle";
+import { mountToast } from "./toast/toast";
+import { mountGateau } from "./gateau/gateau";
+import { mountPinata } from "./pinata/pinata";
 import type { InvitationData, TemplateId } from "@/lib/types";
 import { DEMO_PHOTOS } from "@/lib/demoPhotos";
 
@@ -48,6 +58,10 @@ export default function Invitation(input: Props) {
   if (props.template === "boule-neige") return <OwnEngine {...props} mount={mountDomaine} />;
   if (props.template === "origami") return <OwnEngine {...props} mount={mountOrigami} />;
   if (props.template === "velours") return <OwnEngine {...props} mount={mountVelours} />;
+  if (props.template === "vinyle") return <OwnEngine {...props} mount={mountVinyle} />;
+  if (props.template === "toast") return <OwnEngine {...props} mount={mountToast} />;
+  if (props.template === "gateau") return <OwnEngine {...props} mount={mountGateau} />;
+  if (props.template === "pinata") return <OwnEngine {...props} mount={mountPinata} />;
   return <ClassicInvitation {...props} />;
 }
 

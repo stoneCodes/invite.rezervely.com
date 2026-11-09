@@ -5,8 +5,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { useRouter, useSearchParams } from "next/navigation";
-import { sampleData, veloursSampleData } from "@/lib/sample";
-import { PLACES, TEMPLATES, type InvitationData, type PlaceId, type TemplateId } from "@/lib/types";
+import { sampleFor } from "@/lib/sample";
+import { PLACES, TEMPLATES, displayNames, isBirthday, isKids, PALETTES, type InvitationData, type PlaceId, type TemplateId } from "@/lib/types";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { invitePath } from "@/lib/slug";
@@ -66,7 +66,8 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
   const lg = t.legal;
   const siteLang = useLang();
   const [template, setTemplate] = useState<TemplateId>((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId);
-  const [data, setData] = useState<InvitationData>(() => sp.get("t") === "velours" ? veloursSampleData(siteLang) : sampleData(siteLang));
+  const [data, setData] = useState<InvitationData>(() => sampleFor((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId, siteLang));
+  const bday = isBirthday(template), kids = isKids(template);
   const [email, setEmail] = useState("");
   const [emailErr, setEmailErr] = useState(false);
   const [last, setLast] = useState<LastInvite | null>(null);
@@ -147,12 +148,24 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
   const set = <K extends keyof InvitationData>(k: K, v: InvitationData[K]) => setData((d) => ({ ...d, [k]: v }));
   const dc = data.dressCode;
   const setDc = (patch: Partial<InvitationData["dressCode"]>) => set("dressCode", { ...dc, ...patch });
+  const bd = data.bday ?? { age: null, surprise: false, gifts: "", endTime: "", parentPhone: "", palette: "rose" as const };
+  const wl = data.wishlist ?? { note: "", items: [], fund: "" };
+  const setWl = (patch: Partial<NonNullable<InvitationData["wishlist"]>>) => set("wishlist", { ...wl, ...patch });
+  const setBd = (patch: Partial<NonNullable<InvitationData["bday"]>>) => set("bday", { ...bd, ...patch });
+  /** Changement de modèle : un exemple encore intact est remplacé par celui du nouveau modèle (mariage, velours, anniversaire) ;
+   *  sinon les textes sont gardés, et un anniversaire reçoit ses champs propres. */
+  const chooseTemplate = (id: TemplateId) => {
+    const lang = data.lang ?? siteLang;
+    if (!token && JSON.stringify(data) === JSON.stringify(sampleFor(template, lang))) setData(sampleFor(id, lang));
+    else if (isBirthday(id) && !data.bday) setData((d) => ({ ...d, bday: sampleFor(id, lang).bday }));
+    setTemplate(id);
+  };
 
   async function save(d: InvitationData = data): Promise<string | null> {
     // E-mail obligatoire à l'enregistrement et à la publication (pas avant : on peut tout remplir, photo comprise, sans e-mail).
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setEmailErr(true); setTab("form"); setMsg({ kind: "err", text: e_.emailRequired });
-      requestAnimationFrame(() => { const el = document.getElementById("email") as HTMLInputElement | null; el?.scrollIntoView({ block: "center", behavior: "smooth" }); el?.focus({ preventScroll: true }); });
+      requestAnimationFrame(() => { const el = document.getElementById("email") as HTMLInputElement | null; const sec = el?.closest("details"); if (sec) sec.open = true; el?.scrollIntoView({ block: "center", behavior: "smooth" }); el?.focus({ preventScroll: true }); });
       return null;
     }
     setBusy(true); setMsg(null);
@@ -180,7 +193,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
       const j = await write(tk, d);
       setSlug(j.slug);
       if (!tk && j.editToken) { setToken(j.editToken); router.replace(`/creer?edit=${j.editToken}`); }
-      setLastInvite({ token: tk ?? j.editToken, names: `${d.partner1} & ${d.partner2}` });
+      setLastInvite({ token: tk ?? j.editToken, names: displayNames(d) });
       setMsg({ kind: "ok", text: e_.msgSaved });
       return tk ?? j.editToken;
     } catch (e) {
@@ -239,14 +252,13 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
       </div>
 
       <div className="ed-grid">
-        <form className={`ed-form ${tab === "form" ? "" : "ed-hide-m"}`} onSubmit={async (e) => { e.preventDefault(); const tk = await save(); if (tk) router.push(`/espace/${tk}?enregistre=1`); }}>
+        <form noValidate className={`ed-form ${tab === "form" ? "" : "ed-hide-m"}`} onSubmit={async (e) => { e.preventDefault(); const tk = await save(); if (tk) router.push(`/espace/${tk}?enregistre=1`); }}>
           <h1>{e_.title}</h1>
           {!token && <p className="ed-help ed-back">{e_.already} {last ? <a href={spaceHref(last)}>{t.find.resume(last.names)}</a> : <a href="/espace">{t.find.title}</a>}</p>}
 
-          <fieldset>
-            <legend>{e_.style}</legend>
+          <Sec open title={e_.style} meta={t.templates[template].name}>
             {/* Le modèle choisi passe en tête, en grand, avec un badge ; les autres restent disponibles mais en retrait. */}
-            <TemplateRows compact names={[data.partner1, data.partner2]} lang={siteLang} selected={template} onSelect={setTemplate} onPreview={setFull} />
+            <TemplateRows compact noAll names={[data.partner1, bday ? "" : data.partner2]} lang={siteLang} selected={template} onSelect={chooseTemplate} onPreview={setFull} />
             <p className="ed-help">{e_.styleHelp}</p>
             <label>{e_.inviteLang}
               <select id="ilang" value={data.lang ?? "fr"} onChange={(e) => set("lang", e.target.value as InvitationData["lang"])}>
@@ -254,14 +266,20 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
               </select>
             </label>
             <p className="ed-help">{e_.inviteLangHelp}</p>
-          </fieldset>
+          </Sec>
 
-          <fieldset>
-            <legend>{e_.couple}</legend>
-            <div className="ed-row2">
-              <label>{e_.first}<input id="p1" value={data.partner1} maxLength={40} onChange={(e) => set("partner1", e.target.value)} /></label>
-              <label>{e_.second}<input id="p2" value={data.partner2} maxLength={40} onChange={(e) => set("partner2", e.target.value)} /></label>
-            </div>
+          <Sec title={bday ? e_.celebrant : e_.couple}>
+            {bday ? (
+              <div className="ed-row2">
+                <label>{e_.firstName}<input id="p1" value={data.partner1} maxLength={40} onChange={(e) => set("partner1", e.target.value)} /></label>
+                <label>{e_.age}<input id="age" type="number" inputMode="numeric" min={1} max={120} placeholder={e_.agePh} value={bd.age ?? ""} onChange={(e) => { const n = parseInt(e.target.value, 10); setBd({ age: n >= 1 && n <= 120 ? n : null }); }} /></label>
+              </div>
+            ) : (
+              <div className="ed-row2">
+                <label>{e_.first}<input id="p1" value={data.partner1} maxLength={40} onChange={(e) => set("partner1", e.target.value)} /></label>
+                <label>{e_.second}<input id="p2" value={data.partner2} maxLength={40} onChange={(e) => set("partner2", e.target.value)} /></label>
+              </div>
+            )}
             <label>{e_.intro}<textarea id="intro" rows={2} maxLength={200} value={data.intro} onChange={(e) => set("intro", e.target.value)} /></label>
             <div className="ed-photo">
               {data.photoUrl ? <img src={data.photoUrl} alt="" /> : <span className="muted">{e_.noPhoto}</span>}
@@ -270,18 +288,35 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
                 <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
               </label>
             </div>
-          </fieldset>
+          </Sec>
 
-          <fieldset>
-            <legend>{e_.dateVenue}</legend>
-            <label>{e_.dateTime}<input id="date" type="datetime-local" value={toLocalInput(data.dateISO)} onChange={(e) => e.target.value && set("dateISO", toParisISO(e.target.value))} /></label>
+          <Sec title={e_.dateVenue}>
+            <label>{bday ? e_.partyDateTime : e_.dateTime}<input id="date" type="datetime-local" value={toLocalInput(data.dateISO)} onChange={(e) => e.target.value && set("dateISO", toParisISO(e.target.value))} /></label>
             <p className="ed-help">{e_.dateHelp}</p>
             <label>{e_.venueName}<input id="vname" value={data.venue.name} maxLength={120} onChange={(e) => set("venue", { ...data.venue, name: e.target.value })} /></label>
             <label>{e_.address}<input id="vaddr" value={data.venue.address} maxLength={200} onChange={(e) => set("venue", { ...data.venue, address: e.target.value })} /></label>
-          </fieldset>
+          </Sec>
 
-          <fieldset>
-            <legend>{e_.verse}</legend>
+          {bday && (
+            <Sec title={e_.party}>
+              {kids && (
+                <div className="ed-palettes" role="radiogroup" aria-label={e_.palette}>
+                  <p className="ed-sub">{e_.palette}</p>
+                  {PALETTES.map((pl) => (
+                    <button key={pl} type="button" role="radio" aria-checked={bd.palette === pl} className={`ed-pal ed-pal-${pl}`} onClick={() => setBd({ palette: pl })}>
+                      <span aria-hidden="true" /><span aria-hidden="true" />{e_.palettes[pl]}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <label className="ed-check"><input type="checkbox" checked={bd.surprise} onChange={(e) => setBd({ surprise: e.target.checked })} /> {e_.surprise}</label>
+              <label>{kids ? e_.endTimeKid : e_.endTime}<input id="endtime" maxLength={12} placeholder={e_.endPh} value={bd.endTime} onChange={(e) => setBd({ endTime: e.target.value })} /></label>
+              {kids && <label>{e_.parentPhone}<input id="pphone" type="tel" maxLength={30} placeholder={e_.parentPhonePh} value={bd.parentPhone} onChange={(e) => setBd({ parentPhone: e.target.value })} /></label>}
+              <label>{e_.gifts}<textarea id="gifts" rows={2} maxLength={300} placeholder={e_.giftsPh} value={bd.gifts} onChange={(e) => setBd({ gifts: e.target.value })} /></label>
+            </Sec>
+          )}
+
+          {!bday && <Sec title={e_.verse}>
             <label>{e_.type}
               <select id="vkind" value={data.verse?.kind ?? "none"} onChange={(e) => {
                 const k = e.target.value;
@@ -304,10 +339,9 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
                 <p className="ed-help">{e_.vHelp}</p>
               </>
             )}
-          </fieldset>
+          </Sec>}
 
-          <fieldset>
-            <legend>{e_.programme}</legend>
+          <Sec title={e_.programme}>
             {data.programme.map((p, i) => (
               <div className="ed-item" key={i}>
                 <input aria-label={e_.time} className="ed-time" value={p.t} maxLength={12} placeholder={e_.timePh} onChange={(e) => set("programme", data.programme.map((x, j) => (j === i ? { ...x, t: e.target.value } : x)))} />
@@ -323,11 +357,10 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
               </div>
             ))}
             {data.programme.length < 10 && <button type="button" className="ed-add" onClick={() => set("programme", [...data.programme, { t: "", title: "", note: "" }])}>{e_.addStep}</button>}
-          </fieldset>
+          </Sec>
 
-          <fieldset>
-            <legend>{e_.dress}</legend>
-            <label className="ed-check"><input type="checkbox" checked={dc.enabled} onChange={(e) => setDc({ enabled: e.target.checked })} /> {e_.showDress}</label>
+          <Sec title={bday ? e_.dressTheme : e_.dress}>
+            <label className="ed-check"><input type="checkbox" checked={dc.enabled} onChange={(e) => setDc({ enabled: e.target.checked })} /> {bday ? e_.showTheme : e_.showDress}</label>
             {dc.enabled && (
               <>
                 <label>{e_.dTitle}<input id="dctitle" maxLength={60} value={dc.title} onChange={(e) => setDc({ title: e.target.value })} /></label>
@@ -343,7 +376,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
                         <input aria-label={e_.colorName} value={c.name} maxLength={30} placeholder={e_.colorPh} onChange={(e) => upd({ name: e.target.value })} />
                         <button type="button" className="ed-x" aria-label={e_.removeColor} onClick={() => setDc({ colors: dc.colors.filter((_, j) => j !== i) })}>×</button>
                       </div>
-                      <label className="ed-check"><input type="checkbox" checked={split} onChange={(e) => upd(e.target.checked ? { men: c.hex, women: c.hex } : { men: undefined, women: undefined })} /> {e_.split}</label>
+                      {!bday && <label className="ed-check"><input type="checkbox" checked={split} onChange={(e) => upd(e.target.checked ? { men: c.hex, women: c.hex } : { men: undefined, women: undefined })} /> {e_.split}</label>}
                       {split && (
                         <div className="ed-row2">
                           <label className="ed-inline">{e_.men} <input type="color" value={c.men ?? c.hex} onChange={(e) => upd({ men: e.target.value, hex: e.target.value })} /></label>
@@ -354,16 +387,15 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
                   );
                 })}
                 {dc.colors.length < 4 && <button type="button" className="ed-add" onClick={() => setDc({ colors: [...dc.colors, { name: "", hex: "#C9A46A" }] })}>{e_.addColor}</button>}
-                <div className="ed-row2">
+                {!bday && <div className="ed-row2">
                   <label>{e_.menNote}<textarea rows={2} maxLength={160} value={dc.men.text} onChange={(e) => setDc({ men: { ...dc.men, text: e.target.value } })} /></label>
                   <label>{e_.womenNote}<textarea rows={2} maxLength={160} value={dc.women.text} onChange={(e) => setDc({ women: { ...dc.women, text: e.target.value } })} /></label>
-                </div>
+                </div>}
               </>
             )}
-          </fieldset>
+          </Sec>
 
-          <fieldset>
-            <legend>{e_.story}</legend>
+          {!bday && <Sec title={e_.story}>
             {data.story.map((s, i) => (
               <div className="ed-item" key={i}>
                 <input aria-label={e_.year} className="ed-time" value={s.y} maxLength={12} placeholder="2019" onChange={(e) => set("story", data.story.map((x, j) => (j === i ? { ...x, y: e.target.value } : x)))} />
@@ -372,14 +404,32 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
               </div>
             ))}
             {data.story.length < 6 && <button type="button" className="ed-add" onClick={() => set("story", [...data.story, { y: "", text: "" }])}>{e_.addMemory}</button>}
-          </fieldset>
+          </Sec>}
 
-          <fieldset>
-            <legend>{e_.replies}</legend>
+          <Sec title={e_.wish}>
+            <p className="ed-help">{e_.wishHelp}</p>
+            <label>{e_.wishNote}<textarea id="wnote" rows={2} maxLength={240} placeholder={e_.wishNotePh} value={wl.note} onChange={(e) => setWl({ note: e.target.value })} /></label>
+            {wl.items.map((w, i) => {
+              const upd = (patch: Partial<typeof w>) => setWl({ items: wl.items.map((x, j) => (j === i ? { ...x, ...patch } : x)) });
+              return (
+                <div className="ed-wish" key={i}>
+                  <input aria-label={e_.wishName} value={w.name} maxLength={80} placeholder={e_.wishNamePh} onChange={(e) => upd({ name: e.target.value })} />
+                  <input aria-label={e_.wishUrl} type="url" inputMode="url" value={w.url} maxLength={500} placeholder={e_.wishUrlPh} aria-invalid={!okLink(w.url) || undefined} className={okLink(w.url) ? undefined : "ed-invalid"} onChange={(e) => upd({ url: e.target.value })} onBlur={() => upd({ url: fixLink(w.url) })} />
+                  <button type="button" className="ed-x" aria-label={e_.removeWish} onClick={() => setWl({ items: wl.items.filter((_, j) => j !== i) })}>×</button>
+                  {!okLink(w.url) && <p className="ed-help ed-bad">{e_.badLink}</p>}
+                </div>
+              );
+            })}
+            {wl.items.length < 20 && <button type="button" className="ed-add" onClick={() => setWl({ items: [...wl.items, { name: "", url: "" }] })}>{e_.addWish}</button>}
+            <label>{e_.fund}<input id="wfund" type="url" inputMode="url" maxLength={500} placeholder={e_.fundPh} value={wl.fund} aria-invalid={!okLink(wl.fund) || undefined} className={okLink(wl.fund) ? undefined : "ed-invalid"} onChange={(e) => setWl({ fund: e.target.value })} onBlur={() => setWl({ fund: fixLink(wl.fund) })} /></label>
+            {okLink(wl.fund) ? <p className="ed-help">{e_.fundHelp}</p> : <p className="ed-help ed-bad">{e_.badLink}</p>}
+          </Sec>
+
+          <Sec title={e_.replies}>
             <label>{e_.rsvpLine}<input id="rsvpby" maxLength={120} value={data.rsvpBy} onChange={(e) => set("rsvpBy", e.target.value)} /></label>
             <label><span>{e_.email} <span aria-hidden="true">*</span></span><input id="email" type="email" required autoComplete="email" aria-invalid={emailErr || undefined} className={emailErr ? "ed-invalid" : undefined} maxLength={200} placeholder={e_.emailPh} value={email} onChange={(e) => { setEmail(e.target.value); setEmailErr(false); }} /></label>
             <p className="ed-help">{e_.emailHelp} <a href="/espace">{t.find.lost}</a></p>
-          </fieldset>
+          </Sec>
 
           <div className="ed-actions">
             {msg && <p className={`ed-msg ${msg.kind}`} role="status">{msg.text}</p>}
@@ -424,7 +474,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
               </div>
               {isMine
                 ? status !== "published" && <button type="button" className="btn-s" disabled={busy} onClick={() => { setFull(null); publish(); }}>{publishLabel}</button>
-                : <button type="button" className="btn-s" onClick={() => { if (full === "velours" && !token && JSON.stringify(data) === JSON.stringify(sampleData(data.lang ?? siteLang))) setData(veloursSampleData(data.lang ?? siteLang)); setTemplate(full); setFull(null); setMsg({ kind: "ok", text: e_.msgChosen(shown.name) }); }}><span className="lbl-lg">{e_.choose}</span><span className="lbl-sm">{e_.chooseShort}</span></button>}
+                : <button type="button" className="btn-s" onClick={() => { chooseTemplate(full); setFull(null); setMsg({ kind: "ok", text: e_.msgChosen(shown.name) }); }}><span className="lbl-lg">{e_.choose}</span><span className="lbl-sm">{e_.chooseShort}</span></button>}
             </div>
             {/* key : chaque modèle recharge l'iframe, qui rejoue son ouverture. */}
             <iframe key={full} ref={fullFrame} src="/apercu?plein=1" title={t.common.demoOf(shown.name)} allow="accelerometer; gyroscope" />
@@ -434,3 +484,17 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
     </main>
   );
 }
+
+/** Section repliable du formulaire : chacune s'ouvre et se ferme indépendamment et reste comme la personne l'a laissée. */
+function Sec({ title, meta, open = false, children }: { title: string; meta?: string; open?: boolean; children: React.ReactNode }) {
+  return (
+    <details className="ed-sec" open={open}>
+      <summary><span>{title}</span>{meta && <em>{meta}</em>}</summary>
+      <fieldset><legend>{title}</legend>{children}</fieldset>
+    </details>
+  );
+}
+
+/** Lien de souhait : vide accepté, sinon un domaine (https:// ajouté au besoin). */
+const okLink = (v: string) => !v.trim() || /^(https?:\/\/)?[^\s/.]+(\.[^\s/.]+)+(\/\S*)?$/i.test(v.trim());
+const fixLink = (v: string) => { const t = v.trim(); return t && okLink(t) && !/^https?:\/\//i.test(t) ? `https://${t}` : t; };

@@ -4,6 +4,7 @@
 import { inviteDict } from "../../lib/i18n/invite";
 import { LOCALE } from "../../lib/i18n";
 import { mountCouple } from "./dresscode/couple";
+import { wishHtml } from "./wishlist";
 const CAP=s=>s.charAt(0).toUpperCase()+s.slice(1);
 export const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 export function dateParts(iso,lang="fr",tz="Europe/Paris"){
@@ -51,6 +52,7 @@ function render(){
   $("story").closest("section").hidden=!DATA.story.length;$("timeline").closest("section").hidden=!DATA.programme.length;$("rsvpBy").hidden=!DATA.rsvpBy;
   $("story").innerHTML=DATA.story.map(x=>`<div><span>${x.y}</span><p>${x.text}</p></div>`).join("");
   $("rsvpBy").textContent=DATA.rsvpBy;
+  {const wl=wishHtml(DATA.raw);$("wishSec").hidden=!wl;$("wish").innerHTML=wl;}
   renderVerse();$("dateFull").textContent=DATA.dateFull;renderDress();
 }
 function renderVerse(){const v=DATA.verse&&DATA.verse.text?DATA.verse:null;$("verse").hidden=!v;if(!v)return;$("vOrig").textContent=v.orig||"";$("vOrig").hidden=!v.orig;$("vText").textContent=v.orig?v.text:T.c.quote(v.text);$("vRef").textContent=v.ref||"";}
@@ -68,7 +70,7 @@ function renderDress(){
   if(dcIdx>=cols.length)dcIdx=0; setDc(dcIdx); clearInterval(dcTimer);
   dcTimer=setInterval(()=>{ if(!dcManual && cols.length>1) setDc((dcIdx+1)%cols.length); },2800);
 }
-function setDc(i){ const c=DATA.dressCode.colors[i]; dcIdx=i; const f=$("dcFigs"); f.style.setProperty("--gm",c.men||c.hex); f.style.setProperty("--gw",c.women||c.hex); const ce=$("dcCouple"); if(couple?.el!==ce){couple?.destroy(); couple=mountCouple(ce,DATA.dressCode.couple);} couple.set(c.men||c.hex,c.women||c.hex);
+function setDc(i){ const c=DATA.dressCode.colors[i]; if(!c)return; dcIdx=i; const f=$("dcFigs"); f.style.setProperty("--gm",c.men||c.hex); f.style.setProperty("--gw",c.women||c.hex); const ce=$("dcCouple"); if(couple?.el!==ce){couple?.destroy(); couple=mountCouple(ce,DATA.dressCode.couple);} couple.set(c.men||c.hex,c.women||c.hex);
   $("dcName").innerHTML=c.name; $("dcSwatches").querySelectorAll(".dc-sw").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.i===i));
    }
 

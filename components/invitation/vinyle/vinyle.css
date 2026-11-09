@@ -1,0 +1,127 @@
+/* « Face A » : platine vinyle, préfixe vy-. */
+@property --arm{syntax:"<angle>";inherits:true;initial-value:0deg}
+body[data-tpl="vinyle"]{background:#17110d}
+.fx-vinyle{--fx-ink:#F3E6CC;--fx-muted:#b4a288;--fx-accent:#C9A24A;--fx-accent-ink:#1b1408;--fx-card:rgba(36,27,20,.86);--fx-line:rgba(243,230,204,.18);--fx-field:#fbf5ea;--fx-title:"Cormorant Garamond",Georgia,serif;
+  background:radial-gradient(120% 60% at 50% 0%,#2c1f16,transparent 70%),radial-gradient(90% 50% at 50% 100%,#24180f,transparent 70%),#17110d}
+.fx-vinyle small{color:var(--fx-accent)}
+
+/* salon feutré flou derrière l'album (photo vinyle-salon.webp) */
+.fx-vinyle::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(rgba(20,13,8,.6),rgba(20,13,8,.82)),url(/img/vinyle-salon.webp) center/cover}
+.vy-main{position:relative;z-index:1}
+
+/* ---------- vinyle générique (photo vinyle-disque.webp, étiquette dorée d'origine) ---------- */
+.vy-rec{position:relative;border-radius:50%;aspect-ratio:1;container-type:inline-size;background:url(/img/vinyle-disque.webp) center/100% 100% no-repeat}
+.vy-shine{position:absolute;inset:0;border-radius:50%;pointer-events:none;background:conic-gradient(from 10deg,transparent 0 18deg,rgba(255,255,255,.12) 34deg,transparent 52deg 196deg,rgba(255,255,255,.08) 214deg,transparent 234deg)}
+.vy-label{position:absolute;inset:32.5%;border-radius:50%;display:grid;place-items:center;color:#3a2808;font-family:Cinzel,serif;font-size:17cqi;text-shadow:0 1px 0 rgba(255,240,200,.45)}
+.vy-label:has(span){background:radial-gradient(circle at 40% 34%,#e9c66e,#d2a548 58%,#b98c34)}
+.vy-label span{font-size:1em;line-height:1;transform:translateY(-.06em)}
+@keyframes vy-spin{to{rotate:360deg}}
+
+/* ---------- ouverture : photo de la platine, scène calée sur la hauteur de l'écran ---------- */
+.vy-intro{position:fixed;inset:0;z-index:50;overflow:hidden;text-align:center;background:#120c08;transition:opacity .9s ease}
+.vy-intro::before{content:"";position:absolute;inset:-40px;background:url(/img/vinyle-platine.webp) center/cover;filter:blur(22px) brightness(.55)}
+.vy-intro[hidden]{display:none}
+.vy-deck{position:absolute;top:0;left:50%;height:100%;aspect-ratio:941/1672;translate:-50% 0;touch-action:none;cursor:grab;transform-origin:42.3% 46%;transition:transform 1.2s cubic-bezier(.6,0,.35,1)}
+.vy-plate{position:absolute;inset:0;width:100%;height:100%;display:block;-webkit-user-select:none;user-select:none}
+.vy-rec-intro{position:absolute;left:8.82%;top:27.21%;width:66.95%;filter:drop-shadow(0 6px 10px rgba(0,0,0,.55))}
+.vy-deck.is-play .vy-rec-intro{animation:vy-spin 1.8s linear infinite}
+.vy-deck.is-play .vy-rec-intro .vy-shine{animation:vy-spin 1.8s linear infinite reverse}
+.vy-arm{position:absolute;left:74.04%;top:27.33%;width:26.58%;padding:0;border:0;background:none;cursor:grab;
+  transform-origin:37.28% 21.97%;rotate:var(--arm);transition:rotate .7s cubic-bezier(.3,.75,.25,1);filter:drop-shadow(-8px 12px 8px rgba(0,0,0,.6));touch-action:none}
+.vy-arm img{display:block;width:100%;height:auto;-webkit-user-select:none;user-select:none;pointer-events:none}
+.vy-arm:focus-visible{outline:2px solid var(--fx-accent);outline-offset:4px;border-radius:8px}
+.vy-deck.is-drag .vy-arm{transition:none;cursor:grabbing}
+.vy-deck:not(.is-drag):not(.is-play) .vy-arm{animation:vy-nudge 2.8s ease-in-out 1s infinite}
+@keyframes vy-nudge{0%,55%,100%{rotate:0deg}70%{rotate:7deg}82%{rotate:3deg}}
+.vy-head{position:absolute;z-index:2;left:0;right:0;top:0;padding:max(34px,env(safe-area-inset-top)) 16px 70px;pointer-events:none;background:linear-gradient(rgba(10,6,3,.82),rgba(10,6,3,.5) 60%,transparent)}
+.vy-head h1{font-size:clamp(2.8rem,13vw,4.6rem);font-style:italic;color:#F7EBD3;text-shadow:0 2px 18px rgba(0,0,0,.6)}
+.vy-head p{margin:.2rem auto 0;max-width:none;color:#E8C77A;letter-spacing:.2em;text-transform:uppercase;font-size:.8rem}
+.vy-hint{position:absolute;z-index:2;left:0;right:0;bottom:0;margin:0;max-width:none;padding:70px 16px max(30px,env(safe-area-inset-bottom));pointer-events:none;color:#f1e2c2;font-size:1rem;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(transparent,rgba(10,6,3,.78) 55%)}
+.vy-hint::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--fx-accent);box-shadow:0 0 0 0 rgba(201,162,74,.7);animation:vy-ping 1.8s ease-out infinite}
+@keyframes vy-ping{to{box-shadow:0 0 0 14px rgba(201,162,74,0)}}
+.vy-intro.is-zoom{opacity:0;pointer-events:none}
+.vy-intro.is-zoom .vy-deck{transform:scale(2.3)}
+
+/* ---------- pochette ---------- */
+.vy-main{padding:0 16px 130px}
+.vy-cover{min-height:100svh;display:grid;align-content:center;justify-items:center;text-align:center;gap:10px;padding:56px 0 40px}
+.vy-album{position:relative;width:min(62vw,290px);aspect-ratio:1;margin:0 0 22px;translate:-14% 0}
+.vy-rec-cover{position:absolute;top:4%;left:6%;width:92%;transform:rotate(var(--spin,0deg));transition:left 1.3s cubic-bezier(.2,.8,.2,1) .35s}
+.vy-album.is-in .vy-rec-cover{left:38%}
+.fx-vinyle.is-open .vy-rec-cover .vy-label{animation:vy-spin 3.6s linear infinite}
+.vy-sleeve{position:absolute;inset:0;border-radius:3px;overflow:hidden;background:url(/img/vinyle-pochette.webp) center/cover;box-shadow:0 24px 50px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.08)}
+.vy-photo{width:100%;height:100%;object-fit:cover;display:block}
+.vy-sleeve .fx-mono{width:100%;height:100%;font-size:min(36vw,170px);color:#9a7630;font-style:italic;background:none}
+.vy-badge{position:absolute;right:6%;top:6%;width:30%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;text-align:center;padding:6%;rotate:12deg;
+  background:radial-gradient(circle at 38% 32%,#f2da95,#C9A24A 60%,#a07d30);color:#2a1d08;font-family:Cinzel,serif;font-size:clamp(.62rem,2.6vw,.8rem);line-height:1.1;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.vy-cover h1{font-size:clamp(3.2rem,16vw,6rem);font-style:italic;color:#F7EBD3}
+.vy-sub{margin:0;color:var(--fx-accent);letter-spacing:.22em;text-transform:uppercase;font-size:.82rem}
+.vy-txt{max-width:34ch;margin:.4rem 0 0;color:var(--fx-muted)}
+.vy-advisory{margin-top:10px;border:2px solid var(--fx-ink);padding:8px 14px;max-width:300px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:.76rem;background:#0f0b08}
+.vy-advisory p{margin:0}
+.vy-tracklist{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:7px;font-size:.92rem;color:var(--fx-muted);text-align:left}
+.vy-tracklist span{display:inline-block;width:1.7em;color:var(--fx-accent);font-family:Cinzel,serif}
+
+/* ---------- pistes ---------- */
+.vy-track{max-width:560px;margin:0 auto;padding:70px 0;border-top:1px solid var(--fx-line);text-align:center}
+.vy-th{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:28px;text-align:left}
+.vy-no{font-family:Cinzel,serif;font-size:3.4rem;line-height:1;color:transparent;-webkit-text-stroke:1px var(--fx-accent)}
+.vy-th h2{font-size:2.1rem;font-style:italic}
+.vy-scratch{position:relative;width:min(84vw,380px);margin:0 auto}
+.vy-big{position:relative;border-radius:50%;aspect-ratio:1;container-type:inline-size;touch-action:none;cursor:grab;rotate:var(--r,0deg);
+  background:url(/img/vinyle-disque.webp) center/100% 100% no-repeat;box-shadow:0 26px 60px rgba(0,0,0,.65)}
+.vy-big.is-hold{cursor:grabbing}
+.vy-big.is-done{rotate:0deg;transition:rotate .9s cubic-bezier(.2,.8,.2,1)}
+.vy-big:focus-visible{outline:2px solid var(--fx-accent);outline-offset:6px}
+.vy-dlabel{position:absolute;inset:25%;border-radius:50%;display:grid;place-items:center;text-align:center;color:#2a1d08;background:radial-gradient(circle at 38% 32%,#f2da95,#C9A24A 58%,#9a782b)}
+.vy-dtxt{display:grid;justify-items:center;gap:1cqi;filter:blur(var(--blur,12px));transition:filter .25s}
+.vy-dtxt b{font-family:Cinzel,serif;font-weight:500;font-size:15cqi;line-height:1}
+.vy-dtxt span{font-size:4.6cqi;text-transform:uppercase;letter-spacing:.12em}
+.vy-dtxt em{font-style:normal;font-size:3.2cqi;max-width:40cqi}
+.vy-hand{display:none}
+.fx-vinyle.is-gated .vy-hand{display:block;position:absolute;left:50%;top:80%;width:46px;height:46px;margin:-23px;border-radius:50%;pointer-events:none;background:rgba(243,230,204,.25);border:2px solid rgba(243,230,204,.75);animation:vy-swipe 1.7s ease-in-out infinite}
+@keyframes vy-swipe{0%,100%{translate:-70px 0}50%{translate:70px 0}}
+.vy-lcd{background:#0d0a08;border:1px solid var(--fx-line);border-radius:16px;padding:20px 10px;box-shadow:inset 0 0 34px rgba(0,0,0,.7)}
+.vy-lcd b{font-family:"Courier New",monospace;font-weight:700;color:#f2c14e;text-shadow:0 0 14px rgba(242,193,78,.45)}
+.vy-list{list-style:none;padding:0;margin:0;text-align:left}
+.vy-list li{display:grid;grid-template-columns:2rem 1fr auto;gap:12px;align-items:baseline;padding:15px 4px;border-bottom:1px solid var(--fx-line)}
+.vy-n{color:var(--fx-accent);font-family:Cinzel,serif}
+.vy-list b{display:block;font-weight:500;font-size:1.06rem}
+.vy-list em{font-style:normal;color:var(--fx-muted);font-size:.88rem}
+.vy-list time{color:var(--fx-accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+.vy-dress h3,.vy-place h3{font-size:2rem;font-style:italic}
+.vy-dress p,.vy-place p{color:var(--fx-muted);margin:.5rem auto 0;max-width:38ch}
+.vy-sleeves{display:flex;flex-wrap:wrap;justify-content:center;gap:18px 30px;margin-top:26px}
+.vy-sleeves figure{position:relative;margin:0;width:112px}
+.vy-sleeves i{position:absolute;left:30%;top:6%;width:88%;aspect-ratio:1;border-radius:50%;background:url(/img/vinyle-disque.webp) center/100% 100%}
+.vy-sleeves div{position:relative;aspect-ratio:1;border-radius:3px;background:url(/img/vinyle-pochette.webp) center/cover,var(--sw);background-blend-mode:multiply;box-shadow:0 10px 24px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.12)}
+.vy-sleeves figcaption{margin-top:10px;font-size:.85rem}
+.vy-notes{margin:30px auto 0;padding:18px;border:1px dashed var(--fx-line);border-radius:10px;max-width:440px}
+.vy-notes small{color:var(--fx-accent)}
+.vy-by{color:var(--fx-muted);font-style:italic;margin:0}
+.vy-sent{display:none;position:relative;width:190px;height:150px;margin:26px auto 0}
+.vy-rsvp.is-sent .vy-sent{display:block}
+.vy-sent-sleeve{position:absolute;left:10px;top:5px;width:140px;height:140px;z-index:2;border-radius:3px;background:url(/img/vinyle-pochette.webp) center/cover;box-shadow:0 10px 24px rgba(0,0,0,.5)}
+.vy-sent-rec{position:absolute;top:10px;left:40px;width:130px;animation:vy-in 1.4s cubic-bezier(.3,.8,.3,1) both}
+@keyframes vy-in{from{left:90px;rotate:-120deg}to{left:14px;rotate:0deg}}
+
+/* ---------- lecteur « en cours » ---------- */
+.vy-np{position:fixed;left:12px;right:68px;bottom:14px;z-index:65;max-width:420px;display:flex;align-items:center;gap:10px;padding:8px 16px 10px 8px;border-radius:999px;
+  background:rgba(20,15,11,.9);border:1px solid var(--fx-line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transform:translateY(160%);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.fx-vinyle:not(.is-open) .vy-np{display:none}
+.vy-np.is-on{transform:none}
+.vy-np-rec{width:38px;flex:none;animation:vy-spin 1.8s linear infinite}
+.vy-np>div:not(.vy-rec){min-width:0;flex:1}
+.vy-np small{font-size:.58rem;letter-spacing:.22em}
+.vy-np b{display:block;font-weight:500;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vy-np-bar{position:absolute;left:54px;right:18px;bottom:5px;height:2px;border-radius:2px;background:rgba(243,230,204,.15);overflow:hidden}
+.vy-np-bar i{display:block;height:100%;background:var(--fx-accent);transform-origin:left;transform:scaleX(0)}
+.vy-foot{text-align:center;padding:60px 0 20px;border-top:1px solid var(--fx-line);max-width:560px;margin:0 auto}
+.vy-foot-rec{width:110px;margin:0 auto 16px}
+.vy-foot-rec .vy-rec{animation:vy-spin 3.6s linear infinite}
+.vy-foot-name{font-family:var(--fx-title);font-style:italic;font-size:2.4rem;margin:0}
+.vy-foot p{margin:.3rem 0 0;color:var(--fx-muted)}
+
+@media (max-height:640px){.vy-head h1{font-size:2.6rem}}
+.fx-vinyle.is-still *,.fx-vinyle.is-still *::before{animation:none!important;transition:none!important}
+@media (prefers-reduced-motion:reduce){.fx-vinyle *{animation:none!important}}

@@ -6,17 +6,23 @@ import { useT } from "@/components/I18n";
 import { CATEGORIES, TEMPLATES, type CategoryId, type TemplateId } from "@/lib/types";
 import type { Lang } from "@/lib/i18n";
 
-export default function TemplateRows({ names, lang, compact = false, selected, onPreview, onSelect, onCreate }: {
+export default function TemplateRows({ names, lang, compact = false, noAll = false, selected, onPreview, onSelect, onCreate }: {
   names: [string, string];
   lang: Lang;
   compact?: boolean;
+  /** Sans l'onglet « Tout » (éditeur) : on part de la catégorie du modèle choisi. */
+  noAll?: boolean;
   selected?: TemplateId;
   onPreview: (id: TemplateId) => void;
   onSelect?: (id: TemplateId) => void;
   onCreate?: (id: TemplateId, event: React.MouseEvent<HTMLAnchorElement>) => void;
 }) {
   const t = useT();
-  const [filter, setFilter] = useState<CategoryId | "all">("all");
+  const [filter, setFilter] = useState<CategoryId | "all">(() => {
+    if (!noAll) return "all";
+    const own = TEMPLATES.find((item) => item.id === selected)?.categories[0] as CategoryId | undefined;
+    return own ?? CATEGORIES[0].id;
+  });
   const ordered = (ids: TemplateId[]) => selected && ids.includes(selected) ? [selected, ...ids.filter((id) => id !== selected)] : ids;
   const idsFor = (category: CategoryId) => ordered(TEMPLATES.filter((item) => (item.categories as readonly CategoryId[]).includes(category)).map((item) => item.id));
 
@@ -47,9 +53,9 @@ export default function TemplateRows({ names, lang, compact = false, selected, o
   const total = TEMPLATES.length;
   return <div className={`ph-gallery${compact ? " is-compact" : ""}`}>
     <div className="ph-filters" role="group" aria-label={t.gallery.filtersLabel}>
-      <button type="button" aria-pressed={filter === "all"} onClick={() => setFilter("all")}>
+      {!noAll && <button type="button" aria-pressed={filter === "all"} onClick={() => setFilter("all")}>
         <span className="ph-ico" aria-hidden="true">{ICONS.all}</span><span className="ph-lbl">{t.gallery.filters.all}</span><span className="ph-n">{total}</span>
-      </button>
+      </button>}
       {CATEGORIES.map(({ id }) => {
         const n = idsFor(id).length;
         return <button key={id} type="button" aria-pressed={filter === id} onClick={() => setFilter(id)}>

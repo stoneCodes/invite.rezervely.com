@@ -42,4 +42,20 @@ export const PDF_THEMES: Record<TemplateId, PdfTheme> = {
     background: "#FFF9F3", text: "#40252A", muted: "#80646A", accent: "#A87843", rule: "#E8D3C2",
     titleFont: "/fonts/pdf/CormorantGaramond-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/PinyonScript-Regular.ttf", ornament: "/pdf/ornaments/velours.svg",
   },
+  vinyle: {
+    background: "#FBF7F0", text: "#2A1F17", muted: "#7A6A58", accent: "#A9822F", rule: "#E6D9C2",
+    titleFont: "/fonts/pdf/Cinzel-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/GreatVibes-Regular.ttf", ornament: "/pdf/ornaments/vinyle.svg",
+  },
+  toast: {
+    background: "#FCF9F1", text: "#18213A", muted: "#6B7088", accent: "#B8913B", rule: "#E9DFC4",
+    titleFont: "/fonts/pdf/Cinzel-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/GreatVibes-Regular.ttf", ornament: "/pdf/ornaments/toast.svg",
+  },
+  gateau: {
+    background: "#FFF9FB", text: "#5A2A3E", muted: "#8E6A7A", accent: "#D0668C", rule: "#F2D6E0",
+    titleFont: "/fonts/pdf/CormorantGaramond-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/Parisienne-Regular.ttf", ornament: "/pdf/ornaments/gateau.svg",
+  },
+  pinata: {
+    background: "#FFFBEF", text: "#5A3200", muted: "#8C6A3E", accent: "#E8577C", rule: "#F3E1B6",
+    titleFont: "/fonts/pdf/CormorantGaramond-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/Parisienne-Regular.ttf", ornament: "/pdf/ornaments/pinata.svg",
+  },
 };

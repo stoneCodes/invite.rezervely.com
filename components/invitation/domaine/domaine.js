@@ -6,6 +6,7 @@
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
+import { wishHtml } from "../wishlist";
 
 const IMG = (n) => `/img/domaine-${n}.webp`;
 // Lieux du parcours, dans l'ordre des sections (index = data-s).
@@ -97,6 +98,8 @@ export function mountDomaine(root, data, OPTS = {}) {
   if (venueQ) add("venue", "facade", M.say.venue, `<div class="dm-card dm-place dm-rv">${head(M.venueEyebrow, esc(D.venue?.name || ""))}<p class="dm-note">${esc(D.venue?.address)}</p>
       <div class="dm-btns"><a class="dm-btn" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${ICON.pin}${M.route}</a><a class="dm-btn ghost" href="${calUrl}" target="_blank" rel="noopener noreferrer">${esc(T.c.addCal)}</a></div></div>`);
   if (story.length) add("story", "terrasse", M.say.story, `<div class="dm-card dm-story dm-rv">${head(M.storyEyebrow, C.storyTitle)}${story.map((s) => `<article class="dm-rv"><time>${esc(s.y)}</time><p>${esc(s.text)}</p></article>`).join("")}</div>`);
+  const W = inviteDict(D.lang).wish, wish = wishHtml(D);
+  if (wish) add("wish", "arche", W.say, `<div class="dm-card dm-wish dm-rv">${head(W.eyebrow, W.title)}${wish}</div>`);
   add("table", "table", M.say.rsvp, `<header class="dm-table-head dm-rv"><small>${M.rsvpEyebrow}</small><h2>${M.rsvp}</h2>${D.rsvpBy ? `<p>${esc(D.rsvpBy)}</p>` : ""}</header>`, "dm-sec-table");
   add("rsvp", "table-flou", "", `<div class="dm-card dm-rsvp dm-rv">
       <form class="dm-form" novalidate>

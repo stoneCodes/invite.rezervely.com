@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Invitation from "@/components/invitation/Invitation";
-import { sampleData, veloursSampleData } from "@/lib/sample";
+import { demoWishlist, sampleFor } from "@/lib/sample";
 import type { TemplateId } from "@/lib/types";
 import { useLang, useT } from "@/components/I18n";
 
@@ -20,7 +20,7 @@ export default function DemoClient({ template, embedded = false }: { template: T
   }, [embedded]);
   return (
     <>
-      <Invitation data={template === "velours" ? veloursSampleData(lang) : sampleData(lang)} template={template} demoPhoto />
+      <Invitation data={{ ...sampleFor(template, lang), wishlist: demoWishlist(template, lang) }} template={template} demoPhoto />
       {/* Sortie de la démo : toujours visible, au-dessus des ouvertures plein écran (sauf dans la pop-up de l'accueil). */}
       {!embedded && (
         <Link href="/" className={`demo-exit${mini ? " is-mini" : ""}`} aria-label={t.demo.exitAria}>

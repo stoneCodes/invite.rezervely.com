@@ -141,7 +141,7 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
   .site .ph-gallery.is-compact .ph-card{flex:0 0 100%}
   .site .ph-gallery.is-compact .ph-device{width:min(56vw,230px)}
   .site .ph-soon-screen{width:min(64vw,270px);margin-inline:auto;aspect-ratio:9/18}
-  .site .ph-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:auto;max-width:none;margin:4px 16px 34px;padding:6px;gap:4px;border-radius:24px}
+  .site .ph-filters{display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);width:auto;max-width:none;margin:4px 16px 34px;padding:6px;gap:4px;border-radius:24px}
   .site .ph-filters button{flex-direction:column;justify-content:flex-start;gap:6px;padding:10px 4px 9px;border-radius:18px;font-size:.68rem;line-height:1.15;text-align:center}
   .site .ph-ico{width:36px;height:36px}.site .ph-ico svg{width:21px;height:21px}
   .site .ph-lbl{min-height:2.3em;display:flex;align-items:center}

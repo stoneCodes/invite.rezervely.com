@@ -10,7 +10,7 @@ export type CategoryId = (typeof CATEGORIES)[number]["id"];
 type PhoneSpec = {
   screen: string;
   names: { top: number; size: number };
-  hint: { top: number };
+  hint: { top: number; ink?: string };
   /** Initiales gravées sur le sceau de l'image (centre et diamètre en % de l'écran, couleur de la gravure) ; null = pas de sceau ou sceau à motif. */
   seal: { top: number; left: number; d: number; ink: string } | null;
   ink: string;
@@ -28,10 +28,41 @@ export const TEMPLATES = [
   { id: "boule-neige", name: "Le domaine", tagline: "Une clé ancienne ouvre le portail, puis une promenade en plein jour dans un domaine de charme", cover: "/img/domaine-portail.webp", categories: ["mariage"], featured: true, phone: { screen: "/img/phone-boule-neige.webp", names: { top: 82, size: 12 }, hint: { top: 89 }, seal: null, ink: "#5a4630", font: "script" } },
   { id: "origami", name: "Origami", tagline: "Une enveloppe de papier scellée de cire dorée s'ouvre dans la lumière, chaque section est un pliage, la réponse part en avion", cover: "/img/origami-grues.webp", categories: ["mariage"], featured: false, phone: { screen: "/img/phone-origami.webp", names: { top: 66, size: 12 }, hint: { top: 74 }, seal: null, ink: "#5a3d26", font: "script" } },
   { id: "velours", name: "Éclat de velours", tagline: "Un sceau s'illumine, l'enveloppe s'ouvre et la soirée se dévoile", cover: "/img/velours-enveloppe.webp", categories: ["mariage"], featured: false, phone: { screen: "/img/phone-velours.webp", names: { top: 82, size: 12 }, hint: { top: 89 }, seal: null, ink: "#f3dcb4", font: "script" } },
+  // Anniversaires (docs/anniversaires.md) : un seul prénom + âge, données propres dans data.bday.
+  { id: "vinyle", name: "Face A", tagline: "On pose le diamant sur le disque : l'invitation est un album, chaque section une piste", cover: "/img/phone-vinyle.webp", categories: ["anniversaire"], featured: true, kids: false, phone: { screen: "/img/phone-vinyle.webp", names: { top: 12, size: 13 }, hint: { top: 91.5 }, seal: null, ink: "#F3E6CC", font: "serif" } },
+  { id: "toast", name: "Le toast", tagline: "On sabre le champagne, la mousse jaillit et chaque section arrive dans une bulle", cover: "/img/phone-toast.webp", categories: ["anniversaire"], featured: true, kids: false, phone: { screen: "/img/phone-toast.webp", names: { top: 69.5, size: 12 }, hint: { top: 90, ink: "#F3E6CC" }, seal: null, ink: "#3b2a0b", font: "serif" } },
+  { id: "gateau", name: "Le gâteau magique", tagline: "On souffle les bougies, puis on descend le gâteau étage par étage", cover: "/img/phone-gateau.webp", categories: ["anniversaire"], featured: true, kids: true, phone: { screen: "/img/phone-gateau.webp", names: { top: 13, size: 13 }, hint: { top: 85.5 }, seal: null, ink: "#1f3f63", font: "serif" } },
+  { id: "pinata", name: "La piñata", tagline: "Trois coups sur la piñata, et chaque section tombe dans un bonbon à déballer", cover: "/img/phone-pinata.webp", categories: ["anniversaire"], featured: true, kids: true, phone: { screen: "/img/phone-pinata.webp", names: { top: 78, size: 13 }, hint: { top: 88.5 }, seal: null, ink: "#5a2140", font: "serif" } },
 ] as const;
 
 export type TemplateId = (typeof TEMPLATES)[number]["id"];
 export const TEMPLATE_IDS = TEMPLATES.map((t) => t.id) as TemplateId[];
+
+/** Modèle d'anniversaire (un seul prénom, âge, data.bday) plutôt que de mariage (deux prénoms). */
+export const isBirthday = (id: string | null | undefined) => TEMPLATES.some((t) => t.id === id && (t.categories as readonly string[]).includes("anniversaire"));
+/** Anniversaire d'enfant : palette au choix, heure de fin, téléphone d'un parent, allergies dans la réponse. */
+export const isKids = (id: string | null | undefined) => TEMPLATES.some((t) => t.id === id && "kids" in t && t.kids);
+/** Prénoms affichés : « Léa & Samuel », ou un seul prénom pour un anniversaire. */
+export const displayNames = (d: { partner1?: string; partner2?: string }) => [d.partner1, d.partner2].map((x) => (x ?? "").trim()).filter(Boolean).join(" & ");
+
+/** Palettes des modèles enfant (choix des parents, sans étiquette fille / garçon). */
+export const PALETTES = ["rose", "bleu"] as const;
+export type PaletteId = (typeof PALETTES)[number];
+
+/** Données propres aux anniversaires. */
+export type BirthdayData = {
+  /** Âge fêté (1 à 120), null = non précisé */
+  age: number | null;
+  /** Fête surprise : avertissement aux invités */
+  surprise: boolean;
+  /** Idées de cadeaux, cagnotte… (facultatif) */
+  gifts: string;
+  /** Heure de fin (enfants : heure où l'on vient les chercher) */
+  endTime: string;
+  /** Téléphone d'un parent (enfants) */
+  parentPhone: string;
+  palette: PaletteId;
+};
 
 /** Types de lieu d'une étape du programme (parcours du modèle « Le domaine »). */
 export const PLACES = ["mairie", "eglise", "mosquee", "temple", "ceremonie", "cocktail", "reception", "soiree"] as const;
@@ -64,7 +95,15 @@ export type InvitationData = {
   story: { y: string; text: string }[];
   rsvpBy: string;
   photoUrl: string | null;
+  /** Anniversaires seulement (partner1 = personne fêtée, partner2 vide). */
+  bday?: BirthdayData;
+  /** Liste de souhaits facultative (tous les modèles) : articles nom + lien, et lien de cagnotte. */
+  wishlist?: Wishlist;
 };
+
+/** Un souhait : nom affiché, lien facultatif (https) vers la page de l'article. */
+export type WishItem = { name: string; url: string };
+export type Wishlist = { note: string; items: WishItem[]; fund: string };
 
 export type InvitationRow = {
   id: string;
