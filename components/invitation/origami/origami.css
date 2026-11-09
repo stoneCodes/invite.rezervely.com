@@ -28,24 +28,64 @@ html:has(.or),body:has(.or){background:#E4CBA6}
 .or-btn:disabled{opacity:.6}
 .or-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px}
 
-/* ---------- Ouverture : la grue ---------- */
-.or-intro{position:fixed;inset:0;z-index:40;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);justify-items:center;align-items:center;overflow:clip;
-  padding:calc(30px + env(safe-area-inset-top,0px)) 18px calc(34px + env(safe-area-inset-bottom,0px));transition:opacity .9s ease}
+/* ---------- Ouverture : enveloppe washi plein écran, sceau de cire, lumière ---------- */
+.or-intro{position:fixed;inset:0;z-index:40;overflow:clip;background:#E8DAC0;transition:opacity 1.1s ease;
+  --env:url(/img/origami-washi.webp) center/460px,linear-gradient(160deg,#F5ECDB,#EADCC2);
+  --flapy:53%}
 .or-intro[hidden]{display:none}
 .or-intro.is-out{opacity:0;pointer-events:none}
-.or-intro-bg{position:absolute;inset:-20px;background:#F3E6DA url(/img/origami-grues.webp) center/cover;filter:blur(3px) saturate(1.05);z-index:-1}
-.or-intro-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,250,244,.55),rgba(255,250,244,.25) 40%,rgba(255,250,244,.6))}
-.or-kicker{font:italic 400 clamp(1.4rem,6vw,1.9rem)/1.3 var(--f-name);text-align:center;color:var(--ink);transition:opacity .5s}
-.or-hint{font-size:.9rem;letter-spacing:.06em;color:var(--ink);opacity:.8;transition:opacity .5s}
-.or-intro.is-unfolding .or-kicker,.or-intro.is-unfolding .or-hint{opacity:0}
-.or-crane{position:relative;width:min(84vw,48svh,400px);aspect-ratio:1;border:0;padding:0;background:none;perspective:900px;-webkit-tap-highlight-color:transparent}
-.or-crane svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 26px 22px rgba(80,48,20,.32));
-  transform:rotateX(calc(16deg * (1 - var(--t,0)))) rotateY(calc(-26deg * (1 - var(--t,0)))) scale(calc(1 + .04 * var(--t,0)))}
-.or-intro:not(.is-unfolding) .or-crane svg{animation:or-bob 4s ease-in-out infinite}
-@keyframes or-bob{0%,100%{transform:rotateX(16deg) rotateY(-26deg) translateY(0)}50%{transform:rotateX(12deg) rotateY(-18deg) translateY(-10px)}}
-.or-f .p{stroke:var(--crease);stroke-width:.5;stroke-linejoin:round}
-.or-crane-text{position:absolute;left:14%;right:14%;top:14%;bottom:14%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;transition:opacity 1s .2s;pointer-events:none}
-.or-intro.is-flat .or-crane-text{opacity:1}
+.or-envx{position:absolute;inset:0;perspective:1500px;perspective-origin:50% 50%}
+.or-inside{position:absolute;inset:0;background:var(--env);background-blend-mode:multiply;filter:brightness(.86) sepia(.12);box-shadow:inset 0 0 140px rgba(90,60,25,.4)}
+.or-glow{position:absolute;left:50%;top:var(--flapy);width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;border-radius:50%;opacity:0;transform:scale(.03);
+  background:radial-gradient(circle,#fffefa 0,#fff7df 6%,rgba(255,230,168,.92) 14%,rgba(250,214,140,.5) 27%,rgba(250,214,140,.12) 42%,rgba(250,214,140,0) 56%);
+  transition:transform 1.5s cubic-bezier(.3,.6,.2,1),opacity .9s ease}
+.or-glow i{position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,246,220,.6) 0 3deg,transparent 3deg 11deg);
+  -webkit-mask:radial-gradient(circle,#000 0,rgba(0,0,0,.55) 18%,transparent 46%);mask:radial-gradient(circle,#000 0,rgba(0,0,0,.55) 18%,transparent 46%);animation:or-spin 30s linear infinite}
+@keyframes or-spin{to{transform:rotate(360deg)}}
+.or-intro.is-broken .or-glow{opacity:.7;transform:scale(.18)}
+.or-intro.is-t .or-glow{opacity:.9;transform:scale(.55)}
+.or-intro.is-lr .or-glow{opacity:1;transform:scale(.85)}
+.or-intro.is-b .or-glow{opacity:1;transform:scale(1.15)}
+.or-intro.is-burst .or-glow{transform:scale(1.7)}
+/* Les quatre rabats : un calque ombré par rabat, la découpe sur l'enfant (l'ombre suit la forme) */
+.or-fl{position:absolute;inset:0;filter:drop-shadow(0 2px 2px rgba(80,52,20,.22)) drop-shadow(0 12px 22px rgba(80,52,20,.2));
+  transition:transform 1.15s cubic-bezier(.55,.04,.25,1),opacity .45s ease .75s}
+.or-fl i{position:absolute;inset:0;background:var(--env);background-blend-mode:multiply}
+.or-fl i::after{content:"";position:absolute;inset:0}
+.or-fl.l{transform-origin:0 50%;z-index:1}.or-fl.l i{clip-path:polygon(0 0,54% 50%,0 100%)}
+.or-fl.l i::after{background:linear-gradient(90deg,rgba(255,255,255,.08),rgba(110,78,36,.12))}
+.or-fl.r{transform-origin:100% 50%;z-index:2}.or-fl.r i{clip-path:polygon(100% 0,46% 50%,100% 100%)}
+.or-fl.r i::after{background:linear-gradient(270deg,rgba(255,255,255,.04),rgba(110,78,36,.16))}
+.or-fl.b{transform-origin:50% 100%;z-index:3}.or-fl.b i{clip-path:polygon(0 100%,50% 44%,100% 100%)}
+.or-fl.b i::after{background:linear-gradient(0deg,rgba(255,255,255,.12),rgba(110,78,36,.1))}
+.or-fl.t{transform-origin:50% 0;z-index:4}.or-fl.t i{clip-path:polygon(0 0,100% 0,50% var(--flapy))}
+.or-fl.t i::after{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 60%,rgba(110,78,36,.08))}
+.or-intro.is-t .or-fl.t{transform:rotateX(172deg);opacity:0}
+.or-intro.is-lr .or-fl.l{transform:rotateY(-172deg);opacity:0}
+.or-intro.is-lr .or-fl.r{transform:rotateY(172deg);opacity:0}
+.or-intro.is-b .or-fl.b{transform:rotateX(-172deg);opacity:0}
+/* Le sceau de cire */
+.or-wax{position:absolute;z-index:6;left:50%;top:var(--flapy);width:min(31vw,132px,17svh);aspect-ratio:1;translate:-50% -50%;border:0;padding:0;background:none;
+  filter:drop-shadow(0 7px 9px rgba(70,45,15,.42)) drop-shadow(0 1px 1px rgba(70,45,15,.4));-webkit-tap-highlight-color:transparent;animation:or-wax 3s ease-in-out 1s infinite}
+@keyframes or-wax{0%,72%,100%{transform:none}80%{transform:scale(1.05) rotate(-2deg)}88%{transform:scale(.99) rotate(1deg)}}
+.or-wax-p{position:absolute;inset:0}.or-wax-p svg{width:100%;height:100%}
+.or-wax-p.a{clip-path:polygon(0 0,48% 0,43% 28%,52% 42%,45% 60%,54% 77%,49% 100%,0 100%)}
+.or-wax-p.b{clip-path:polygon(48% 0,100% 0,100% 46%,86% 48%,69% 45%,52% 42%,43% 28%)}
+.or-wax-p.c{clip-path:polygon(52% 42%,69% 45%,86% 48%,100% 46%,100% 100%,49% 100%,54% 77%,45% 60%)}
+.or-crack{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.or-crack path{fill:none;stroke:#4A2E10;stroke-width:1.4;stroke-linejoin:round;stroke-dasharray:150;stroke-dashoffset:150;transition:stroke-dashoffset .32s ease-in}
+.or-intro.is-cracking .or-wax{animation:none;transform:scale(.97)}
+.or-intro.is-cracking .or-crack path{stroke-dashoffset:0}
+.or-wax-p{transition:transform 1.2s cubic-bezier(.45,0,.85,.55),opacity .7s ease .45s}
+.or-intro.is-broken .or-crack{opacity:0;transition:opacity .2s}
+.or-intro.is-broken .or-wax-p.a{transform:translate(-55%,75svh) rotate(-48deg);opacity:0}
+.or-intro.is-broken .or-wax-p.b{transform:translate(45%,68svh) rotate(36deg);opacity:0;transition-delay:.05s,.5s}
+.or-intro.is-broken .or-wax-p.c{transform:translate(12%,80svh) rotate(22deg);opacity:0;transition-delay:.1s,.55s}
+.or-intro.is-broken .or-wax{pointer-events:none}
+.or-burst{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% var(--flapy),#fffefa,#fff6dc 38%,#f6e3b8);transition:opacity .75s ease}
+.or-intro.is-burst .or-burst{opacity:1}
+.or-hint{position:absolute;z-index:7;left:16px;right:16px;max-width:none!important;margin:0;bottom:calc(9svh + env(safe-area-inset-bottom,0px));text-align:center;font:500 .68rem/1.4 var(--f-ui);letter-spacing:.34em;text-transform:uppercase;color:#7A6346;transition:opacity .4s}
+.or-intro.is-cracking .or-hint{opacity:0}
 
 /* Texte de la feuille dépliée (ouverture + héros) */
 .or-sheet small,.or-crane-text small,.or-head small{display:block;font:500 .7rem/1.4 var(--f-ui);letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
@@ -98,30 +138,37 @@ html:has(.or),body:has(.or){background:#E4CBA6}
 
 /* ---------- Enveloppe origami ---------- */
 .or-envsec{text-align:center;overflow-x:clip}
-.or-env{position:relative;width:min(66vw,270px);aspect-ratio:1;margin:clamp(70px,12svh,130px) auto 10svh;perspective:1100px}
-.or-env-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px;transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+/* La cocotte en papier : 4 pyramides vues de dessus ; 1re touche elle s'ouvre en largeur, 2e en hauteur, 3e elle se déplie */
+.or-cot{position:relative;width:min(66vw,270px);aspect-ratio:1;margin:clamp(70px,12svh,130px) auto 10svh;perspective:900px;cursor:pointer;-webkit-tap-highlight-color:transparent;outline-offset:8px}
+.or-cot-in{position:absolute;inset:6%;background:#7A5A3A url(/img/origami-washi.webp) center/300px;background-blend-mode:multiply;
+  box-shadow:inset 0 0 40px rgba(40,22,8,.6);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.or-cot-in::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,236,190,.9),rgba(255,220,150,.25) 30%,transparent 55%)}
+.or-q{position:absolute;width:50%;height:50%;z-index:2;
+  background:conic-gradient(from -45deg,rgba(255,255,255,.3) 0 90deg,rgba(0,0,0,.03) 0 180deg,rgba(80,48,18,.2) 0 270deg,rgba(255,255,255,.12) 0),url(/img/origami-washi.webp) center/280px,var(--qc);
+  background-blend-mode:normal,multiply;box-shadow:0 10px 22px -12px rgba(80,48,20,.55);transition:transform .55s cubic-bezier(.3,.7,.2,1.15),opacity .5s}
+.or-q::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px;border-radius:50%;background:var(--gold);opacity:.65}
+.or-q.tl{left:0;top:0;--qc:#F2DADA}.or-q.tr{right:0;top:0;--qc:#E2E7D5}.or-q.bl{left:0;bottom:0;--qc:#F0E3C8}.or-q.br{right:0;bottom:0;--qc:#F7F1E6}
+.or-cot:not(.is-started) .or-q{animation:or-pinch 3s ease-in-out 1.2s infinite}
+@keyframes or-pinch{0%,70%,100%{translate:0}80%{translate:var(--px,0) var(--py,0)}}
+.or-q.tl{--px:-3px;--py:-3px}.or-q.tr{--px:3px;--py:-3px}.or-q.bl{--px:-3px;--py:3px}.or-q.br{--px:3px;--py:3px}
+.or-cot.is-h .or-q.tl,.or-cot.is-h .or-q.bl{transform:translateX(-17%) rotateY(-16deg)}
+.or-cot.is-h .or-q.tr,.or-cot.is-h .or-q.br{transform:translateX(17%) rotateY(16deg)}
+.or-cot.is-v .or-q.tl,.or-cot.is-v .or-q.tr{transform:translateY(-17%) rotateX(16deg)}
+.or-cot.is-v .or-q.bl,.or-cot.is-v .or-q.br{transform:translateY(17%) rotateX(-16deg)}
+.or-env-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px;background-image:linear-gradient(45deg,transparent calc(50% - .6px),var(--crease) 50%,transparent calc(50% + .6px)),linear-gradient(-45deg,transparent calc(50% - .6px),var(--crease) 50%,transparent calc(50% + .6px))}
 .or-env-in small{font:500 .62rem var(--f-ui);letter-spacing:.26em;text-transform:uppercase;color:var(--gold)}
 .or-env-in b{font:500 clamp(4rem,22vw,5.6rem)/.95 var(--f-name);color:var(--ink)}
 .or-my{font:500 clamp(1.3rem,6vw,1.6rem)/1.1 var(--f-name);text-transform:capitalize}
 .or-wd{font-size:.82rem;color:var(--muted);margin-top:4px}
-.or-flap4{position:absolute;inset:0;border:0;padding:0;transition:transform 1s cubic-bezier(.5,.05,.2,1),opacity .6s;-webkit-tap-highlight-color:transparent}
-.or-flap4.t{clip-path:polygon(0 0,100% 0,50% 50%);transform-origin:50% 0;background:linear-gradient(180deg,rgba(255,255,255,.25),rgba(74,47,30,.14)),var(--washi);z-index:4}
-.or-flap4.r{clip-path:polygon(100% 0,100% 100%,50% 50%);transform-origin:100% 50%;background:linear-gradient(270deg,rgba(255,255,255,.1),rgba(74,47,30,.2)),var(--washi);z-index:3}
-.or-flap4.b{clip-path:polygon(0 100%,100% 100%,50% 50%);transform-origin:50% 100%;background:linear-gradient(0deg,rgba(255,255,255,.15),rgba(74,47,30,.16)),var(--washi);z-index:2}
-.or-flap4.l{clip-path:polygon(0 0,0 100%,50% 50%);transform-origin:0 50%;background:linear-gradient(90deg,rgba(255,255,255,.2),rgba(74,47,30,.1)),var(--washi);z-index:1}
-.or-flap4.t.o{transform:rotateX(180deg)}
-.or-flap4.b.o{transform:rotateX(-180deg)}
-.or-flap4.l.o{transform:rotateY(-180deg)}
-.or-flap4.r.o{transform:rotateY(180deg)}
-.or-env:not(.is-started) .or-flap4.t{animation:or-tease 3.2s ease-in-out 1.5s infinite}
-@keyframes or-tease{0%,70%,100%{transform:none}80%{transform:rotateX(24deg)}90%{transform:rotateX(6deg)}}
-.or-env::before{content:"";position:absolute;inset:0;box-shadow:var(--lift);pointer-events:none}
-.or-env.is-done .or-flap4{opacity:0;pointer-events:none}
-.or-env.is-done .or-env-in{transform:scale(1.14) rotate(-1deg)}
-.or-env.is-done::before{transform:scale(1.14) rotate(-1deg);transition:transform .9s}
-.or-seal{position:absolute;left:50%;top:50%;z-index:5;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;display:grid;place-items:center;pointer-events:none;
-  background:radial-gradient(circle at 35% 30%,#F0D7A6,#B08A4A 72%);color:#FFF8EA;font:400 1.15rem var(--f-script);box-shadow:0 4px 10px rgba(80,48,20,.4),inset 0 0 0 3px rgba(255,255,255,.18);transition:opacity .4s,transform .4s}
-.or-env.is-started .or-seal{opacity:0;transform:scale(.5)}
+.or-cot .or-env-in{opacity:0;transform:scale(.55) rotate(-8deg);transition:opacity .7s ease .25s,transform .9s cubic-bezier(.2,.8,.2,1.1) .2s;z-index:1}
+.or-cot.is-open .or-env-in{opacity:1;transform:rotate(-1deg)}
+.or-cot.is-open .or-cot-in{opacity:0;transition:opacity .5s}
+.or-cot.is-open .or-q{transition:transform .8s cubic-bezier(.5,0,.3,1),opacity .6s ease .2s;opacity:0}
+.or-cot.is-open .or-q.tl{transform:translate(-70%,-70%) rotate(-35deg) scale(.7)}
+.or-cot.is-open .or-q.tr{transform:translate(70%,-70%) rotate(35deg) scale(.7)}
+.or-cot.is-open .or-q.bl{transform:translate(-70%,70%) rotate(35deg) scale(.7)}
+.or-cot.is-open .or-q.br{transform:translate(70%,70%) rotate(-35deg) scale(.7)}
+.or-cot.is-done{cursor:default}
 .or-env-hint{font-size:.9rem;color:var(--ink);opacity:.85}
 .or.is-gated .or-after{display:none}
 
@@ -217,15 +264,13 @@ html:has(.or),body:has(.or){background:#E4CBA6}
 /* ---------- Aperçu de l'éditeur et mouvement réduit : tout est déplié ---------- */
 .or-still .or-flap,.or-still .or-p,.or-still .or-side{transform:none !important;transition:none !important}
 .or-still .or-head,.or-still .or-pin{opacity:1;translate:none;transform:none;transition:none}
-.or-still .or-sky span,.or-still .or-cue i,.or-still .or-fin-crane,.or-still .or-flap4{animation:none}
+.or-still .or-sky span,.or-still .or-cue i,.or-still .or-fin-crane,.or-still .or-q{animation:none}
 @media (prefers-reduced-motion:reduce){.or *,.or *::before,.or *::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}}
 /* Écrans courts */
 @media (max-height:640px){
-  .or-kicker{font-size:clamp(1.2rem,min(6vw,4.4svh),1.9rem)}
+  .or-hint{bottom:calc(6svh + env(safe-area-inset-bottom,0px))}
 }
 /* Téléphone : ouverture calée sur la hauteur visible, grue un peu plus petite. */
 @media (max-width:600px){
-  .or-intro{bottom:auto;height:100vh;height:100svh;padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
-  .or-crane{width:min(76vw,44svh,400px)}
-  .or-hint{font-size:.84rem}
+  .or-intro{bottom:auto;height:100vh;height:100svh}
 }

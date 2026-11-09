@@ -1,5 +1,6 @@
-// Modèle « Origami » : une grue en papier se déplie et devient l'invitation ; chaque section est un pliage
-// dessiné en code ; la date est une enveloppe origami à déplier ; la réponse part en avion en papier.
+// Modèle « Origami » : une enveloppe en papier washi plein écran, fermée par un sceau de cire gravé d'une grue ;
+// le sceau se brise, les quatre rabats se déplient dans une lumière qui grandit, puis l'invitation apparaît.
+// Chaque section est un pliage dessiné en code ; la date est dans une cocotte en papier ; la réponse part en avion.
 // mountOrigami(racine, données, options) → { replay, destroy }. Même contrat que les autres modèles.
 /* eslint-disable */
 import { esc, dateParts } from "../engine";
@@ -30,6 +31,26 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const pts = (p) => p.map((x) => x.map((n) => n.toFixed(1)).join(",")).join(" ");
 const crane = (fill, id = "") => `<svg viewBox="22 20 152 132" aria-hidden="true">${FACETS.map((f) => `<polygon points="${pts(f.c)}" fill="${fill}"/><polygon points="${pts(f.c)}" fill="#4A2F1E" opacity="${((1 - f.k) * 1.15).toFixed(2)}"/>`).join("")}</svg>`;
 
+// Sceau de cire dorée, bord irrégulier, grue gravée en creux (motif de la grue réduit dans le disque).
+const SEAL = (() => {
+  const n = 30, ptsW = [];
+  for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2, r = 54 + Math.sin(i * 2.7) * 2.6 + Math.cos(i * 5.3) * 1.8; ptsW.push(`${(60 + Math.cos(a) * r).toFixed(1)},${(60 + Math.sin(a) * r).toFixed(1)}`); }
+  // Grue de profil : aile dressée, corps, cou et tête à gauche, queue à droite
+  // [facette, opacité] : aile arrière, corps, aile avant, cou, tête, queue (facettes plus ou moins sombres)
+  const cr = [["62,60 92,30 74,63", .7], ["44,66 61,57 79,66 61,75", .79], ["58,61 70,22 68,64", .9], ["47,66 29,38 34,37 52,63", .86], ["29,38 20,45 34,41", .9], ["76,67 99,44 94,43 72,63", .83]];
+  return `<svg viewBox="0 0 120 120" aria-hidden="true"><defs>
+    <radialGradient id="SW" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#F6DE9E"/><stop offset=".45" stop-color="#D3A652"/><stop offset=".85" stop-color="#9A6E2A"/><stop offset="1" stop-color="#7A531C"/></radialGradient>
+    <radialGradient id="SD" cx="62%" cy="66%" r="70%"><stop offset="0" stop-color="#E8C77D"/><stop offset=".6" stop-color="#C3954A"/><stop offset="1" stop-color="#9B7030"/></radialGradient></defs>
+    <polygon points="${ptsW.join(" ")}" fill="url(#SW)"/>
+    <circle cx="60" cy="60" r="39" fill="url(#SD)"/>
+    <circle cx="60" cy="60" r="39" fill="none" stroke="#7E5820" stroke-opacity=".55" stroke-width="1.6"/>
+    <circle cx="60" cy="60" r="41.5" fill="none" stroke="#FFF1C8" stroke-opacity=".55" stroke-width="1"/>
+    <circle cx="60" cy="60" r="33" fill="none" stroke="#7E5820" stroke-opacity=".35" stroke-width=".8" stroke-dasharray="1.2 2.4"/>
+    <g transform="translate(.8 1)" fill="#FFF0C4" opacity=".5">${cr.map(([c]) => `<polygon points="${c}"/>`).join("")}</g>
+    <g fill="#5E3E12">${cr.map(([c, o]) => `<polygon points="${c}" opacity="${o}"/>`).join("")}</g>
+    <path d="M24 46 A38 38 0 0 1 52 22" fill="none" stroke="#FFF6D8" stroke-opacity=".45" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+})();
+
 // Tenues pliées (facettes recolorées par --gm / --gw)
 const shade = (pts, o) => `<polygon points="${pts}" fill="${o > 0 ? "#3A2516" : "#fff"}" opacity="${Math.abs(o)}"/>`;
 const PLANE = `<svg viewBox="0 0 120 70" aria-hidden="true"><polygon points="0,30 120,0 44,44" fill="#FBF5EA"/><polygon points="44,44 120,0 52,68" fill="#E9DDCB"/><polygon points="0,30 44,44 34,50" fill="#D9C9B2"/><path d="M44 44 120 0" stroke="#B9A487" stroke-width=".8"/></svg>`;
@@ -44,7 +65,7 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   const p1 = esc(D.partner1), p2 = esc(D.partner2);
   const ini = (s) => esc((String(s || "").trim()[0] || "").toUpperCase());
   const photo = typeof D.photoUrl === "string" && D.photoUrl ? D.photoUrl : null;
-  let alive = true, timers = [], countI = 0, craneRaf = 0;
+  let alive = true, timers = [], countI = 0;
   const later = (fn, ms) => { const t = setTimeout(() => alive && fn(), ms); timers.push(t); return t; };
   const q = (s) => root.querySelector(s), qa = (s) => [...root.querySelectorAll(s)];
 
@@ -82,13 +103,10 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
     </section>
     <section class="or-sec or-envsec">
       ${head(O.dateEyebrow, O.dateTitle)}
-      <div class="or-env">
+      <div class="or-cot" role="button" tabindex="0" aria-label="${O.cotAria}">
+        <div class="or-cot-in" aria-hidden="true"></div>
         <div class="or-env-in"><small>${O.saveDate}</small><b>${when ? esc(when.day) : ""}</b><span class="or-my">${when ? esc(`${when.month} ${when.year}`) : ""}</span><span class="or-wd">${dayLine}</span></div>
-        <button type="button" class="or-flap4 t" aria-label="${O.flapT}"></button>
-        <button type="button" class="or-flap4 r" aria-label="${O.flapR}"></button>
-        <button type="button" class="or-flap4 b" aria-label="${O.flapB}"></button>
-        <button type="button" class="or-flap4 l" aria-label="${O.flapL}"></button>
-        <span class="or-seal" aria-hidden="true">${ini(D.partner1)}${ini(D.partner2)}</span>
+        <span class="or-q tl"></span><span class="or-q tr"></span><span class="or-q bl"></span><span class="or-q br"></span>
       </div>
       <p class="or-env-hint">${O.envHint}</p>
     </section>`;
@@ -128,14 +146,16 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
     <div class="or-sky" aria-hidden="true">${sky.map(([c, x, y, dl], i) => `<span style="left:${x}%;top:${y}%;--d:${dl}s;--s:${0.7 + (i % 3) * 0.2}">${crane(c)}</span>`).join("")}</div>
 
     <section class="or-intro" aria-label="${O.introAria(p1, p2)}">
-      <div class="or-intro-bg" aria-hidden="true"></div>
-      <p class="or-kicker">${O.kicker}</p>
-      <button type="button" class="or-crane" aria-label="${O.unfold}">
-        <svg viewBox="20 20 160 160" aria-hidden="true"><defs><pattern id="orWashi" patternUnits="userSpaceOnUse" width="200" height="200"><image href="${IMG.washi}" width="200" height="200" preserveAspectRatio="xMidYMid slice"/></pattern></defs>
-          ${FACETS.map(() => `<g class="or-f"><polygon class="p" fill="url(#orWashi)"/><polygon class="sh" fill="#4A2F1E"/></g>`).join("")}
-        </svg>
-        <span class="or-crane-text">${sheetText}</span>
+      <div class="or-envx" aria-hidden="true">
+        <div class="or-inside"></div>
+        <div class="or-glow"><i></i></div>
+        <div class="or-fl l"><i></i></div><div class="or-fl r"><i></i></div><div class="or-fl b"><i></i></div><div class="or-fl t"><i></i></div>
+      </div>
+      <button type="button" class="or-wax" aria-label="${O.unfold}">
+        <span class="or-wax-p a">${SEAL}</span><span class="or-wax-p b">${SEAL}</span><span class="or-wax-p c">${SEAL}</span>
+        <svg class="or-crack" viewBox="0 0 120 120" aria-hidden="true"><path d="M57.6 0 51.6 33.6 62.4 50.4 54 72 64.8 92.4 58.8 120"/><path d="M62.4 50.4 82.8 54 103.2 57.6 120 55.2"/></svg>
       </button>
+      <div class="or-burst" aria-hidden="true"></div>
       <p class="or-hint">${O.hint}</p>
     </section>
 
@@ -146,7 +166,7 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
     <button type="button" class="or-snd" aria-label="${O.mute}">${ICON.sound}</button>
   </div>`;
 
-  const or = q(".or"), intro = q(".or-intro"), craneBtn = q(".or-crane");
+  const or = q(".or"), intro = q(".or-intro");
   if (REDUCE) or.classList.add("or-still");
 
   /* ---------- Son : papier froissé et kalimba (seulement après un geste) ---------- */
@@ -165,28 +185,23 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   sndBtn.addEventListener("click", () => { soundOn = !soundOn; sndBtn.innerHTML = soundOn ? ICON.sound : ICON.mute; sndBtn.setAttribute("aria-label", soundOn ? O.mute : O.unmute);
     if (soundOn) { audio(); if (or.classList.contains("is-open")) loop(); } else { clearTimeout(loopT); looping = false; } });
 
-  /* ---------- Ouverture : la grue se déplie en une feuille ---------- */
-  const facetEls = qa(".or-crane .or-f");
-  const setCrane = (t) => facetEls.forEach((g, i) => {
-    const f = FACETS[i], k = ease(clamp((t - f.d * 0.55) / (1 - 0.38 * 0.55), 0, 1));
-    const P = f.c.map((p, j) => [p[0] + (f.s[j][0] - p[0]) * k, p[1] + (f.s[j][1] - p[1]) * k]);
-    const s = pts(P), lit = f.k + ((i % 2 ? 0.93 : 1) - f.k) * k;
-    g.children[0].setAttribute("points", s); g.children[1].setAttribute("points", s); g.children[1].setAttribute("opacity", ((1 - lit) * 1.15).toFixed(3));
-  });
-  setCrane(0);
-  let unfolding = false;
+  /* ---------- Ouverture : le sceau se brise, les rabats s'ouvrent dans la lumière ---------- */
+  const wax = q(".or-wax");
+  const crack = () => { if (!actx || !soundOn) return; const t = actx.currentTime; paper(0.07, 0.9); tone(150, t, 0.25, 0.35); tone(2600, t + 0.02, 0.06, 0.12); };
+  let opening = false;
   function unfold() {
-    if (unfolding) return; unfolding = true; audio(); paper(0.35, 0.6); later(() => paper(0.25, 0.4), 500); later(() => paper(0.3, 0.45), 950);
-    intro.classList.add("is-unfolding");
-    const t0 = performance.now(), dur = REDUCE ? 1 : 1900;
-    const st = (now) => { const t = clamp((now - t0) / dur, 0, 1); setCrane(t); craneBtn.style.setProperty("--t", t.toFixed(3)); if (t < 1 && alive) craneRaf = requestAnimationFrame(st); else done(); };
-    craneRaf = requestAnimationFrame(st);
-    const done = () => { intro.classList.add("is-flat"); chime(); later(openMain, REDUCE ? 0 : 1900); };
+    if (opening) return; opening = true; audio();
+    intro.classList.add("is-cracking"); crack(); if (navigator.vibrate) navigator.vibrate([12, 40, 18]);
+    if (REDUCE) { intro.classList.add("is-broken", "is-t", "is-lr", "is-b", "is-burst"); return later(() => openMain(false), 400); }
+    const steps = [["is-broken", 380, () => paper(0.12, 0.5)], ["is-t", 760, () => paper(0.35, 0.55)], ["is-lr", 1300, () => paper(0.3, 0.45)],
+      ["is-b", 1800, () => paper(0.3, 0.45)], ["is-burst", 2350, chime]];
+    steps.forEach(([c, ms, fx]) => later(() => { intro.classList.add(c); fx(); }, ms));
+    later(() => openMain(false), 3150);
   }
-  craneBtn.addEventListener("click", unfold);
+  wax.addEventListener("click", unfold);
   function showIntro() {
-    unfolding = false; or.classList.remove("is-open"); intro.hidden = false; intro.classList.remove("is-unfolding", "is-flat", "is-out");
-    craneBtn.style.removeProperty("--t"); setCrane(0); document.body.classList.add("or-locked"); scrollTo(0, 0);
+    opening = false; or.classList.remove("is-open"); intro.hidden = false; intro.classList.remove("is-cracking", "is-broken", "is-t", "is-lr", "is-b", "is-burst", "is-out");
+    document.body.classList.add("or-locked"); scrollTo(0, 0);
     clearTimeout(loopT); looping = false;
   }
   function openMain(instant) {
@@ -213,21 +228,25 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   };
   if (dressEl) { setColor(0); q(".or-sw").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { setColor(+b.dataset.i); paper(0.12, 0.3); } }); }
 
-  /* ---------- L'enveloppe : quatre rabats à déplier pour voir la date (obligatoire avant la suite) ---------- */
-  let gated = !OPTS.noGate;
-  const env = q(".or-env");
+  /* ---------- La cocotte en papier : trois touches pour l'ouvrir et voir la date (obligatoire avant la suite) ---------- */
+  let gated = !OPTS.noGate, taps = 0;
+  const cot = q(".or-cot");
   const setGate = (on) => { gated = on; or.classList.toggle("is-gated", on); };
   setGate(gated);
-  if (!gated) env.classList.add("is-open", "is-done");
-  env.addEventListener("click", (e) => {
-    const f = e.target.closest(".or-flap4"); if (!f || f.classList.contains("o") || !gated) return;
-    audio(); paper(0.22, 0.55); f.classList.add("o"); env.classList.add("is-started"); if (navigator.vibrate) navigator.vibrate(15);
-    if (qa(".or-flap4.o").length === 4) {
-      env.classList.add("is-open"); later(() => env.classList.add("is-done"), REDUCE ? 0 : 700);
+  if (!gated) { cot.classList.add("is-open", "is-done"); q(".or-env-hint").textContent = O.envDone; }
+  const tapCot = () => {
+    if (!gated || cot.classList.contains("is-open")) return;
+    audio(); taps++; cot.classList.add("is-started"); if (navigator.vibrate) navigator.vibrate(12);
+    if (taps === 1) { paper(0.16, 0.5); cot.classList.add("is-h"); }
+    else if (taps === 2) { paper(0.16, 0.5); cot.classList.remove("is-h"); later(() => cot.classList.add("is-v"), REDUCE ? 0 : 220); }
+    else {
+      paper(0.3, 0.55); cot.classList.remove("is-h", "is-v"); cot.classList.add("is-open"); later(() => cot.classList.add("is-done"), REDUCE ? 0 : 900);
       setGate(false); chime(); countUp(); observeFolds(); q(".or-env-hint").textContent = O.envDone;
-      later(() => scrollBy({ top: innerHeight * 0.6, behavior: REDUCE ? "auto" : "smooth" }), 1500);
+      later(() => scrollBy({ top: innerHeight * 0.6, behavior: REDUCE ? "auto" : "smooth" }), 1600);
     }
-  });
+  };
+  cot.addEventListener("click", tapCot);
+  cot.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tapCot(); } });
 
   /* ---------- Compte à rebours ---------- */
   const remaining = () => { let s = Math.max(0, Math.floor((start - Date.now()) / 1000)); const dd = Math.floor(s / 86400); s %= 86400; const hh = Math.floor(s / 3600); s %= 3600; return [dd, hh, Math.floor(s / 60), s % 60]; };
@@ -269,6 +288,6 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
 
   return {
     replay() { showIntro(); },
-    destroy() { alive = false; couple?.destroy(); timers.forEach(clearTimeout); clearInterval(countI); cancelAnimationFrame(craneRaf); io && io.disconnect(); document.body.classList.remove("or-locked"); try { actx && actx.close(); } catch (e) {} root.innerHTML = ""; },
+    destroy() { alive = false; couple?.destroy(); timers.forEach(clearTimeout); clearInterval(countI); io && io.disconnect(); document.body.classList.remove("or-locked"); try { actx && actx.close(); } catch (e) {} root.innerHTML = ""; },
   };
 }

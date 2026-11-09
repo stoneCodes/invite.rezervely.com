@@ -23,7 +23,7 @@ export const PDF_THEMES: Record<TemplateId, PdfTheme> = {
     titleFont: "/fonts/pdf/Cinzel-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/GreatVibes-Regular.ttf", ornament: "/pdf/ornaments/nuit-doree.svg",
   },
   "jardin-nuit": {
-    background: "#FFFAF9", text: "#29283A", muted: "#77748A", accent: "#C9708A", rule: "#E8D2DA",
+    background: "#FFFDF7", text: "#33402B", muted: "#6E795F", accent: "#C2788A", rule: "#E4E2D0",
     titleFont: "/fonts/pdf/CormorantGaramond-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/Parisienne-Regular.ttf", ornament: "/pdf/ornaments/jardin-nuit.svg",
   },
   appel: {
@@ -31,7 +31,7 @@ export const PDF_THEMES: Record<TemplateId, PdfTheme> = {
     titleFont: "/fonts/pdf/CormorantGaramond-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/PinyonScript-Regular.ttf", ornament: "/pdf/ornaments/appel.svg",
   },
   "boule-neige": {
-    background: "#FCFBFF", text: "#272638", muted: "#77768A", accent: "#B18A4D", rule: "#DDDCEB",
+    background: "#FBF7EF", text: "#3B3128", muted: "#76685A", accent: "#A8844F", rule: "#E5D9C4",
     titleFont: "/fonts/pdf/CormorantGaramond-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/PinyonScript-Regular.ttf", ornament: "/pdf/ornaments/boule-neige.svg",
   },
   origami: {

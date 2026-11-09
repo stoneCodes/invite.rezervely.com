@@ -1,4 +1,4 @@
-import { TEMPLATE_IDS, type InvitationData, type TemplateId } from "./types";
+import { PLACES, TEMPLATE_IDS, type InvitationData, type PlaceId, type TemplateId } from "./types";
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const hex = (v: unknown) => (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v) ? v : undefined);
@@ -22,7 +22,7 @@ export function sanitizeData(input: any): InvitationData {
     intro: str(d.intro, 200),
     dateISO: isNaN(date.getTime()) ? new Date().toISOString() : str(d.dateISO, 40),
     venue: { name: str(d.venue?.name, 120), address: str(d.venue?.address, 200) },
-    programme: arr(d.programme, 10, (x) => ({ t: str(x?.t, 12), title: str(x?.title, 60), note: str(x?.note, 120) })),
+    programme: arr(d.programme, 10, (x) => ({ t: str(x?.t, 12), title: str(x?.title, 60), note: str(x?.note, 120), ...((PLACES as readonly string[]).includes(x?.place) ? { place: x.place as PlaceId } : {}) })),
     dressCode: {
       enabled: dc.enabled !== false,
       title: str(dc.title, 60),

@@ -6,12 +6,13 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import { useRouter, useSearchParams } from "next/navigation";
 import { sampleData, veloursSampleData } from "@/lib/sample";
-import { TEMPLATES, type InvitationData, type TemplateId } from "@/lib/types";
+import { PLACES, TEMPLATES, type InvitationData, type PlaceId, type TemplateId } from "@/lib/types";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { invitePath } from "@/lib/slug";
 import { getLastInvite, setLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 import { LANGS } from "@/lib/i18n";
+import TemplateRows from "@/components/TemplateRows";
 
 /* ---------- Dates : l'éditeur saisit l'heure de Paris, on stocke un ISO avec décalage ---------- */
 function toParisISO(local: string) {
@@ -245,14 +246,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
           <fieldset>
             <legend>{e_.style}</legend>
             {/* Le modèle choisi passe en tête, en grand, avec un badge ; les autres restent disponibles mais en retrait. */}
-            <div className="ed-tpls">
-              {TEMPLATES.map((tp) => (
-                <button type="button" key={tp.id} aria-pressed={template === tp.id} aria-label={e_.seeDemo(tplName(tp.id))} data-demo={t.home.demo} onClick={() => setFull(tp.id)} style={{ backgroundImage: `url(${tp.cover})` }}>
-                  {template === tp.id && <em className="ed-tpl-badge">{e_.yourModel}</em>}
-                  <span>{tplName(tp.id)}{template === tp.id && <small>{t.templates[tp.id].tagline}</small>}</span>
-                </button>
-              ))}
-            </div>
+            <TemplateRows compact names={[data.partner1, data.partner2]} lang={siteLang} selected={template} onSelect={setTemplate} onPreview={setFull} />
             <p className="ed-help">{e_.styleHelp}</p>
             <label>{e_.inviteLang}
               <select id="ilang" value={data.lang ?? "fr"} onChange={(e) => set("lang", e.target.value as InvitationData["lang"])}>
@@ -320,6 +314,12 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
                 <input aria-label={e_.step} value={p.title} maxLength={60} placeholder={e_.stepPh} onChange={(e) => set("programme", data.programme.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))} />
                 <input aria-label={e_.detail} value={p.note} maxLength={120} placeholder={e_.detailPh} onChange={(e) => set("programme", data.programme.map((x, j) => (j === i ? { ...x, note: e.target.value } : x)))} />
                 <button type="button" className="ed-x" aria-label={e_.removeStep} onClick={() => set("programme", data.programme.filter((_, j) => j !== i))}>×</button>
+                {template === "boule-neige" && (
+                  <select className="ed-place" aria-label={e_.place} value={p.place ?? ""} onChange={(e) => set("programme", data.programme.map((x, j) => (j === i ? { ...x, place: (e.target.value || undefined) as PlaceId | undefined } : x)))}>
+                    <option value="">{e_.place} · {e_.placeAuto}</option>
+                    {PLACES.map((pl) => <option key={pl} value={pl}>{e_.places[pl]}</option>)}
+                  </select>
+                )}
               </div>
             ))}
             {data.programme.length < 10 && <button type="button" className="ed-add" onClick={() => set("programme", [...data.programme, { t: "", title: "", note: "" }])}>{e_.addStep}</button>}

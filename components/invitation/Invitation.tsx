@@ -1,18 +1,18 @@
 "use client";
 import "./invitation.css";
 import "./appel/appel.css";
-import "./boule/boule.css";
 import "./origami/origami.css";
 import "./velours/velours.css";
+import "./domaine/domaine.css";
 import "./dresscode/couple.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { markup } from "./markup";
 import { inviteDict } from "@/lib/i18n/invite";
 import { mountInvitation, type MountOptions } from "./engine";
 import { mountAppel } from "./appel/appel";
-import { mountBoule } from "./boule/boule";
 import { mountOrigami } from "./origami/origami";
 import { mountVelours } from "./velours/velours";
+import { mountDomaine } from "./domaine/domaine";
 import type { InvitationData, TemplateId } from "@/lib/types";
 import { DEMO_PHOTOS } from "@/lib/demoPhotos";
 
@@ -42,9 +42,10 @@ function options(slug: string | undefined, skipIntro?: boolean, noGate?: boolean
 /** Monte une invitation animée. Le balisage est remonté à chaque changement de données (key côté parent). */
 export default function Invitation(input: Props) {
   const props = input.demoPhoto && !input.data.photoUrl ? { ...input, data: { ...input.data, photoUrl: DEMO_PHOTOS[input.template] } } : input;
-  // « Appel entrant » et « Le monde miniature » ont leur propre moteur ; les autres partagent engine.js + markup.ts.
+  // « Appel entrant », « Le domaine » et les autres moteurs dédiés ont leur propre moteur ; les autres partagent engine.js + markup.ts.
   if (props.template === "appel") return <OwnEngine {...props} mount={mountAppel} />;
-  if (props.template === "boule-neige") return <OwnEngine {...props} mount={mountBoule} />;
+  // « boule-neige » est désormais « Le domaine » (même id, pas de migration) ; l'ancien moteur boule/ reste en secours.
+  if (props.template === "boule-neige") return <OwnEngine {...props} mount={mountDomaine} />;
   if (props.template === "origami") return <OwnEngine {...props} mount={mountOrigami} />;
   if (props.template === "velours") return <OwnEngine {...props} mount={mountVelours} />;
   return <ClassicInvitation {...props} />;
@@ -60,7 +61,10 @@ function ClassicInvitation({ data, template, slug, skipIntro, noGate, onReady }:
     return () => { api.destroy(); delete document.body.dataset.tpl; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return <div ref={ref} dangerouslySetInnerHTML={{ __html: markup(inviteDict(data.lang)) }} />;
+  // Balisage figé au montage : un nouveau rendu du parent (ex. bouton de démo qui se réduit au défilement)
+  // ne doit jamais réécrire le contenu que le moteur a rempli.
+  const [html] = useState(() => ({ __html: markup(inviteDict(data.lang)) }));
+  return <div ref={ref} dangerouslySetInnerHTML={html} />;
 }
 
 function OwnEngine({ data, slug, skipIntro, noGate, onReady, mount }: Props & { mount: Mount }) {

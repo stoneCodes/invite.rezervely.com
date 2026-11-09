@@ -20,11 +20,11 @@ body[data-tpl="nuit-doree"]{
   --name-color:#F4D99A; --scratch-a:#F3DB9E; --scratch-b:#A67B33;
 }
 body[data-tpl="jardin-nuit"]{
-  --bg:#0B1324; --bg-outer:#050912; --ink:#F4E9E6; --muted:#B5BED2; --accent:#EBA3B3; --accent-2:#E6C88C;
-  --line:rgba(255,255,255,.16); --card:rgba(255,255,255,.06); --btn-bg:#EBA3B3; --btn-ink:#0B1324;
+  --bg:#F4F1E8; --bg-outer:#E7E2D2; --ink:#33402B; --muted:#6E795F; --accent:#C2788A; --accent-2:#B0904F;
+  --line:rgba(70,90,55,.2); --card:rgba(255,255,255,.55); --btn-bg:#5F7449; --btn-ink:#FFFDF6;
   --f-script:"Parisienne",cursive; --f-cap:var(--f-label);
   --seal-hi:#F8E2A6; --seal:#D4AE5E; --seal-lo:#8E6A28; --seal-ink:rgba(110,78,20,.7);
-  --name-color:#FFF4EE; --scratch-a:#F7C6D2; --scratch-b:#C9708A;
+  --name-color:#2E3B26; --scratch-a:#F6D5DC; --scratch-b:#CF8D9F;
 }
 html,body{background:var(--bg-outer);color:var(--ink)}
 html.snap{scroll-snap-type:y proximity}
@@ -38,7 +38,7 @@ body.locked{overflow:hidden;height:100%}
 .hero .scene{position:absolute;inset:0;background:center/cover no-repeat;transform-origin:50% 60%}
 body[data-tpl="cygnes"] .scene{background-image:url(/img/1b-scene.webp);animation:kenburns 26s ease-in-out infinite alternate}
 body[data-tpl="nuit-doree"] .scene{background-image:url(/img/2b-scene.webp)}
-body[data-tpl="jardin-nuit"] .scene{background-image:url(/img/5b-scene.webp)}
+body[data-tpl="jardin-nuit"] .scene{background-image:linear-gradient(180deg,rgba(255,252,242,.62),rgba(255,252,242,.18) 38%,rgba(255,252,242,0) 55%),url(/img/jardin-scene.webp)}
 @keyframes kenburns{to{transform:scale(1.09) translateY(-1%)}}
 .hero .scene.push{animation:push 4.5s cubic-bezier(.2,.6,.2,1) both}
 @keyframes push{from{transform:scale(1.3);filter:brightness(1.6)}to{transform:scale(1);filter:brightness(1)}}
@@ -56,8 +56,9 @@ body[data-tpl="cygnes"] .names{text-shadow:0 0 20px rgba(255,240,240,.95)}
 body[data-tpl="cygnes"] .names .amp{color:#B0606F}
 body[data-tpl="nuit-doree"] .names span{background:linear-gradient(110deg,#A9772A 15%,#FFF3C8 35%,#D8A64A 50%,#FFE7A3 65%,#A9772A 85%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 4s linear infinite;filter:drop-shadow(0 3px 14px rgba(0,0,0,.7))}
 @keyframes shimmer{to{background-position:-260% 0}}
-body[data-tpl="jardin-nuit"] .names{text-shadow:0 0 18px rgba(255,190,210,.7),0 0 40px rgba(255,220,160,.35)}
-body[data-tpl="jardin-nuit"] .names .amp{color:var(--accent-2)}
+body[data-tpl="jardin-nuit"] .names{text-shadow:0 0 14px rgba(255,253,245,.95),0 0 34px rgba(255,250,235,.85)}
+body[data-tpl="jardin-nuit"] .names .amp{color:var(--accent)}
+body[data-tpl="jardin-nuit"] .hero .eyebrow{text-shadow:0 0 10px rgba(255,253,245,.95)}
 .write{animation:write 2.2s cubic-bezier(.45,.05,.3,1) both}
 .write.d2{animation-delay:.55s}.write.d3{animation-delay:1.1s}
 @keyframes write{from{clip-path:inset(-30% 100% -30% 0)}to{clip-path:inset(-30% -8% -30% 0)}}
@@ -67,7 +68,7 @@ body[data-tpl="nuit-doree"] .names span.write{animation:write 2.2s cubic-bezier(
 .fade-up{animation:fadeUp 1.2s ease 1.6s both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}}
 .hint{position:absolute;left:0;right:0;bottom:6%;z-index:3;text-align:center;font-family:var(--f-label);font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink);opacity:.8}
-body[data-tpl="jardin-nuit"] .hint{color:#fff}
+body[data-tpl="jardin-nuit"] .hint{color:#2E3B26;text-shadow:0 0 10px rgba(255,253,245,.95)}
 .hint::after{content:"";display:block;width:9px;height:9px;margin:8px auto 0;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);animation:bob 1.8s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(5px) rotate(45deg)}}
 /* bougies qui vacillent (Nuit dorée) */
@@ -79,7 +80,6 @@ body[data-tpl="nuit-doree"] .flicker{display:block}
 .curtain{position:absolute;top:0;bottom:0;width:74%;z-index:2;background:url(/img/5c-rideau.webp) center/cover no-repeat;mix-blend-mode:screen;display:none;transition:transform 2.6s cubic-bezier(.6,0,.2,1)}
 .curtain.l{left:-8%;transform:scaleX(-1)}
 .curtain.r{right:-8%}
-body[data-tpl="jardin-nuit"] .curtain{display:block}
 .hero.opened .curtain.l{transform:scaleX(-1) translateX(80%)}
 .hero.opened .curtain.r{transform:translateX(80%)}
 
@@ -180,24 +180,52 @@ body[data-tpl="jardin-nuit"] .curtain{display:block}
 .st-nuit .tap{color:#F3D894}
 
 /* --- 3. Jardin de nuit : lucioles --- */
-.st-jardin{background:radial-gradient(circle at 78% 16%,rgba(255,250,230,.35) 0,rgba(255,250,230,0) 18%),radial-gradient(ellipse at 50% 100%,#1B2B4E,#070D1C 70%)}
+/* --- 3. Le jardin : portail fleuri dont les battants s'ouvrent, lumière du jour, oiseaux et papillons --- */
+.st-jardin{background:#EFE7D4}
 .st-jardin.lit{background:transparent}
-.j-env{position:absolute;left:50%;top:44%;width:260px;height:176px;margin:-88px 0 0 -130px;z-index:4;transition:opacity .7s ease,transform .9s ease}
-.j-env .bob{position:absolute;inset:0;animation:floaty 4s ease-in-out infinite}
-.j-env .halo{position:absolute;inset:-60px;border-radius:50%;background:radial-gradient(rgba(255,175,200,.35),transparent 65%);animation:pulse 3s ease-in-out infinite}
-.j-body{position:absolute;inset:0;border-radius:4px;background:linear-gradient(to bottom,rgba(0,0,0,.04),rgba(0,0,0,0) 40%),url(/img/5a-lin.webp) center/cover;box-shadow:0 18px 40px rgba(0,0,0,.5)}
-.j-body::before{content:"";position:absolute;inset:0;background:linear-gradient(to top right,transparent 49.4%,rgba(120,40,60,.25) 50%,transparent 50.6%) left bottom/50% 55% no-repeat,linear-gradient(to top left,transparent 49.4%,rgba(120,40,60,.25) 50%,transparent 50.6%) right bottom/50% 55% no-repeat}
-.j-light{position:absolute;left:10%;right:10%;top:-30px;height:60px;border-radius:50%;background:radial-gradient(rgba(255,240,200,.95),rgba(255,200,150,0) 70%);opacity:0;transform:scale(.3);transition:all 1s ease .4s}
-.j-flap{position:absolute;left:0;right:0;top:0;height:62%;transform-origin:50% 0;transform:perspective(700px) rotateX(0);transition:transform .8s cubic-bezier(.55,0,.25,1);filter:drop-shadow(0 3px 4px rgba(80,20,35,.35))}
-.j-flap div{position:absolute;inset:0;clip-path:polygon(0 0,100% 0,50% 100%);background:url(/img/5a-lin.webp) center top/260px 176px}
-.j-env.open .j-flap{transform:perspective(700px) rotateX(165deg)}
-.j-env.open .j-light{opacity:1;transform:scale(1.6)}
-.j-env.dissolve{opacity:0;transform:scale(.85)}
-.st-jardin .seal{left:50%;top:62%;margin:-40px 0 0 -40px;width:80px;height:80px;z-index:6;transition:transform .5s,opacity .4s}
-.st-jardin .seal span{font-size:1.6rem}
-.st-jardin .seal::before{inset:11px}
-.j-env.open .seal{transform:scale(1.4);opacity:0}
-.st-jardin .tap{color:#F6E3EA}
+.jg-all{position:absolute;inset:0;animation:jg-breathe 9s ease-in-out infinite alternate}
+@keyframes jg-breathe{to{transform:scale(1.035)}}
+.jg-open,.jg-closed,.jg-leaf{position:absolute;inset:0;background:center/cover no-repeat}
+.jg-open{background-image:url(/img/jardin-portail-ouvert.webp)}
+.jg-closed,.jg-leaf{background-image:url(/img/jardin-portail.webp)}
+.jg-gate{position:absolute;inset:0;perspective:1100px}
+.jg-leaf{transition:transform 2.6s cubic-bezier(.5,.04,.24,1),filter 2.6s ease;will-change:transform}
+.jg-gate.open .jg-leaf.l{transform:rotateY(80deg);filter:brightness(.72)}
+.jg-gate.open .jg-leaf.r{transform:rotateY(-80deg);filter:brightness(.72)}
+.st-jardin.lit .jg-all{visibility:hidden}
+.jg-sun{position:absolute;width:40px;height:40px;margin:-20px;border-radius:50%;z-index:8;pointer-events:none;opacity:0;transform:scale(.3);
+  background:radial-gradient(circle,#fff 0,#FFFDF4 38%,rgba(255,250,232,.85) 52%,rgba(255,248,225,0) 70%);transition:transform 1.6s cubic-bezier(.65,0,.35,1),opacity .5s ease}
+.jg-sun.go{opacity:1;transform:scale(90)}
+.jg-sun.out{opacity:0;transition:opacity 2s ease .1s}
+.jg-hit{inset:0;left:0;top:0;width:auto;height:auto;margin:0;border-radius:0}
+.jg-amb{position:fixed;z-index:55;pointer-events:none;overflow:hidden}
+.jbird{position:absolute;left:0;top:0;will-change:transform}
+.jbird svg{display:block;width:100%;animation:jg-flap .28s ease-in-out infinite alternate;transform-origin:50% 60%}
+@keyframes jg-flap{to{transform:scaleY(-.5)}}
+.jb{position:absolute;left:0;top:0;perspective:260px;will-change:transform;filter:drop-shadow(0 6px 6px rgba(40,50,25,.25))}
+.jb.near{filter:blur(1.5px) drop-shadow(0 10px 10px rgba(40,50,25,.25))}
+.jb i{position:absolute;top:0;bottom:0;width:50%;background:var(--img) 0 0/200% 100% no-repeat}
+.jb i.l{left:0;transform-origin:100% 50%;animation:jg-wl var(--f,.15s) ease-in-out infinite alternate}
+.jb i.r{right:0;background-position:100% 0;transform-origin:0 50%;animation:jg-wr var(--f,.15s) ease-in-out infinite alternate}
+@keyframes jg-wl{to{transform:rotateY(72deg)}}
+@keyframes jg-wr{to{transform:rotateY(-72deg)}}
+/* cartouche ivoire : prénoms et consigne lisibles sur n'importe quelle partie de la photo */
+#stage.st-jardin .tap{left:50%;right:auto;translate:-50% 0;width:max-content;max-width:86%;padding:12px 26px 13px;border-radius:18px;color:#2E3B26;pointer-events:none;
+  background:rgba(255,252,244,.86);border:1px solid rgba(176,144,79,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 14px 34px rgba(50,45,25,.28),inset 0 0 0 4px rgba(255,255,255,.5)}
+#stage.st-jardin .tap .who{font-size:2.3rem;line-height:1.05}
+#stage.st-jardin .tap .t{color:#5F7449;opacity:1;font-weight:500;margin-top:.35rem}
+/* ruban, nœud et médaillon */
+.jg-band{position:absolute;display:block;translate:0 -50%;background:url(/img/jardin-ruban-g.webp) 0 0/100% 100% no-repeat;filter:drop-shadow(0 3px 4px rgba(60,30,40,.3))}
+.jg-leaf.r .jg-band{background-image:url(/img/jardin-ruban-d.webp)}
+.jg-knot{position:absolute;z-index:6;width:0;height:0;pointer-events:none;transition:opacity .45s ease,transform .5s ease}
+.jg-bow{position:absolute;left:calc(-110px * var(--k,1));top:calc(-53.6px * var(--k,1));width:calc(220px * var(--k,1));height:auto;max-width:none;user-select:none;filter:drop-shadow(0 6px 8px rgba(60,30,40,.35))}
+.st-jardin .jg-medal{left:calc(-31px * var(--k,1));top:calc(-31px * var(--k,1));width:calc(62px * var(--k,1));height:calc(62px * var(--k,1));display:grid;place-items:center;cursor:default}
+.st-jardin .jg-medal::before{inset:7px}
+.st-jardin .jg-medal span{font-size:calc(1.25rem * var(--k,1))}
+.jg-knot::after{content:"";position:absolute;left:calc(-31px * var(--k,1));top:calc(-31px * var(--k,1));width:calc(62px * var(--k,1));height:calc(62px * var(--k,1));border-radius:50%;box-shadow:0 0 0 0 rgba(255,236,190,.85);animation:jg-ping 2.2s ease-out infinite}
+@keyframes jg-ping{to{box-shadow:0 0 0 28px rgba(255,236,190,0)}}
+.jg-knot.go{opacity:0;transform:scale(1.35)}
+.jg-knot.go::after{animation:none}
 
 /* ================= PAGE (commun) ================= */
 .wrap{padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));padding-block:0 130px;text-align:center;position:relative;z-index:2}
@@ -302,12 +330,12 @@ body[data-tpl="nuit-doree"] .wrap section.pre>*{opacity:0;transform:translateY(2
 body[data-tpl="nuit-doree"] .wrap section>*{transition:opacity 1s ease,transform 1s ease}
 
 /* ===== Mise en page 3 : verre sur la scène de nuit ===== */
-.backdrop{z-index:0;background:url(/img/5b-scene.webp) center/cover;filter:blur(7px) brightness(.45) saturate(1.2);transform:scale(1.08);display:none}
+.backdrop{z-index:0;background:url(/img/jardin-scene.webp) center/cover;filter:blur(9px) brightness(1.04) saturate(.9);transform:scale(1.08);display:none}
 body[data-tpl="jardin-nuit"] .backdrop{display:block}
 body[data-tpl="jardin-nuit"] .app{background:transparent}
-body[data-tpl="jardin-nuit"] .wrap section{margin:22px 0;padding:36px 22px;border-radius:24px;background:rgba(12,20,38,.42);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 20px 40px rgba(0,0,0,.25)}
-body[data-tpl="jardin-nuit"] .timeline::before{background:none;border-left:1px dashed rgba(255,255,255,.35)}
-body[data-tpl="jardin-nuit"] .timeline li::before{background:#FFE9F0;border:0;box-shadow:0 0 10px 3px rgba(255,170,195,.8)}
+body[data-tpl="jardin-nuit"] .wrap section{margin:22px 0;padding:36px 22px;border-radius:24px;background:rgba(255,253,246,.8);border:1px solid rgba(255,255,255,.75);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 20px 40px rgba(60,70,40,.16)}
+body[data-tpl="jardin-nuit"] .timeline::before{background:none;border-left:1px dashed rgba(70,90,55,.4)}
+body[data-tpl="jardin-nuit"] .timeline li::before{background:#fff;border:0;box-shadow:0 0 0 2px #E7B9C4,0 0 10px 3px rgba(214,140,160,.6)}
 body[data-tpl="jardin-nuit"] .count div{border-radius:16px}
 body[data-tpl="jardin-nuit"] .wrap section.pre{opacity:0;transform:translateY(30px) scale(.97)}
 body[data-tpl="jardin-nuit"] .wrap section{transition:opacity 1s ease,transform 1s ease}
@@ -315,7 +343,7 @@ body[data-tpl="jardin-nuit"] .wrap section{transition:opacity 1s ease,transform 
 /* ===== Défilement scénarisé (les 3 templates) ===== */
 body[data-tpl="cygnes"]{--glow:rgba(255,255,255,.9);--ring:#C98C97;--ringglow:rgba(255,255,255,.9)}
 body[data-tpl="nuit-doree"]{--glow:rgba(255,205,120,.55);--ring:#E8C77F;--ringglow:rgba(255,200,110,.9)}
-body[data-tpl="jardin-nuit"]{--glow:rgba(255,190,210,.6);--ring:#FFDCE6;--ringglow:rgba(255,180,205,.95)}
+body[data-tpl="jardin-nuit"]{--glow:rgba(255,236,214,.75);--ring:#E2AEBB;--ringglow:rgba(255,205,218,.95)}
 .hero-track{position:relative;height:185vh;height:185svh}
 .hero{position:sticky;top:0}
 .hero .date-line{display:none}
@@ -332,13 +360,10 @@ body[data-tpl="nuit-doree"] .tl-wrap{max-width:none}
 .scene{scale:calc(1 + var(--h,0)*.42)}
 body[data-tpl="cygnes"] .scene{filter:blur(calc(var(--h,0)*6px)) brightness(calc(1 + var(--h,0)*.12))}
 body[data-tpl="nuit-doree"] .scene{filter:blur(calc(var(--h,0)*6px)) brightness(calc(1 - var(--h,0)*.6))}
-body[data-tpl="jardin-nuit"] .scene{transform-origin:50% 72%;filter:blur(calc(var(--h,0)*8px)) brightness(calc(1 - var(--h,0)*.55))}
+body[data-tpl="jardin-nuit"] .scene{transform-origin:50% 60%;filter:blur(calc(var(--h,0)*8px)) brightness(calc(1 + var(--h,0)*.06))}
 .hero-text{translate:0 calc(var(--h,0)*-150px);scale:calc(1 - var(--h,0)*.22);opacity:calc(1 - var(--h,0)*1.5);filter:blur(calc(var(--h,0)*3px))}
 .hint{opacity:calc(.8 - var(--h,0)*4)}
 .flicker{opacity:calc(1 - var(--h,0))}
-body[data-tpl="jardin-nuit"] .moon{display:block;position:absolute;left:72%;top:52.5%;width:170px;height:170px;margin:-85px;border-radius:50%;background:radial-gradient(rgba(255,251,230,.6),rgba(255,240,200,.15) 40%,transparent 68%);mix-blend-mode:screen;scale:calc(1 + var(--h,0)*1.6);animation:pulse 4s ease-in-out infinite}
-body[data-tpl="jardin-nuit"] .curtain.l{translate:calc(var(--h,0)*-38%) 0;scale:calc(1 + var(--h,0)*.25)}
-body[data-tpl="jardin-nuit"] .curtain.r{translate:calc(var(--h,0)*38%) 0;scale:calc(1 + var(--h,0)*.25)}
 
 /* sections : entrée propre à chaque template */
 .wrap section{transition:none}
@@ -428,14 +453,12 @@ body[data-tpl]{overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:10
 @media (max-height:640px){
   .hero{min-height:0}
   .env3d{scale:.84}
-  .j-env{scale:.9}
   #stage .tap{bottom:calc(6% + env(safe-area-inset-bottom,0px))}
   #stage .tap .who{font-size:2.1rem}
   .names{font-size:min(4.1rem,11svh,17vw)}
 }
 @media (max-height:540px){
   .env3d{scale:.72;top:44%}
-  .j-env{scale:.8}
   .seal,.door .half{scale:.85}
   #stage .tap .who{font-size:1.8rem}
 }
@@ -443,13 +466,11 @@ body[data-tpl]{overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:10
 @media (max-width:600px){
   .fixed-frame{bottom:auto;height:100vh;height:100svh}
   .env3d{scale:.9}
-  .j-env{scale:.94}
   #stage .tap{bottom:calc(11% + env(safe-area-inset-bottom,0px))}
   #stage .tap .who{font-size:2.1rem}
 }
 @media (max-width:600px) and (max-height:640px){
   .env3d{scale:.78}
-  .j-env{scale:.86}
   #stage .tap .who{font-size:1.85rem}
 }
 @media (max-width:600px) and (max-height:540px){

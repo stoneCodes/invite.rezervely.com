@@ -6,14 +6,18 @@ import Logo from "@/components/Logo";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { TEMPLATES, type TemplateId } from "@/lib/types";
+import TemplateRows from "@/components/TemplateRows";
+import HeroReel from "@/components/HeroReel";
+import HomeReveal from "@/components/HomeReveal";
 import { lockScroll } from "@/lib/scrollLock";
-import { LangSwitch, useT } from "@/components/I18n";
+import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { getLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 
 /** Page d'accueil « Nuit de gala » : poussière d'or, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal. */
 export default function HomeClient({publicPromo}:{publicPromo?:{code:string;label:string}}) {
   const router = useRouter();
   const t = useT();
+  const lang = useLang();
   const h = t.home;
   const TITLE = h.title;
   // Dernière invitation créée sur cet appareil (lu après le montage : le stockage n'existe pas côté serveur).
@@ -68,24 +72,12 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
       if (!was) loop();
     };
 
-    // Défilement : enveloppe, défilement horizontal, barre de navigation
-    const nav = document.getElementById("gl-nav")!, pin = document.getElementById("gl-pin")!, env = document.getElementById("gl-env")!;
-    const hz = document.getElementById("gl-hz")!, track = document.getElementById("gl-track")!;
-    const cards = [...track.querySelectorAll<HTMLElement>(".gl-tpl")];
-    const prog = (el: HTMLElement) => { const r = el.getBoundingClientRect(); return Math.min(1, Math.max(0, -r.top / (r.height - innerHeight))); };
+    // Défilement : barre de navigation (l'enveloppe est dans HomeReveal)
+    const nav = document.getElementById("gl-nav")!;
     let ticking = false;
     const onScroll = () => {
       ticking = false; scrollY0 = scrollY;
       nav.classList.toggle("is-scrolled", scrollY > 40);
-      const p = prog(pin), p1 = Math.min(1, p / 0.45), p2 = Math.max(0, Math.min(1, (p - 0.4) / 0.45));
-      env.style.setProperty("--p1", String(p1)); env.style.setProperty("--p2", String(p2)); env.style.setProperty("--z", p1 > 0.5 ? "3" : "0");
-      const max = track.scrollWidth - innerWidth;
-      track.style.transform = `translateX(${-prog(hz) * Math.max(0, max)}px)`;
-      for (const c of cards) {
-        const r = c.getBoundingClientRect(), d = (r.left + r.width / 2 - innerWidth / 2) / innerWidth;
-        c.style.setProperty("--ry", `${d * -14}deg`);
-        c.querySelector("img")?.style.setProperty("--px", `${d * -30}px`);
-      }
     };
     const sched = () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } };
     const onResize = () => { resize(); sched(); };
@@ -137,14 +129,15 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
       <canvas id="gl-fw" className="gl-canvas gl-fw" aria-hidden />
 
       <nav id="gl-nav" className="gl-nav">
-        <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={26} onLight /></Link>
+        <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={26} onLight className="gl-logo-d" /><Logo height={26} onLight={false} className="gl-logo-l" /></Link>
         <div className="gl-nav-r"><Link className="gl-space" href={spaceHref(last)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg><span>{t.find.mySpace}</span></Link><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
       </nav>
 
       {publicPromo&&<aside className="gl-promo" role="status"><span>{h.promoLine(publicPromo.label)}</span><strong>{publicPromo.code}</strong></aside>}
 
       <section className="gl-hero">
-        <div>
+        <HeroReel />
+        <div className="gl-hero-in">
           <div className="gl-kicker">{h.kicker}</div>
           <h1 aria-label={`${h.title} ${h.titleScript}`}>
             <span aria-hidden>
@@ -164,16 +157,7 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
         <div className="gl-cue" aria-hidden />
       </section>
 
-      <section id="gl-pin" className="gl-pin" aria-label={h.pinAria}>
-        <div className="gl-stick">
-          <div id="gl-env" className="gl-env" aria-hidden>
-            <div className="gl-env-back" />
-            <div className="gl-env-card"><div><small>{h.envKicker}</small><b>Léa &amp; Samuel</b><small>{h.envDate}</small></div></div>
-            <div className="gl-env-front" /><div className="gl-env-flap" /><div className="gl-env-seal">L&amp;S</div>
-          </div>
-          <div className="gl-pin-cap"><div className="gl-kicker">{h.scroll}</div><h2>{h.pinTitle} <span className="gold-text">{h.pinTitleGold}</span></h2></div>
-        </div>
-      </section>
+      <HomeReveal />
 
       <div className="gl-marq" aria-hidden>
         <div>
@@ -184,26 +168,8 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
       </div>
 
       <section id="gl-hz" className="gl-hz">
-        <div className="gl-stick">
-          <div className="gl-hz-head"><div className="gl-kicker">{h.worlds(TEMPLATES.length)}</div><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
-          <div id="gl-track" className="gl-track">
-            {TEMPLATES.map((tp, i) => (
-              <article key={tp.id} className="gl-tpl">
-                <img src={tp.cover} alt="" loading="lazy" />
-                <span className="gl-num">0{i + 1}</span>
-                <div className="gl-tpl-ov">
-                  <h3>{t.templates[tp.id].name}</h3>
-                  <p>{t.templates[tp.id].tagline}</p>
-                  <div className="gl-row">
-                    <a className="btn-s" href={`/creer?t=${tp.id}`} onClick={celebrate(`/creer?t=${tp.id}`)}>{h.createMine}</a>
-                    <a className="btn-s ghost" href={`/demo/${tp.id}`} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); setDemo(tp.id as TemplateId); }}>{h.demo}</a>
-                  </div>
-                </div>
-              </article>
-            ))}
-            <article className="gl-tpl is-end"><div><div className="gl-kicker">{h.soon}</div><h3 style={{ marginTop: 12 }}>{h.soonTitle}</h3><p>{h.soonText}</p></div></article>
-          </div>
-        </div>
+        <div className="gl-hz-head"><div className="gl-kicker">{h.worlds(TEMPLATES.length)}</div><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
+        <TemplateRows names={["Léa", "Samuel"]} lang={lang} onPreview={setDemo} onCreate={(id, event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return; celebrate(`/creer?t=${id}`)(event); }} />
       </section>
 
       <section className="wrap-site gl-steps">

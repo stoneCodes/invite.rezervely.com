@@ -8,9 +8,9 @@ export const contentType = "image/png";
 const THEME: Record<string, { bg: string; ink: string; accent: string }> = {
   cygnes: { bg: "linear-gradient(135deg,#FBF1F0,#E9C6CB)", ink: "#4A2E35", accent: "#B0606F" },
   "nuit-doree": { bg: "linear-gradient(135deg,#2A160E,#0D0604)", ink: "#F4D99A", accent: "#D9B46A" },
-  "jardin-nuit": { bg: "linear-gradient(135deg,#1B2B4E,#070D1C)", ink: "#FFF4EE", accent: "#EBA3B3" },
+  "jardin-nuit": { bg: "linear-gradient(135deg,#FBF8EE,#DCE5CC)", ink: "#2E3B26", accent: "#C2788A" },
   appel: { bg: "linear-gradient(160deg,#3A2531,#120A10)", ink: "#FFFFFF", accent: "#5BE38B" },
-  "boule-neige": { bg: "radial-gradient(circle at 50% 40%,#2C3462,#07080F)", ink: "#FBF3E6", accent: "#E9C98F" },
+  "boule-neige": { bg: "radial-gradient(circle at 50% 40%,#FBF6EC,#E3D6BF)", ink: "#3B3128", accent: "#A8844F" },
   origami: { bg: "linear-gradient(135deg,#FBF6EE,#EAD3BE)", ink: "#4B3A30", accent: "#D99AA5" },
   velours: { bg: "linear-gradient(135deg,#32171D,#8A563B 52%,#E6C79B)", ink: "#FFF7EA", accent: "#E8C98D" },
 };

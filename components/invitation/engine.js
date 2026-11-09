@@ -33,7 +33,7 @@ export function mountInvitation(INPUT,TPL,OPTS={}){
 const DATA=normalize(INPUT);
 const T=inviteDict(INPUT.lang);
 let alive=true;const CLEAN=[];
-const TEMPLATES = {"cygnes":{fx:"petals"},"nuit-doree":{fx:"gold"},"jardin-nuit":{fx:"fireflies"}};
+const TEMPLATES = {"cygnes":{fx:"petals"},"nuit-doree":{fx:"gold"},"jardin-nuit":{fx:"petals"}};
 const PLACEHOLDER="data:image/svg+xml,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 300"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3DCD4"/><stop offset=".6" stop-color="#E9CFC6"/><stop offset="1" stop-color="#C9B9A0"/></linearGradient></defs><rect width="230" height="300" fill="url(#g)"/><g fill="#8A5A5E" opacity=".5"><circle cx="92" cy="128" r="24"/><path d="M48 300c0-62 18-118 44-118s44 56 44 118z"/><circle cx="140" cy="118" r="26"/><path d="M92 300c0-70 20-130 48-130s50 60 50 130z"/></g><text x="115" y="272" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="13" fill="#5E3E41">${esc(T.c.photoHere)}</text></svg>`);
 const $=id=>document.getElementById(id), tpl=()=>document.body.dataset.tpl, wait=ms=>new Promise(r=>setTimeout(r,ms));
 const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -152,7 +152,7 @@ $("sound").onclick=()=>musicOn?stopMusic():startMusic();
 const stage=$("stage"),hero=$("hero"),scene=$("scene");
 let opening=false,token=0;
 const sealHTML=()=>`<span>${DATA.monogram}</span>`;
-const tapHTML=()=>`<div class="tap"><div class="who">${DATA.partner1} &amp; ${DATA.partner2}</div><div class="t">${esc(T.classic.tapSeal)}</div></div>`;
+const tapHTML=(t=T.classic.tapSeal)=>`<div class="tap"><div class="who">${DATA.partner1} &amp; ${DATA.partner2}</div><div class="t">${esc(t)}</div></div>`;
 
 function hideNames(){document.querySelectorAll("#names span").forEach(s=>{s.className=s.className.replace(/\b(write|d2|d3|reveal-soft|on)\b/g,"").trim();});
   $("names").style.opacity=0;$("dateLine").style.opacity=0;}
@@ -218,55 +218,89 @@ const BUILD={
     };
   },
   "jardin-nuit"(){
+    // Le jardin (id historique « jardin-nuit ») : portail fleuri en fer forgé, les deux battants s'ouvrent,
+    // une lumière blanche de plein jour envahit l'écran, puis le jardin apparaît avec des oiseaux et des papillons.
     stage.className="fixed-frame st-jardin";
-    stage.innerHTML=`<canvas class="stage-fx" id="sfx"></canvas>
-      <div class="j-env" id="jenv"><div class="halo"></div><div class="bob"><div class="j-light"></div><div class="j-body"></div><div class="j-flap"><div></div></div>
-      <button class="seal breathe" id="seal" aria-label="${esc(T.classic.open)}">${sealHTML()}</button></div></div>${tapHTML()}`;
-    const fxs=fireflyStage($("sfx"));
+    stage.innerHTML=`<div class="jg-all"><div class="jg-open"></div><div class="jg-gate" id="jgate"><div class="jg-closed" id="jclosed"></div><div class="jg-leaf l" id="jleafL"><i class="jg-band"></i></div><div class="jg-leaf r" id="jleafR"><i class="jg-band"></i></div></div></div>
+      <div class="jg-knot" id="jknot">${BOW}<span class="seal jg-medal" id="jmedal">${sealHTML()}</span></div>
+      <div class="jg-sun" id="jsun"></div>
+      <button class="hit jg-hit" id="seal" aria-label="${esc(T.classic.open)}"></button>${tapHTML(T.classic.tapGate)}`;
+    placeGate();
     return async my=>{
-      const env=$("jenv");env.classList.add("open");chime();
-      try{await document.fonts.ready;}catch(e){}
-      const er=env.getBoundingClientRect();
-      await wait(800);if(my!==token)return;
-      env.classList.add("dissolve");fxs.release(er,420);boom();
-      await wait(600);stage.classList.add("lit");hero.classList.add("opened");
-      await wait(900);if(my!==token)return;
-      fxs.formText();
-      await wait(2300);if(my!==token)return;
-      const n=$("names");n.style.transition="opacity 1s";n.style.opacity=1;$("dateLine").style.transition="opacity 1.2s .4s";$("dateLine").style.opacity=1;
-      fxs.scatter();
-      await wait(1400);fxs.stop();finish(my);
+      // le médaillon saute en pétales, le nœud se défait, puis les battants s'ouvrent avec chacun sa moitié de ruban
+      const mr=$("jmedal").getBoundingClientRect();$("jknot").classList.add("go");fx.burst(mr.left+mr.width/2,mr.top+mr.height/2,46,6);chime();
+      await wait(380);if(my!==token)return;$("jgate").classList.add("open");chirps(6,2600);
+      await wait(700);if(my!==token)return;$("jsun").classList.add("go");
+      await wait(1500);if(my!==token)return;
+      stage.classList.add("lit");hero.classList.add("opened");scene.classList.remove("push");void scene.offsetWidth;scene.classList.add("push");
+      $("jsun").classList.add("out");const fl=flyLayer();flock(fl,7);flutter(fl,4,true);boom();
+      await wait(700);if(my!==token)return;writeNames();
+      await wait(2900);finish(my);
     };
   }
 };
 
-/* Lucioles qui sortent de l'enveloppe et écrivent les prénoms */
-function fireflyStage(cv){
-  const ctx=cv.getContext("2d");let W,H,d,ps=[],stars=[],phase="idle",run=true,t=0;
-  const r0=cv.getBoundingClientRect();d=Math.min(2,devicePixelRatio||1);W=r0.width;H=r0.height;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);
-  for(let i=0;i<110;i++)stars.push({x:Math.random()*W,y:Math.random()*H*.75,r:Math.random()*1.3+.2,ph:Math.random()*6});
-  function targets(){
-    const off=document.createElement("canvas");off.width=W;off.height=H;const o=off.getContext("2d");o.fillStyle="#fff";o.textAlign="center";o.textBaseline="middle";
-    document.querySelectorAll("#names span").forEach(s=>{const r=s.getBoundingClientRect(),cs=getComputedStyle(s);o.font=`${cs.fontSize} ${cs.fontFamily}`;o.fillText(s.textContent,r.left-r0.left+r.width/2,r.top-r0.top+r.height/2);});
-    const data=o.getImageData(0,0,W,H).data,pts=[];for(let y=0;y<H;y+=3)for(let x=0;x<W;x+=3)if(data[(y*W+x)*4+3]>140)pts.push([x,y]);
-    for(let i=pts.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[pts[i],pts[j]]=[pts[j],pts[i]];}return pts;}
-  function release(er,n){const cx=er.left-r0.left+er.width/2,cy=er.top-r0.top+er.height/2;
-    for(let i=0;i<n;i++)ps.push({x:er.left-r0.left+Math.random()*er.width,y:er.top-r0.top+Math.random()*er.height,cx,cy,a:Math.random()*6,rad:10+Math.random()*120,sp:.02+Math.random()*.03,vy:-.6-Math.random()*1.2,r:2.5+Math.random()*3,ph:Math.random()*6,sprite:Math.random()<.3?SP.pink:SP.fire});phase="swirl";}
-  function formText(){const pts=targets();if(!pts.length)return;ps.forEach((p,i)=>{const q=pts[i%pts.length];p.tx=q[0];p.ty=q[1];});phase="form";}
-  function scatter(){phase="scatter";ps.forEach(p=>{const a=Math.random()*Math.PI*2,s=1+Math.random()*4;p.vx=Math.cos(a)*s;p.vy=Math.sin(a)*s;});}
-  function frame(){if(!run||!alive)return;t++;ctx.clearRect(0,0,W,H);
-    ctx.globalCompositeOperation="lighter";
-    if(phase==="idle"||phase==="swirl"){stars.forEach(s=>{ctx.globalAlpha=.4+.4*Math.sin(t*.03+s.ph);ctx.fillStyle="#fff";ctx.fillRect(s.x,s.y,s.r,s.r);});}
-    ps.forEach(p=>{p.ph+=.08;
-      if(phase==="swirl"){p.a+=p.sp;p.cy+=-.9;p.x+=(p.cx+Math.cos(p.a)*p.rad-p.x)*.06;p.y+=(p.cy+Math.sin(p.a)*p.rad*.6-p.y)*.06;p.rad+=.6;}
-      else if(phase==="form"){p.x+=(p.tx-p.x)*.075;p.y+=(p.ty-p.y)*.075;}
-      else if(phase==="scatter"){p.x+=p.vx;p.y+=p.vy;p.vx*=.985;p.vy=p.vy*.985-.02;p.fade=(p.fade??1)-.012;}
-      const al=(phase==="form"?.85+.15*Math.sin(p.ph):.6+.4*Math.sin(p.ph))*(p.fade??1);
-      ctx.globalAlpha=Math.max(0,al);const s=phase==="form"?p.r*2.6:p.r*4;ctx.drawImage(p.sprite,p.x-s/2,p.y-s/2,s,s);});
-    ctx.globalAlpha=1;requestAnimationFrame(frame);}
-  if(!REDUCE)requestAnimationFrame(frame);
-  return{release,formText,scatter,stop:()=>{run=false;}};
+/* ===== Le jardin : portail, oiseaux, papillons ===== */
+// Repères mesurés sur /img/jardin-portail.webp (941×1672) : battants entre x 170 et 752, jointure 461, haut de l'arche 348, naissance de l'arche 608, bas 1275.
+const GATE={w:941,h:1672,l:170,r:752,m:461,top:348,spring:608,bot:1275,knot:850,band:40};
+function placeGate(){
+  const g=$("jgate");if(!g)return;const W=g.offsetWidth,H=g.offsetHeight,s=Math.max(W/GATE.w,H/GATE.h),ox=(W-GATE.w*s)/2,oy=(H-GATE.h*s)/2;
+  const X=x=>(ox+x*s).toFixed(1)+"px",Y=y=>(oy+y*s).toFixed(1)+"px",rx=(GATE.r-GATE.l)/2,ry=GATE.spring-GATE.top,cx=GATE.l+rx;
+  const arc=(from,to)=>{const pts=[];for(let k=0;k<=12;k++){const a=from+(to-from)*k/12;pts.push(`${X(cx+Math.cos(a)*rx)} ${Y(GATE.spring-Math.sin(a)*ry)}`);}return pts;};
+  // battant gauche : de la charnière gauche jusqu'à la jointure, sous l'arche (le haut suit la courbe)
+  $("jleafL").style.clipPath=`polygon(${[`${X(GATE.l)} ${Y(GATE.bot)}`,...arc(Math.PI,Math.PI/2),`${X(GATE.m)} ${Y(GATE.top)}`,`${X(GATE.m)} ${Y(GATE.bot)}`].join(",")})`;
+  $("jleafR").style.clipPath=`polygon(${[`${X(GATE.m)} ${Y(GATE.bot)}`,`${X(GATE.m)} ${Y(GATE.top)}`,...arc(Math.PI/2,0),`${X(GATE.r)} ${Y(GATE.bot)}`].join(",")})`;
+  $("jleafL").style.transformOrigin=`${X(GATE.l)} 50%`;$("jleafR").style.transformOrigin=`${X(GATE.r)} 50%`;
+  // le reste du portail fermé, percé de l'arche (on voit le jardin derrière les battants qui s'ouvrent)
+  const hole=[`${X(GATE.l)} ${Y(GATE.bot)}`,`${X(GATE.r)} ${Y(GATE.bot)}`,...arc(0,Math.PI).map(String)];
+  $("jclosed").style.clipPath=`polygon(evenodd,0 0,100% 0,100% 100%,0 100%,0 0,${hole.join(",")},${X(GATE.l)} ${Y(GATE.bot)},0 0)`;
+  g.style.perspectiveOrigin=`${X(GATE.m)} ${Y((GATE.top+GATE.bot)/2)}`;
+  const sun=$("jsun");sun.style.left=X(GATE.m);sun.style.top=Y((GATE.spring+GATE.bot)/2);
+  // ruban en travers des battants à mi-hauteur, nœud et médaillon sur la jointure
+  const kk=Math.max(.75,Math.min(1.25,s/.486)),bh=220*kk*206/1080; // épaisseur de la bande = celle du nœud photographié
+  $("jleafL").firstChild.style.cssText=`left:${X(GATE.l)};width:${((GATE.m-GATE.l)*s).toFixed(1)}px;top:${Y(GATE.knot)};height:${bh.toFixed(1)}px`;
+  $("jleafR").firstChild.style.cssText=`left:${X(GATE.m)};width:${((GATE.r-GATE.m)*s).toFixed(1)}px;top:${Y(GATE.knot)};height:${bh.toFixed(1)}px`;
+  const k=$("jknot");k.style.left=X(GATE.m);k.style.top=Y(GATE.knot);k.style.setProperty("--k",Math.max(.75,Math.min(1.25,s/.486)).toFixed(3));
 }
+// Nœud de ruban en satin (photo détourée, images-source/jardin/ruban.webp) ; le centre du nœud est à 50 % / 32,3 % de l'image.
+const BOW=`<img class="jg-bow" src="/img/jardin-ruban-noeud.webp" alt="" draggable="false">`;
+addEventListener("resize",placeGate);CLEAN.push(()=>removeEventListener("resize",placeGate));
+
+// Chants d'oiseaux synthétisés (petits glissandos aigus), seulement après le geste d'ouverture.
+function chirps(n,span){if(!actx||!musicOn)return;const t0=actx.currentTime+.15;
+  for(let i=0;i<n;i++){const t=t0+Math.random()*span/1000,f=2300+Math.random()*1600,k=1+Math.floor(Math.random()*3);
+    for(let j=0;j<k;j++){const o=actx.createOscillator(),g=actx.createGain(),tt=t+j*.11;o.type="sine";o.frequency.setValueAtTime(f,tt);o.frequency.exponentialRampToValueAtTime(f*(1.35+Math.random()*.3),tt+.07);o.frequency.exponentialRampToValueAtTime(f*.9,tt+.1);
+      g.gain.setValueAtTime(0,tt);g.gain.linearRampToValueAtTime(.12,tt+.012);g.gain.exponentialRampToValueAtTime(.001,tt+.11);o.connect(g).connect(master);o.start(tt);o.stop(tt+.13);}}}
+
+// Vol d'oiseaux qui sort de la lumière et s'éloigne vers le ciel (silhouettes, battements d'ailes).
+const BIRD=`<svg viewBox="0 0 40 18" aria-hidden="true"><path d="M1 12 Q10 1 20 10 Q30 1 39 12" fill="none" stroke="#3B3127" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="20" cy="10.5" rx="2.2" ry="1.6" fill="#3B3127"/></svg>`;
+function flock(box,n){if(REDUCE||!box)return;const W=box.offsetWidth,H=box.offsetHeight,sx=W*.5,sy=H*.55;
+  for(let i=0;i<n;i++){const b=document.createElement("div");b.className="jbird";b.innerHTML=BIRD;const w=26+Math.random()*16;b.style.width=w+"px";
+    b.firstChild.style.animationDuration=(.22+Math.random()*.12)+"s";box.appendChild(b);
+    const side=i%2?1:-1,ex=sx+side*(W*.35+Math.random()*W*.5),ey=-60-Math.random()*H*.2,mx=sx+side*(W*.12+Math.random()*W*.18),my=sy-H*(.22+Math.random()*.15);
+    const a=b.animate([{transform:`translate(${sx-w/2}px,${sy}px) scale(.3)`,opacity:0},{transform:`translate(${mx}px,${my}px) scale(1.25)`,opacity:.95,offset:.35},{transform:`translate(${ex}px,${ey}px) scale(.45)`,opacity:.8}],
+      {duration:2600+Math.random()*1200,delay:i*140,easing:"cubic-bezier(.3,.1,.4,1)",fill:"both"});a.onfinish=()=>b.remove();}}
+
+// Papillons réalistes (photos détourées, ailes animées en 3D) qui virevoltent en zigzag.
+const PAP=[["blanc",360/224],["bleu",360/244],["jaune",360/230]];
+function flutter(box,n,fromCenter){if(REDUCE||!box)return;const W=box.offsetWidth,H=box.offsetHeight;
+  for(let i=0;i<n;i++){const [k,ar]=PAP[i%3],near=fromCenter&&i===n-1,w=near?130+Math.random()*40:56+Math.random()*26;
+    const b=document.createElement("div");b.className="jb"+(near?" near":"");b.style.cssText=`width:${w}px;aspect-ratio:${ar};--img:url(/img/jardin-papillon-${k}.webp);--f:${(.11+Math.random()*.07).toFixed(3)}s`;
+    b.innerHTML="<i class=l></i><i class=r></i>";box.appendChild(b);
+    const x0=fromCenter?W*(.35+Math.random()*.3):(Math.random()<.5?-w:W+w*.2),y0=fromCenter?H*(.5+Math.random()*.15):H*(.25+Math.random()*.5);
+    const dir=fromCenter?(i%2?1:-1):(x0<0?1:-1),steps=6,kf=[];let x=x0,y=y0;
+    for(let s2=0;s2<=steps;s2++){const t=s2/steps;kf.push({transform:`translate(${(x-w/2).toFixed(0)}px,${y.toFixed(0)}px) rotate(${(dir*12+Math.sin(s2*1.7)*18).toFixed(0)}deg) scale(${near?(.8+t*.7).toFixed(2):(fromCenter?(.4+t*.8).toFixed(2):1)})`,opacity:s2===0&&fromCenter?0:1,offset:t});
+      x+=dir*(W*(fromCenter?.16:.22))*(.6+Math.random()*.8);y+=(Math.random()-.62)*H*.22;}
+    const a=b.animate(kf,{duration:(near?2600:fromCenter?4200:7000)+Math.random()*1500,delay:fromCenter?300+i*260:0,easing:"ease-in-out",fill:"both"});a.onfinish=()=>b.remove();}}
+
+// Après l'ouverture : de temps en temps, un papillon traverse l'invitation (jamais pendant l'écran d'ouverture).
+// Calque fixe hors de l'écran d'ouverture : les oiseaux et papillons continuent leur vol quand l'ouverture s'efface.
+let ambTimer=0,ambLayer=null;
+function flyLayer(){if(!ambLayer){ambLayer=document.createElement("div");ambLayer.className="fixed-frame jg-amb";ambLayer.setAttribute("aria-hidden","true");stage.after(ambLayer);}return ambLayer;}
+function ambientButterflies(){clearTimeout(ambTimer);if(REDUCE)return;
+  const go=()=>{if(!alive||tpl()!=="jardin-nuit")return;if(stage.hidden&&!document.hidden)flutter(flyLayer(),1,false);ambTimer=setTimeout(go,8000+Math.random()*7000);};
+  ambTimer=setTimeout(go,6000);}
+CLEAN.push(()=>{clearTimeout(ambTimer);ambLayer?.remove();});
 
 async function openInvite(){
   if(opening)return;opening=true;const my=token;startMusic();stage.classList.add("opening");
@@ -297,6 +331,7 @@ function prepReveal(){
 function setTemplate(name){
   if(!TEMPLATES[name])name="cygnes";document.body.dataset.tpl=name;
   fx.setMode(TEMPLATES[name].fx);if(musicOn){clearTimeout(loopTimer);playLoop();}
+  if(name==="jardin-nuit")ambientButterflies();
   buildStage();
 }
 $("rsvp").onsubmit=async e=>{e.preventDefault();const name=$("gName").value.trim();if(!name){$("gName").focus();$("gName").placeholder=T.c.nameMissing;return;}

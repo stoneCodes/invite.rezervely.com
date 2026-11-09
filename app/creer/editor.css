@@ -15,7 +15,9 @@
 .ed-sub{margin:4px 0 0;font-size:.85rem;font-weight:500}
 .ed-check{display:flex!important;align-items:center;gap:8px;color:var(--ink)!important;cursor:pointer}
 .ed-inline{display:flex!important;align-items:center;gap:8px}
-.ed-item{display:flex;gap:8px;align-items:flex-start}
+.ed-item{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+.ed-item>input,.ed-item>textarea{min-width:0}
+.ed-place{flex:1 0 100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);font:inherit;font-size:.86rem}
 .ed-item>input,.ed-item>textarea{flex:1 1 0}
 .ed-item .ed-time{flex:0 0 76px}
 .ed-x{flex:none;width:36px;height:40px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--muted);font-size:1.2rem;cursor:pointer}
