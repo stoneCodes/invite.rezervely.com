@@ -84,10 +84,19 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 
 /* Shared phone gallery: the bezel is CSS, the screen art stays text-free. */
 .site .ph-gallery{width:100%;min-width:0;color:var(--ink)}
-.site .ph-filters{display:flex;gap:8px;overflow-x:auto;padding:8px 6vw 16px;scrollbar-width:none}
-.site .ph-filters::-webkit-scrollbar,.site .ph-rail::-webkit-scrollbar{display:none}
-.site .ph-filters button{flex:0 0 auto;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.58);color:var(--ink);font:500 .78rem/1.2 var(--f-ui);padding:10px 16px;cursor:pointer}
-.site .ph-filters button[aria-pressed=true]{background:#dfd0b2;border-color:#c2a875;color:#33291c}
+/* Catégories : barre segmentée en verre ivoire, pictogramme + libellé + nombre ; tuiles sur mobile */
+.site .ph-filters{display:flex;width:max-content;max-width:calc(100% - 40px);margin:6px auto 44px;padding:6px;gap:4px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(250,244,232,.62));border:1px solid rgba(190,160,105,.32);box-shadow:0 18px 40px -26px rgba(80,58,28,.45),inset 0 1px 0 #fff;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.site .ph-rail::-webkit-scrollbar{display:none}
+.site .ph-filters button{position:relative;display:flex;align-items:center;gap:9px;border:0;border-radius:999px;background:transparent;color:#6f6250;font:400 .82rem/1.2 var(--f-ui);letter-spacing:.02em;padding:11px 18px 11px 14px;cursor:pointer;transition:background .3s,color .3s,box-shadow .3s}
+.site .ph-filters button:hover{color:#33291c;background:rgba(255,255,255,.7)}
+.site .ph-filters button[aria-pressed=true]{color:#2f2517;background:linear-gradient(135deg,#f7ecd4,#e3cc9c 55%,#d4b57a);box-shadow:0 8px 18px -10px rgba(120,86,30,.7),inset 0 1px 0 rgba(255,255,255,.75)}
+.site .ph-ico{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(201,170,112,.14);color:#a8843f;transition:background .3s,color .3s}
+.site .ph-ico svg{width:19px;height:19px}
+.site .ph-filters button[aria-pressed=true] .ph-ico{background:rgba(255,255,255,.6);color:#7d5b1f}
+.site .ph-n{min-width:22px;padding:3px 7px;border-radius:99px;background:rgba(120,95,55,.1);font-size:.68rem;font-weight:500;text-align:center;color:inherit}
+.site .ph-n.is-soon{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+.site .ph-filters button[aria-pressed=true] .ph-n{background:rgba(255,255,255,.55)}
+.site .ph-filters button:focus-visible{outline:2px solid #b8955a;outline-offset:2px}
 .site .ph-section{margin:0 auto 48px;min-width:0;max-width:1280px}
 .site .ph-row-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 clamp(20px,5vw,64px) 22px}
 .site .ph-row-title h3{margin:0;font:400 clamp(1.35rem,3vw,2rem)/1.15 var(--f-display)}
@@ -113,14 +122,40 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 .site .ph-selected{position:absolute;z-index:3;top:9px;left:50%;transform:translateX(-50%);max-width:90%;padding:5px 10px;border-radius:99px;background:#e8d4aa;color:#392d1c;font-size:.68rem;white-space:nowrap;box-shadow:0 3px 10px #0002}
 .site .ph-soon{padding-top:4px}.site .ph-soon-screen{aspect-ratio:9/19.5;border:1px dashed #c4b89f;border-radius:clamp(20px,5vw,30px);background:linear-gradient(145deg,#f7f2e8,#e9dfcc);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#87734e}.site .ph-soon-screen span{font-size:2rem}
 .site .ph-view-all{text-align:center;padding:2px 0 24px}
-.site .ph-gallery.is-compact .ph-filters{padding:4px 0 12px}
+.site .ph-gallery.is-compact .ph-filters{margin:4px auto 24px}
 .site .ph-gallery.is-compact .ph-section{margin-bottom:32px}
 .site .ph-gallery.is-compact .ph-row-title{padding:0 0 16px}
 .site .ph-gallery.is-compact .ph-rail{padding:4px 4px 18px;gap:28px 20px}
 .site .ph-gallery.is-compact .ph-device{width:min(100%,164px);border-radius:27px;padding:5px}.site .ph-gallery.is-compact .ph-frame{inset:5px;border-radius:22px}
 .site .ph-gallery.is-compact .ph-model-name{font-size:1rem}
 @media(min-width:761px) and (max-width:1000px){.site .ph-rail{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:760px){.site .ph-rail{display:flex;gap:16px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:20px;padding:8px 20px 26px;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}.site .ph-card{flex:0 0 min(58vw,230px);width:auto;max-width:none;margin:0;scroll-snap-align:start}.site .ph-device{width:100%}.site .ph-gallery.is-compact .ph-rail{display:flex;gap:14px}.site .ph-gallery.is-compact .ph-card{flex:0 0 min(44vw,180px)}.site .ph-gallery.is-compact .ph-device{width:100%}.site .ph-filters{padding-inline:20px}}
+.site .ph-rail-wrap{position:relative}
+.site .ph-arrow,.site .ph-count{display:none}
+/* Mobile : un seul téléphone par écran, plus court et plus large (9/18 au lieu de 9/19,5 : l'image est recadrée, --sy recale prénoms et sceaux), flèches de part et d'autre */
+@media(max-width:760px){
+  .site .ph-rail{display:flex;gap:0;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:8px 0 10px;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .site .ph-rail::-webkit-scrollbar{display:none}
+  .site .ph-card{flex:0 0 100%;width:100%;max-width:none;margin:0;scroll-snap-align:center;scroll-snap-stop:always}
+  .site .ph-device{width:min(64vw,270px);aspect-ratio:9/18;--sy:1.0833}
+  .site .ph-gallery.is-compact .ph-rail{display:flex;gap:0}
+  .site .ph-gallery.is-compact .ph-card{flex:0 0 100%}
+  .site .ph-gallery.is-compact .ph-device{width:min(56vw,230px)}
+  .site .ph-soon-screen{width:min(64vw,270px);margin-inline:auto;aspect-ratio:9/18}
+  .site .ph-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:auto;max-width:none;margin:4px 16px 34px;padding:6px;gap:4px;border-radius:24px}
+  .site .ph-filters button{flex-direction:column;justify-content:flex-start;gap:6px;padding:10px 4px 9px;border-radius:18px;font-size:.68rem;line-height:1.15;text-align:center}
+  .site .ph-ico{width:36px;height:36px}.site .ph-ico svg{width:21px;height:21px}
+  .site .ph-lbl{min-height:2.3em;display:flex;align-items:center}
+  .site .ph-n{padding:2px 6px;font-size:.6rem}.site .ph-n.is-soon{font-size:.5rem;letter-spacing:.06em}
+  .site .ph-arrow{display:grid;place-items:center;position:absolute;z-index:4;top:calc(8px + min(64vw,270px) * 1);translate:0 -50%;width:44px;height:44px;padding:0;border-radius:50%;border:1px solid rgba(176,144,79,.45);background:rgba(255,252,246,.92);color:#5a4630;font:300 2rem/1 var(--f-ui);box-shadow:0 8px 20px -8px rgba(60,45,25,.45);cursor:pointer;transition:opacity .25s}
+  .site .ph-gallery.is-compact .ph-arrow{top:calc(8px + min(56vw,230px) * 1)}
+  .site .ph-arrow span{margin-top:-4px}
+  .site .ph-arrow.prev{left:10px}.site .ph-arrow.next{right:10px}
+  .site .ph-arrow:disabled{opacity:0;pointer-events:none}
+  .site .ph-arrow.next:not(:disabled){animation:ph-nudge 2.4s ease-in-out infinite}
+  .site .ph-count{display:block;margin:0 0 18px;text-align:center;font:500 .72rem/1 var(--f-ui);letter-spacing:.2em;color:#9a8661}
+}
+@keyframes ph-nudge{0%,70%,100%{transform:translateX(0)}80%{transform:translateX(4px)}90%{transform:translateX(-1px)}}
+@media(prefers-reduced-motion:reduce){.site .ph-arrow{animation:none!important}}
 @media(prefers-reduced-motion:reduce){.site .ph-device{transition:none!important}.site .ph-card:hover .ph-device,.site .ph-card.is-selected .ph-device{transform:none}}
 .lang-switch button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .gl-nav-r{display:flex;align-items:center;gap:10px}

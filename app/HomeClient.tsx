@@ -168,7 +168,7 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
       </div>
 
       <section id="gl-hz" className="gl-hz">
-        <div className="gl-hz-head"><div className="gl-kicker">{h.worlds(TEMPLATES.length)}</div><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
+        <div className="gl-hz-head"><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
         <TemplateRows names={["Léa", "Samuel"]} lang={lang} onPreview={setDemo} onCreate={(id, event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return; celebrate(`/creer?t=${id}`)(event); }} />
       </section>
 
