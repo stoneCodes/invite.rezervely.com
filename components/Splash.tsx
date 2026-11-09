@@ -5,7 +5,7 @@ import Loader from "./Loader";
 import { useT } from "./I18n";
 
 const KEY = "je-splash";
-const SHOW_MS = 2300; // le temps que la poussière se rassemble, que l'étincelle naisse et que le logo apparaisse
+const SHOW_MS = 2300; // le temps que le monogramme ES se trace (2,2 s) et que le reflet passe
 const FADE_MS = 500;
 
 /** Pages du site (pas les invitations, démos ni aperçus, qui ont leur propre ouverture). */
@@ -14,7 +14,7 @@ function isSitePage(p: string) {
 }
 
 /**
- * Écran d'accueil animé « Poussière d'or » : une fois par visite (onglet), sur les pages du site.
+ * Écran d'accueil animé « Trait d'or » (monogramme ES qui se trace) : une fois par visite (onglet), sur les pages du site.
  * Présent dans le HTML dès le départ (pas de flash de la page) ; un petit script le masque tout de suite
  * s'il a déjà été vu ou si la page est dans une iframe. Toucher l'écran le passe.
  */

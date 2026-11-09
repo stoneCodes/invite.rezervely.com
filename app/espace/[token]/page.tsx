@@ -43,7 +43,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
   return (
     <main className="site">
       <div className="wrap-site" style={{ paddingBlock: "40px 64px", maxWidth: 860, display: "grid", gap: 22 }}>
-        <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}><Link href="/" className="ed-home" aria-label={t.common.backHome}><span aria-hidden="true">←</span> <Logo height={22} /></Link><LangSwitch /></nav>
+        <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}><Link href="/" className="ed-home" aria-label={t.common.backHome}><span aria-hidden="true">←</span> <Logo height={28} /></Link><LangSwitch /></nav>
         <header>
           <p className="muted" style={{ letterSpacing: ".3em", textTransform: "uppercase", fontSize: ".72rem", margin: 0 }}>{s.kicker}</p>
           <h1 style={{ fontSize: "2.6rem", margin: ".2em 0" }}>{displayNames(inv.data)}</h1>

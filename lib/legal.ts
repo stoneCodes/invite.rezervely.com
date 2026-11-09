@@ -2,13 +2,13 @@
    À mettre à jour ici seulement (adresse, médiateur, régime de TVA…). */
 
 export const LEGAL = {
-  brand: "joyeuxevent",
+  brand: "E-carte Studio",
   owner: "Attisso Ngouegne Tovor", // entrepreneur individuel (mention « EI » obligatoire)
   siren: "990 116 683",
   address: "78 avenue des Champs-Élysées, 75008 Paris, France",
   domiciliation: "Source (société de domiciliation)",
-  email: "hello@joyeuxevent.com",
-  site: "joyeuxevent.com",
+  email: "hello@ecartestudio.com",
+  site: "ecartestudio.com",
   vatFranchise: true, // franchise en base de TVA : « TVA non applicable, art. 293 B du CGI »
   /** Médiateur de la consommation : à renseigner dès l'adhésion (nom + site). */
   mediator: null as null | { name: string; url: string },

@@ -8,7 +8,7 @@ const fr = {
     openSpace: "Ouvrir mon espace",
     edit: "Modifier l'invitation",
     keep: "Gardez cet e-mail : le lien de votre espace est personnel, il donne accès à vos réponses et à la modification de l'invitation.",
-    footer: "Vous recevez cet e-mail parce que cette adresse a été indiquée lors de la création d'une invitation sur joyeuxevent.",
+    footer: "Vous recevez cet e-mail parce que cette adresse a été indiquée lors de la création d'une invitation sur E-carte Studio.",
     couple: (a: string, b: string) => `${a} & ${b}`,
   },
   welcome: {
@@ -32,7 +32,7 @@ const fr = {
     totals: (yes: number, no: number) => `Depuis le début : ${yes} personne${yes > 1 ? "s" : ""} présente${yes > 1 ? "s" : ""}, ${no} absence${no > 1 ? "s" : ""}.`,
   },
   links: {
-    subject: "Vos liens joyeuxevent",
+    subject: "Vos liens E-carte Studio",
     title: "Vos invitations",
     body: "Vous avez demandé à retrouver votre espace. Voici le lien de chaque invitation créée avec cette adresse.",
     ignore: "Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet e-mail.",
@@ -47,7 +47,7 @@ const en: EmailDict = {
     openSpace: "Open my space",
     edit: "Edit the invitation",
     keep: "Keep this email: your space link is personal. It gives access to your replies and lets you edit the invitation.",
-    footer: "You are receiving this email because this address was entered when an invitation was created on joyeuxevent.",
+    footer: "You are receiving this email because this address was entered when an invitation was created on E-carte Studio.",
     couple: (a, b) => `${a} & ${b}`,
   },
   welcome: {
@@ -71,7 +71,7 @@ const en: EmailDict = {
     totals: (yes, no) => `So far: ${yes} guest${yes > 1 ? "s" : ""} attending, ${no} declined.`,
   },
   links: {
-    subject: "Your joyeuxevent links",
+    subject: "Your E-carte Studio links",
     title: "Your invitations",
     body: "You asked to find your space again. Here is the link for each invitation created with this address.",
     ignore: "If you didn't make this request, simply ignore this email.",

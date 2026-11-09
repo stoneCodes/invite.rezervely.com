@@ -428,7 +428,7 @@ const fr = {
     from: "De",
     page: (n: number, total: number) => `${n} / ${total}`,
     stoppedAt: (date: string) => `Liste arrêtée le ${date}`,
-    createdWith: "Créé avec joyeuxevent",
+    createdWith: "Créé avec E-carte Studio",
     reserved: "Disponible avec une publication payée ou offerte.",
   },
   /** Image d'aperçu (WhatsApp, réseaux) */
@@ -863,7 +863,7 @@ const en: InviteDict = {
     from: "From",
     page: (n: number, total: number) => `${n} / ${total}`,
     stoppedAt: (date: string) => `List generated on ${date}`,
-    createdWith: "Created with joyeuxevent",
+    createdWith: "Created with E-carte Studio",
     reserved: "Available with a paid or complimentary publication.",
   },
   og: {

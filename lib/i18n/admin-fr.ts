@@ -1,6 +1,6 @@
 /** Textes français de l'espace administrateur. */
 const adminFr = {
-  brand: "joyeuxevent · Administration",
+  brand: "E-carte Studio · Administration",
   loginTitle: "Connexion administrateur",
   email: "Adresse e-mail",
   sendCode: "Recevoir un code",
@@ -8,7 +8,7 @@ const adminFr = {
   signIn: "Se connecter",
   genericSent: "Si cette adresse est autorisée, un code vient d'être envoyé.",
   loginError: "Connexion impossible. Vérifiez le code et réessayez.",
-  emailSubject: "Votre code administrateur joyeuxevent",
+  emailSubject: "Votre code administrateur E-carte Studio",
   emailCodeIntro: "Votre code de connexion à l'administration est :",
   emailExpiry: "Il expire dans 10 minutes et ne peut être utilisé qu'une fois.",
   dashboard: "Tableau de bord",

@@ -17,7 +17,7 @@ export default async function Retrouver() {
     <main className="site">
       <div className="wrap-site" style={{ paddingBlock: "40px 64px", maxWidth: 560, display: "grid", gap: 22 }}>
         <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-          <Link href="/" className="ed-home" aria-label={t.common.backHome}><span aria-hidden="true">←</span> <Logo height={22} /></Link>
+          <Link href="/" className="ed-home" aria-label={t.common.backHome}><span aria-hidden="true">←</span> <Logo height={28} /></Link>
           <LangSwitch />
         </nav>
         <header>

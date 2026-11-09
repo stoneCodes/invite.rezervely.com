@@ -9,7 +9,7 @@ export default {
 
   /** Cron (wrangler.jsonc) : appelle la route du récapitulatif, protégée par CRON_SECRET comme sur Vercel. */
   async scheduled(_event: unknown, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }) {
-    const base = env.NEXT_PUBLIC_SITE_URL || "https://joyeuxevent.com";
+    const base = env.NEXT_PUBLIC_SITE_URL || "https://ecartestudio.com";
     const req = new Request(`${base}/api/cron/recap`, { headers: { authorization: `Bearer ${env.CRON_SECRET ?? ""}` } });
     ctx.waitUntil(
       Promise.resolve(handler.fetch(req, env, ctx)).then(async (res: Response) => console.log("cron recap", res.status, await res.text())),

@@ -109,8 +109,8 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
   const document = await PDFDocument.create();
   document.registerFontkit(fontkit);
   document.setTitle(`${t.title} · ${[data.partner1, data.partner2].filter(Boolean).join(" & ")}`);
-  document.setAuthor("joyeuxevent");
-  document.setCreator("joyeuxevent");
+  document.setAuthor("E-carte Studio");
+  document.setCreator("E-carte Studio");
   // Le sous-ensemble de pdf-lib abîme les polices de titre variables (Cormorant -VF : lettres manquantes) : intégrées entières.
   const titleFont = await document.embedFont(titleBytes, { subset: !theme.titleFont.includes("-VF") });
   const bodyFont = await document.embedFont(bodyBytes, { subset: true });

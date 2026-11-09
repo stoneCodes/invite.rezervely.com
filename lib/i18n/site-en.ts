@@ -3,7 +3,7 @@ import type { SiteDict } from "./site-fr";
 /* Site texts — English. Typed on the French dictionary: a missing key fails the typecheck. */
 export const en: SiteDict = {
   meta: {
-    title: "joyeuxevent · Animated invitations to share",
+    title: "E-carte Studio · Animated invitations to share",
     description: "Create an animated invitation that opens in spectacular fashion, and share it with a simple link.",
     create: "Create my invitation",
     space: "Your space",
@@ -19,7 +19,7 @@ export const en: SiteDict = {
     loading: "Loading…",
     home: "Home",
     backHome: "Back to home",
-    homeAria: "joyeuxevent, home",
+    homeAria: "E-carte Studio, home",
     prevTpl: "Previous design",
     nextTpl: "Next design",
     demoOf: (name) => `${name} design demo`,
@@ -103,7 +103,7 @@ export const en: SiteDict = {
     ready: "Ready?",
     finalTitle: "Let the party",
     finalGold: "begin",
-    footer: "joyeuxevent · Animated invitations to share",
+    footer: "E-carte Studio · Animated invitations to share",
     demoSub: "demo",
     createWith: "Create with this design",
   },
@@ -305,7 +305,7 @@ export const en: SiteDict = {
     unavailable: "Payment is unavailable right now. Please try again in a moment.",
     paid: "Payment received, thank you! Your invitation is live: send the link below to your guests.",
     pending: "Payment is being confirmed. Refresh this page in a moment.",
-    product: (names) => (names ? `Animated invitation · ${names}` : "joyeuxevent animated invitation"),
+    product: (names) => (names ? `Animated invitation · ${names}` : "E-carte Studio animated invitation"),
     productDesc: "Invitation publishing, unlimited guests and replies, free edits.",
   },
   legal: {

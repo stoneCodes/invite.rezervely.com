@@ -8,9 +8,9 @@ import WebAnalytics from "@/components/WebAnalytics";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
   return {
-    title: { default: t.meta.title, template: "%s · joyeuxevent" },
-    applicationName: "joyeuxevent",
-    appleWebApp: { title: "joyeuxevent" },
+    title: { default: t.meta.title, template: "%s · E-carte Studio" },
+    applicationName: "E-carte Studio",
+    appleWebApp: { title: "E-carte Studio" },
     description: t.meta.description,
   };
 }

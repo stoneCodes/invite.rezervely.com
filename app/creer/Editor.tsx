@@ -243,7 +243,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
   return (
     <main className="site ed">
       <nav className="ed-top">
-        <Link href="/" className="ed-home" aria-label={t.common.backHome}><span aria-hidden="true">←</span> <Logo height={22} /></Link>
+        <Link href="/" className="ed-home" aria-label={t.common.backHome}><span aria-hidden="true">←</span> <Logo height={28} /></Link>
         <LangSwitch />
       </nav>
       <div className="ed-tabs">

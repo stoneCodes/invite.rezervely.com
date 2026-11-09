@@ -27,7 +27,7 @@ export default async function LegalPage({ kind }: { kind: LegalKind }) {
     <main className="site">
       <div className="wrap-site legal">
         <nav className="legal-nav">
-          <Link href="/" className="ed-home" aria-label={t.common.backHome}><span aria-hidden="true">←</span> <Logo height={22} /></Link>
+          <Link href="/" className="ed-home" aria-label={t.common.backHome}><span aria-hidden="true">←</span> <Logo height={28} /></Link>
           <LangSwitch />
         </nav>
         <header>

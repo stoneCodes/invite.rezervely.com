@@ -129,7 +129,7 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
       <canvas id="gl-fw" className="gl-canvas gl-fw" aria-hidden />
 
       <nav id="gl-nav" className="gl-nav">
-        <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={26} onLight className="gl-logo-d" /><Logo height={26} onLight={false} className="gl-logo-l" /></Link>
+        <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={32} onLight className="gl-logo-d" /><Logo height={32} onLight={false} className="gl-logo-l" /></Link>
         <div className="gl-nav-r"><Link className="gl-space" href={spaceHref(last)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg><span>{t.find.mySpace}</span></Link><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
       </nav>
 

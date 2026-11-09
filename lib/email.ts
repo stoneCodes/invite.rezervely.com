@@ -12,15 +12,15 @@ type Mail = { to: string; subject: string; html: string; text: string };
 
 const clean = (v?: string) => v?.trim().replace(/^["']|["']$/g, "").trim() || "";
 
-/** "joyeuxevent <hello@joyeuxevent.com>" → { name, email } */
+/** "E-carte Studio <hello@joyeuxevent.com>" → { name, email } */
 function parseFrom(v: string) {
   const m = v.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
-  return m ? { name: m[1] || "joyeuxevent", email: m[2] } : { name: "joyeuxevent", email: v };
+  return m ? { name: m[1] || "E-carte Studio", email: m[2] } : { name: "E-carte Studio", email: v };
 }
 
 export async function sendEmail(mail: Mail): Promise<{ ok: boolean; test?: boolean }> {
   const key = clean(process.env.BREVO_API_KEY);
-  const from = parseFrom(clean(process.env.EMAIL_FROM) || "joyeuxevent <hello@joyeuxevent.com>");
+  const from = parseFrom(clean(process.env.EMAIL_FROM) || "E-carte Studio <hello@joyeuxevent.com>");
   const replyTo = clean(process.env.EMAIL_REPLY_TO);
   if (!key) {
     console.info(`\n[e-mail · mode test] à ${mail.to} · « ${mail.subject} »\n${mail.text}\n`);
@@ -71,7 +71,7 @@ function layout(lang: Lang | null | undefined, blocks: Block[]) {
 <body style="margin:0;padding:0;background:#F3ECE3">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3ECE3"><tr><td align="center" style="padding:28px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;border-radius:18px;overflow:hidden;background:#ffffff">
-<tr><td align="center" style="background:#0D0911;padding:22px 24px"><a href="${esc(home)}" style="text-decoration:none;${FONT};font-size:28px;letter-spacing:.02em;line-height:1"><span style="color:#E7A6B6;font-size:16px;vertical-align:top">&#10022;</span><span style="color:#F4EADB">joyeux</span><span style="color:#D9B76E">event</span><span style="color:#D9B76E;font-size:13px;vertical-align:top">&#10022;</span></a></td></tr>
+<tr><td align="center" style="background:#0D0911;padding:22px 24px"><a href="${esc(home)}" style="text-decoration:none;${FONT};font-size:28px;letter-spacing:.02em;line-height:1"><span style="color:#F4EADB">E-carte</span> <span style="color:#D9B76E">Studio</span></a></td></tr>
 <tr><td style="padding:30px 28px 14px">${blocks.join("")}</td></tr>
 <tr><td style="padding:0 28px 26px">${p(c.footer, true)}</td></tr>
 </table></td></tr></table></body></html>`;

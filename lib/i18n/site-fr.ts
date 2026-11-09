@@ -2,7 +2,7 @@
    Toute nouvelle clé ici doit aussi exister dans site-en.ts (sinon le typecheck échoue). */
 export const fr = {
   meta: {
-    title: "joyeuxevent · Invitations animées à partager",
+    title: "E-carte Studio · Invitations animées à partager",
     description: "Créez une invitation animée qui s'ouvre de façon spectaculaire, et partagez-la par un simple lien.",
     create: "Créer mon invitation",
     space: "Votre espace",
@@ -18,7 +18,7 @@ export const fr = {
     loading: "Chargement…",
     home: "Accueil",
     backHome: "Revenir à l'accueil",
-    homeAria: "joyeuxevent, accueil",
+    homeAria: "E-carte Studio, accueil",
     prevTpl: "Modèle précédent",
     nextTpl: "Modèle suivant",
     demoOf: (name: string) => `Démo du modèle ${name}`,
@@ -102,7 +102,7 @@ export const fr = {
     ready: "Prêts ?",
     finalTitle: "Que la fête",
     finalGold: "commence",
-    footer: "joyeuxevent · Invitations animées à partager",
+    footer: "E-carte Studio · Invitations animées à partager",
     demoSub: "démo",
     createWith: "Créer avec ce modèle",
   },
@@ -304,7 +304,7 @@ export const fr = {
     unavailable: "Le paiement est indisponible pour le moment. Réessayez dans un instant.",
     paid: "Paiement reçu, merci ! Votre invitation est en ligne : envoyez le lien ci-dessous à vos invités.",
     pending: "Paiement en cours de confirmation. Actualisez cette page dans un instant.",
-    product: (names: string) => (names ? `Invitation animée · ${names}` : "Invitation animée joyeuxevent"),
+    product: (names: string) => (names ? `Invitation animée · ${names}` : "Invitation animée E-carte Studio"),
     productDesc: "Publication de l'invitation, invités et réponses illimités, modifications gratuites.",
   },
   legal: {

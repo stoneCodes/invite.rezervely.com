@@ -1,8 +1,8 @@
 import { customAlphabet } from "nanoid";
 
-/* Lien public lisible : joyeuxevent.com/lea-et-samuel-k7m2
+/* Lien public lisible : ecartestudio.com/lea-et-samuel-k7m2
    - prénoms simplifiés (accents retirés, « & » remplacé par « et » / « and » : « & » casse les liens dans WhatsApp et les SMS) ;
-   - un seul prénom (anniversaire, baptême…) : joyeuxevent.com/lea-k7m2 ;
+   - un seul prénom (anniversaire, baptême…) : ecartestudio.com/lea-k7m2 ;
    - code de 4 caractères toujours ajouté : le lien ne se devine pas (invitation privée) et deux couples homonymes n'ont jamais le même lien.
    Les anciens liens courts (/i/3kvv57mz) continuent de fonctionner. */
 

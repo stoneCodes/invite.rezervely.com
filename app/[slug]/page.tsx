@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import InvitePage, { generateMetadata as inviteMetadata } from "../i/[slug]/page";
 import { isPrettySlug } from "@/lib/slug";
 
-/* Lien lisible à la racine : joyeuxevent.com/lea-et-samuel-k7m2 (même page que /i/<slug>).
+/* Lien lisible à la racine : ecartestudio.com/lea-et-samuel-k7m2 (même page que /i/<slug>).
    Les pages du site (/creer, /espace, /demo…) passent avant cette route ; tout ce qui n'a pas la forme d'un lien d'invitation donne une 404. */
 
 type P = { params: Promise<{ slug: string }> };
