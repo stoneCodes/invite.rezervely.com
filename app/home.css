@@ -8,7 +8,7 @@ body:has(.gl){background:#EEE6D9}
 .gl-kicker{font:400 .72rem/1 var(--f-ui);letter-spacing:.42em;text-transform:uppercase;color:var(--accent)}
 .gl-canvas{position:fixed;inset:0;pointer-events:none}
 .gl-dust{z-index:1}.gl-fw{z-index:30}
-.gl section,.gl .gl-marq,.gl footer{position:relative;z-index:2}
+.gl section,.gl footer{position:relative;z-index:2}
 
 .gl-nav{position:fixed;inset:0 0 auto;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:16px max(20px,env(safe-area-inset-left,0px));transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
 .gl-nav.is-scrolled{background:rgba(244,240,232,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:var(--line)}
@@ -130,10 +130,6 @@ body:has(.gl){background:#EEE6D9}
 .gl-pin.is-still .gl-ring{animation:none}
 
 /* Bandeau défilant */
-.gl-marq{border-block:1px solid var(--line);padding:22px 0;overflow:hidden;white-space:nowrap;background:linear-gradient(110deg,rgba(226,216,199,.8),rgba(247,243,235,.78) 48%,rgba(226,216,199,.8));box-shadow:0 12px 30px rgba(74,56,31,.06),inset 0 1px rgba(255,255,255,.75),inset 0 -1px rgba(112,85,46,.08);font:400 clamp(1.6rem,4vw,2.6rem)/1 var(--f-display)}
-.gl-marq>div{display:inline-block;animation:gl-mq 30s linear infinite}
-.gl-marq i{font-family:var(--f-script);font-style:normal;color:var(--rose);margin:0 .6em}
-@keyframes gl-mq{to{transform:translateX(-50%)}}
 
 /* Modèles en défilement horizontal */
 .gl-hz{height:auto;min-height:0;padding:64px 0 34px;background:linear-gradient(145deg,rgba(249,246,239,.76),rgba(233,224,208,.62) 52%,rgba(249,246,239,.78));box-shadow:inset 0 1px rgba(255,255,255,.72),inset 0 -1px rgba(112,85,46,.08);overflow:hidden}
@@ -233,3 +229,83 @@ body:has(.gl){background:#EEE6D9}
   .gl-hero p{margin-bottom:26px}
 }
 @media (max-width:767px) and (max-height:640px){.gl-hero{padding-top:96px}}
+
+/* ───── Lien FAQ dans la barre du haut ───── */
+.gl-navfaq{color:var(--ink)!important;text-decoration:none;font-size:.8rem;letter-spacing:.12em;padding:8px 10px;border-radius:999px;border:1px solid transparent}
+.gl-navfaq:hover{border-color:var(--line)}
+@media (max-width:480px){.gl-navfaq{padding:8px 4px;letter-spacing:.06em}}
+
+/* ───── « Ce que contient votre invitation » ───── */
+.gl-feat,.gl-faq{padding-block:14vh 4vh;text-align:center}
+.gl-feat h2,.gl-faq h2{font-size:clamp(2.2rem,6.4vw,4.4rem);margin:.25em 0 .9em}
+.gl-feat-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;text-align:left}
+.gl-feat-card{padding:26px 24px 24px;border:1px solid rgba(105,80,40,.14);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(237,229,214,.7));box-shadow:0 18px 36px rgba(62,45,26,.07),inset 0 1px rgba(255,255,255,.85)}
+.gl-feat-card svg{width:34px;height:34px;fill:none;stroke:var(--accent);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;margin-bottom:14px}
+.gl-feat-card h3{font:400 clamp(1.35rem,2.6vw,1.7rem)/1.1 var(--f-display);margin:0 0 8px}
+.gl-feat-card p{color:var(--muted);margin:0;font-size:.96rem;line-height:1.55}
+.gl-feat-card.is-music{background:radial-gradient(90% 80% at 0 0,rgba(214,190,140,.32),transparent 70%),linear-gradient(145deg,rgba(255,255,255,.8),rgba(237,229,214,.72));border-color:rgba(168,136,79,.35)}
+.gl-listen{margin-top:16px;display:inline-flex;align-items:center;gap:10px;padding:9px 16px 9px 9px;border-radius:999px;border:1px solid rgba(168,136,79,.45);background:rgba(255,255,255,.7);color:var(--ink);font:400 .86rem/1 var(--f-ui);letter-spacing:.04em;cursor:pointer}
+.gl-listen:hover{background:#fff}
+.gl-listen-i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-size:.7rem;padding-left:2px}
+.gl-listen.is-on .gl-listen-i{padding:0}
+.gl-listen-i i{width:9px;height:9px;background:#fff;border-radius:1px}
+@media (prefers-reduced-motion:no-preference){.gl-listen.is-on .gl-listen-i{animation:gl-pulse 1.4s ease-in-out infinite}}
+@keyframes gl-pulse{50%{box-shadow:0 0 0 7px rgba(168,136,79,.18)}}
+@media (max-width:900px){.gl-feat-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px){.gl-feat-grid{grid-template-columns:1fr;gap:12px}.gl-feat-card{padding:20px}}
+
+/* ───── FAQ ───── */
+.gl-faq{scroll-margin-top:70px;padding-bottom:14vh}
+.gl-faq-list{max-width:780px;margin:0 auto;text-align:left;border-top:1px solid var(--line)}
+.gl-faq-item{border-bottom:1px solid var(--line)}
+.gl-faq-item summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 4px;font:400 clamp(1.15rem,2.4vw,1.4rem)/1.25 var(--f-display);color:var(--ink)}
+.gl-faq-item summary::-webkit-details-marker{display:none}
+.gl-faq-item summary:hover{color:var(--accent)}
+.gl-faq-plus{position:relative;flex:0 0 26px;height:26px;border-radius:50%;border:1px solid rgba(168,136,79,.5)}
+.gl-faq-plus::before,.gl-faq-plus::after{content:"";position:absolute;left:50%;top:50%;width:10px;height:1.4px;margin:-.7px 0 0 -5px;background:var(--accent);transition:transform .3s}
+.gl-faq-plus::after{transform:rotate(90deg)}
+.gl-faq-item[open] .gl-faq-plus::after{transform:rotate(0)}
+.gl-faq-item p{margin:0;padding:0 44px 22px 4px;color:var(--muted);line-height:1.65;max-width:62ch}
+.gl-faq-more{margin:28px 0 0;color:var(--muted);font-size:.92rem}
+.gl-faq-more a{color:var(--ink);text-decoration-color:var(--accent);text-underline-offset:3px}
+@media (max-width:600px){.gl-faq-item p{padding-right:4px}}
+
+
+/* ───── Trois tons et bords en courbe (10 nov. 2026, demandé par Glad) ─────
+   Haut de page blanc → « Du papier à l'écran » (satin, inchangé) → bandeau blanc → modèles blanc cassé → atouts blanc
+   → étapes beige → FAQ blanc cassé → « Prêts ? » blanc → pied de page beige.
+   Chaque section .gl-wave remonte sur la précédente et son bord haut est découpé en courbe douce (masque SVG) :
+   plus de trait net entre deux blocs. Fonds très légèrement transparents : la poussière d'or reste visible. */
+.gl{--gl-w:rgba(255,253,249,.96);--gl-c:rgba(247,242,233,.96);--gl-b:rgba(235,226,211,.96)}
+body:has(.gl){background:#F4EEE4}
+.gl-wave{--wv:clamp(26px,4.2vw,58px);margin-top:calc(-1 * var(--wv));
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V30C180 8 360 6 540 22S900 52 1080 38S1320 14 1440 24V60Z'/%3E%3C/svg%3E") top/100% var(--wv) no-repeat,linear-gradient(#000 0 0) 0 calc(var(--wv) - 1px)/100% calc(100% - var(--wv) + 1px) no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V30C180 8 360 6 540 22S900 52 1080 38S1320 14 1440 24V60Z'/%3E%3C/svg%3E") top/100% var(--wv) no-repeat,linear-gradient(#000 0 0) 0 calc(var(--wv) - 1px)/100% calc(100% - var(--wv) + 1px) no-repeat}
+.gl-wave.is-b{-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V24C200 44 420 50 640 32S1060 4 1260 18S1400 34 1440 30V60Z'/%3E%3C/svg%3E") top/100% var(--wv) no-repeat,linear-gradient(#000 0 0) 0 calc(var(--wv) - 1px)/100% calc(100% - var(--wv) + 1px) no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V24C200 44 420 50 640 32S1060 4 1260 18S1400 34 1440 30V60Z'/%3E%3C/svg%3E") top/100% var(--wv) no-repeat,linear-gradient(#000 0 0) 0 calc(var(--wv) - 1px)/100% calc(100% - var(--wv) + 1px) no-repeat}
+
+/* Haut de page blanc (fond, voile de la vidéo, halo des titres, barre du haut) */
+.gl-hero{background:radial-gradient(60% 50% at 50% 35%,rgba(213,192,151,.14),transparent 70%),linear-gradient(180deg,#FFFDF9 72%,#F4EEE4)}
+.gl-reel-clip{background:#FAF6EF}
+.gl-reel-veil{background:linear-gradient(180deg,rgba(255,253,249,.6),rgba(255,253,249,.7) 45%,rgba(255,253,249,.78))}
+.gl-hero h1,.gl-hero p{text-shadow:0 0 22px rgba(255,253,249,.95),0 0 6px rgba(255,253,249,.7)}
+.gl-hero h1 .gl-script{filter:drop-shadow(0 0 6px rgba(255,253,249,.95)) drop-shadow(0 0 14px rgba(255,253,249,.8))}
+.gl-nav.is-scrolled{background:rgba(255,253,249,.92)}
+@media (min-width:768px){.gl-reel-veil{background:linear-gradient(90deg,rgba(255,253,249,.94) 0,rgba(255,253,249,.84) 32%,rgba(255,253,249,.58) 58%,rgba(255,253,249,.48))}}
+@media (max-width:767px){.gl-hero{background:linear-gradient(180deg,#FFFDF9 80%,#F4EEE4)}.gl-reel-veil{background:linear-gradient(180deg,rgba(255,253,249,.62),rgba(255,253,249,.76) 22%,rgba(255,253,249,.8) 60%,rgba(255,253,249,.86))}}
+
+/* Sections : fonds alternés, plus de traits de séparation */
+.gl .gl-hz{background:var(--gl-c);box-shadow:none;padding:calc(56px + var(--wv)) 0 calc(34px + var(--wv))}
+.gl-feat{background:var(--gl-w);padding:calc(11vh + var(--wv)) 0 11vh;text-align:center}
+.gl-steps-band{background:var(--gl-b)}
+.gl-steps-band .gl-steps{padding-block:calc(14vh + var(--wv)) 14vh}
+.gl-faq{background:var(--gl-c);padding:calc(11vh + var(--wv)) 0 12vh}
+.gl .gl-final{background:radial-gradient(50% 60% at 50% 50%,rgba(199,176,132,.22),transparent 70%),var(--gl-w);box-shadow:none;padding:calc(20vh + var(--wv)) 20px 20vh}
+.gl footer{background:var(--gl-b);border-top:0;padding-top:calc(26px + var(--wv))}
+
+/* Cartes : ton qui ressort sur le fond de leur section */
+.gl-feat-card{background:linear-gradient(145deg,#F8F3EA,#EFE6D7)}
+.gl-feat-card.is-music{background:radial-gradient(90% 80% at 0 0,rgba(214,190,140,.34),transparent 70%),linear-gradient(145deg,#F8F3EA,#EFE6D7)}
+.gl-step>div:last-child{background:linear-gradient(145deg,rgba(255,253,249,.92),rgba(249,245,237,.88))}
+.gl-faq-list{border-top-color:rgba(105,80,40,.14)}
+.gl-faq-item{border-bottom-color:rgba(105,80,40,.14)}

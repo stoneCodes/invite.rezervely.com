@@ -10,12 +10,13 @@ import { cycleTemplate } from "@/lib/templateOrder";
 import TemplateRows from "@/components/TemplateRows";
 import HeroReel from "@/components/HeroReel";
 import HomeReveal from "@/components/HomeReveal";
+import { HomeFaq, HomeFeatures } from "@/components/HomeExtras";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { getLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 
 /** Page d'accueil « Nuit de gala » : poussière d'or, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal. */
-export default function HomeClient({publicPromo,order}:{publicPromo?:{code:string;label:string};order:TemplateId[]}) {
+export default function HomeClient({publicPromo,order,price}:{publicPromo?:{code:string;label:string};order:TemplateId[];price:string|null}) {
   const router = useRouter();
   const t = useT();
   const lang = useLang();
@@ -128,7 +129,7 @@ export default function HomeClient({publicPromo,order}:{publicPromo?:{code:strin
 
       <nav id="gl-nav" className="gl-nav">
         <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={32} onLight className="gl-logo-d" /><Logo height={32} onLight={false} className="gl-logo-l" /></Link>
-        <div className="gl-nav-r"><Link className="gl-space" href={spaceHref(last)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg><span>{t.find.mySpace}</span></Link><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
+        <div className="gl-nav-r"><a className="gl-navfaq" href="#faq">{h.navFaq}</a><Link className="gl-space" href={spaceHref(last)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg><span>{t.find.mySpace}</span></Link><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
       </nav>
 
       {publicPromo&&<aside className="gl-promo" role="status"><span>{h.promoLine(publicPromo.label)}</span><strong>{publicPromo.code}</strong></aside>}
@@ -157,31 +158,27 @@ export default function HomeClient({publicPromo,order}:{publicPromo?:{code:strin
 
       <HomeReveal />
 
-      <div className="gl-marq" aria-hidden>
-        <div>
-          {[0, 1].map((k) => (
-            <span key={k}>{h.marquee.map((w) => (<span key={w}>{w} <i>&amp;</i> </span>))}</span>
-          ))}
-        </div>
-      </div>
-
-      <section id="gl-hz" className="gl-hz">
+      <section id="gl-hz" className="gl-hz gl-wave is-b">
         <div className="gl-hz-head"><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
         <TemplateRows names={["Léa", "Samuel"]} lang={lang} order={order} onPreview={setDemo} onCreate={(id, event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return; celebrate(`/creer?t=${id}`)(event); }} />
       </section>
 
-      <section className="wrap-site gl-steps">
+      <HomeFeatures />
+
+      <section className="gl-steps-band gl-wave is-b"><div className="wrap-site gl-steps">
         {h.steps.map(([n, st, p]) => (
           <div key={n} className="gl-step gl-rv"><div className="gl-n gold-text">{n}</div><div><h3>{st}</h3><p>{p}</p></div></div>
         ))}
-      </section>
+      </div></section>
 
-      <section className="gl-final">
+      <HomeFaq price={price} />
+
+      <section className="gl-final gl-wave is-b">
         <div className="gl-kicker">{h.ready}</div>
         <h2>{h.finalTitle} <span className="gold-text">{h.finalGold}</span></h2>
         <a className="btn-s" href="/creer" onClick={celebrate("/creer")}>{h.ctaCreate}</a>
       </section>
-      <footer>{h.footer} · <a href="/espace">{t.find.title}</a><LegalLinks className="gl-legal" /></footer>
+      <footer className="gl-wave">{h.footer} · <a href="/espace">{t.find.title}</a><LegalLinks className="gl-legal" /></footer>
 
       {demo && shown && (
         <div className="ed-full" role="dialog" aria-modal="true" aria-label={t.common.demoOf(shown.name)}>
