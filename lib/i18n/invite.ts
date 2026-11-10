@@ -441,6 +441,7 @@ const fr = {
     open: "Touchez pour ouvrir l'invitation",
     fallback: "Invitation",
     birthday: "JOYEUX ANNIVERSAIRE",
+    brand: "E-CARTE STUDIO",
   },
 };
 
@@ -875,6 +876,7 @@ const en: InviteDict = {
     open: "Tap to open the invitation",
     fallback: "Invitation",
     birthday: "HAPPY BIRTHDAY",
+    brand: "E-CARTE STUDIO",
   },
 };
 

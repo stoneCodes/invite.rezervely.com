@@ -97,3 +97,6 @@ body[data-tpl="toast"]{background:#0a0f1f}
 .tt-foot p{margin:.3rem 0 0;color:var(--fx-muted)}
 .fx-toast.is-still *,.fx-toast.is-still *::before{animation:none!important;transition:none!important}
 @media (prefers-reduced-motion:reduce){.fx-toast *{animation:none!important}}
+
+/* âge rempli par la photo : contour or champagne */
+.tt-agephoto{--ap-ring:#e3c67e;--ap-stroke:10px;--ap-shadow:drop-shadow(0 0 18px rgba(227,198,126,.35)) drop-shadow(0 14px 26px rgba(0,0,0,.5));margin:.02em 0 .04em}

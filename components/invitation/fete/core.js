@@ -242,6 +242,15 @@ export function bindRsvp(root, P, OPTS, L, onSent) {
 /** Photo de la personne fêtée, ou repli dessiné (initiale). */
 export const portrait = (P, cls) => P.photo ? `<img class="${cls}" src="${esc(P.photo)}" alt="${esc(P.F.photoAlt(P.nameRaw))}">` : `<span class="${cls} fx-mono" aria-hidden="true">${P.initial}</span>`;
 
+/**
+ * Âge en très grand chiffres remplis par la photo de la personne fêtée (demandé par Glad le 10 nov. 2026).
+ * Seulement si photo ET âge ; sinon "" et chaque modèle garde son rendu habituel.
+ * ::before = contour (couleur --ap-ring, épaisseur --ap-stroke) ; le span porte la photo découpée dans les chiffres.
+ */
+export const agePhoto = (P, cls = "") => P.photo && P.age
+  ? `<p class="fx-agephoto${String(P.age).length === 1 ? " is-1" : ""} ${cls}" role="img" aria-label="${esc(P.F.photoAlt(P.nameRaw))} · ${P.age}" data-n="${P.age}"><span style="background-image:url('${esc(P.photo)}')">${P.age}</span></p>`
+  : "";
+
 /** Grattage générique sur un canvas (crème du gâteau…) : appelle done() quand ~55 % est dégagé. */
 export function wipe(canvas, paint, done, L, S, opts = {}) {
   let ctx = null, last = null, down = false, strokes = 0, finished = false;

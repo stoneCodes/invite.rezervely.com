@@ -15,9 +15,13 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   if (!inv || inv.status !== "published") return { title: t.meta.invitation, robots: { index: false } };
   const d = inv.data;
   const when = dateParts(d.dateISO, d.lang);
+  const title = isBirthday(inv.template) ? t.meta.birthday(d.partner1) : t.meta.invites(d.partner1, d.partner2);
+  const description = when ? (isBirthday(inv.template) ? t.meta.partyOn : t.meta.weddingOn)(`${when.day} ${when.month} ${when.year}`) : t.meta.openInvite;
   return {
-    title: { absolute: isBirthday(inv.template) ? t.meta.birthday(d.partner1) : t.meta.invites(d.partner1, d.partner2) },
-    description: when ? (isBirthday(inv.template) ? t.meta.partyOn : t.meta.weddingOn)(`${when.day} ${when.month} ${when.year}`) : t.meta.openInvite,
+    title: { absolute: title },
+    description,
+    // Aperçu WhatsApp / iMessage : titre, texte et enveloppe de marque (opengraph-image).
+    openGraph: { title, description, siteName: "E-carte Studio", type: "website", locale: d.lang === "en" ? "en_US" : "fr_FR" },
     robots: { index: false, follow: false },
   };
 }

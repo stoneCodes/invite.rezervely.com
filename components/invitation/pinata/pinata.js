@@ -67,7 +67,7 @@ export function mountPinata(root, data, OPTS = {}) {
     <main class="pn-main">
       <header class="pn-hero fx-r">
         ${bunting(pal)}
-        ${P.photo ? `<div class="pn-photo">${portrait(P, "")}</div>` : ""}
+        ${P.photo ? `<div class="pn-balloon"><div class="pn-balloon-body">${portrait(P, "")}</div><i class="pn-balloon-knot" aria-hidden="true"></i><svg class="pn-balloon-string" viewBox="0 0 20 70" aria-hidden="true"><path d="M10 0c-7 10 7 16 0 26s7 16 0 26-4 12 0 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>` : ""}
         <h1>${P.name}</h1>
         ${P.age ? `<p class="pn-age" aria-hidden="true">${String(P.age).split("").map((c, i) => `<span style="--i:${i}">${c}</span>`).join("")}</p>` : ""}
         <p class="pn-sub">${P.sub}</p>

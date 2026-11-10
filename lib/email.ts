@@ -96,12 +96,16 @@ export function welcomeEmail(lang: Lang | null | undefined, d: Who, token: strin
   };
 }
 
+/** Enveloppe de marque personnalisée (même image que l'aperçu WhatsApp), entièrement cliquable. */
+const envelope = (href: string, alt: string) =>
+  `<div style="margin:0 0 20px;text-align:center"><a href="${esc(href)}" style="display:inline-block;text-decoration:none"><img src="${esc(href)}/opengraph-image" width="520" alt="${esc(alt)}" style="display:block;width:100%;max-width:520px;height:auto;border:0;border-radius:10px"></a></div>`;
+
 export function publishedEmail(lang: Lang | null | undefined, d: Who, token: string, slug: string): Omit<Mail, "to"> {
   const t = emailDict(lang), n = names(lang, d);
   const pub = `${siteUrl()}${invitePath(slug)}`, space = `${siteUrl()}/espace/${token}`;
   return {
     subject: t.published.subject(n),
-    html: layout(lang, [h1(t.published.title), p(t.common.hello(n)), p(t.published.body), linkBox(t.published.share, pub), `<div style="margin:0 0 18px">${button(pub, t.published.open)}${button(space, t.common.openSpace, true)}</div>`, p(t.published.after), p(t.common.keep, true)]),
+    html: layout(lang, [h1(t.published.title), p(t.common.hello(n)), p(t.published.body), envelope(pub, t.published.cardAlt(n)), linkBox(t.published.share, pub), `<div style="margin:0 0 18px">${button(pub, t.published.open)}${button(space, t.common.openSpace, true)}</div>`, p(t.published.after), p(t.common.keep, true)]),
     text: text([t.common.hello(n), t.published.body, `${t.published.share} : ${pub}`, t.published.after, `${t.common.openSpace} : ${space}`, t.common.keep]),
   };
 }

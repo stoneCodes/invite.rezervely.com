@@ -1,42 +1,24 @@
-import { ImageResponse } from "next/og";
 import { getBySlug } from "@/lib/supabase";
 import { dateParts } from "@/components/invitation/engine";
 import { inviteDict } from "@/lib/i18n/invite";
 import { displayNames, isBirthday } from "@/lib/types";
+import { OG_SIZE, renderEnvelope } from "@/lib/og/envelope";
 
-export const size = { width: 1200, height: 630 };
+export const size = OG_SIZE;
 export const contentType = "image/png";
-const THEME: Record<string, { bg: string; ink: string; accent: string }> = {
-  cygnes: { bg: "linear-gradient(135deg,#FBF1F0,#E9C6CB)", ink: "#4A2E35", accent: "#B0606F" },
-  "nuit-doree": { bg: "linear-gradient(135deg,#2A160E,#0D0604)", ink: "#F4D99A", accent: "#D9B46A" },
-  "jardin-nuit": { bg: "linear-gradient(135deg,#FBF8EE,#DCE5CC)", ink: "#2E3B26", accent: "#C2788A" },
-  appel: { bg: "linear-gradient(160deg,#3A2531,#120A10)", ink: "#FFFFFF", accent: "#5BE38B" },
-  "boule-neige": { bg: "radial-gradient(circle at 50% 40%,#FBF6EC,#E3D6BF)", ink: "#3B3128", accent: "#A8844F" },
-  origami: { bg: "linear-gradient(135deg,#FBF6EE,#EAD3BE)", ink: "#4B3A30", accent: "#D99AA5" },
-  velours: { bg: "linear-gradient(135deg,#32171D,#8A563B 52%,#E6C79B)", ink: "#FFF7EA", accent: "#E8C98D" },
-  vinyle: { bg: "radial-gradient(circle at 50% 45%,#3a2a1e,#120c08)", ink: "#F3E6CC", accent: "#C9A24A" },
-  toast: { bg: "linear-gradient(160deg,#16213a,#0b1020 60%,#3a2f17)", ink: "#F6E7C1", accent: "#E3C67E" },
-  gateau: { bg: "linear-gradient(135deg,#FFF0F5,#F6B7CB)", ink: "#7a3550", accent: "#C25A80" },
-  pinata: { bg: "linear-gradient(135deg,#FFE58A,#FFC94D)", ink: "#7a3a00", accent: "#E8577C" },
-};
+export const alt = "E-carte Studio";
 
-/** Image d'aperçu affichée par WhatsApp, iMessage, etc. quand le lien est partagé. */
+/** Image d'aperçu des liens (WhatsApp, iMessage…) et de l'e-mail « invitation en ligne » : enveloppe de marque personnalisée. */
 export default async function OG({ params }: { params: Promise<{ slug: string }> }) {
   const inv = await getBySlug((await params).slug);
-  const t = THEME[inv?.template ?? "cygnes"];
+  const published = !!inv && inv.status === "published";
   const og = inviteDict(inv?.data.lang).og;
-  const bday = isBirthday(inv?.template);
-  const names = inv && inv.status === "published" ? displayNames(inv.data) : og.fallback;
-  const when = inv ? dateParts(inv.data.dateISO, inv.data.lang) : null;
-  return new ImageResponse(
-    (
-      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: t.bg, color: t.ink, fontFamily: "serif" }}>
-        <div style={{ fontSize: 26, letterSpacing: 10, color: t.accent }}>{bday ? og.birthday : inv?.template === "appel" ? og.appel : inv?.template === "boule-neige" ? og.boule : og.married}</div>
-        <div style={{ fontSize: 110, fontStyle: "italic", margin: "18px 0" }}>{names}</div>
-        <div style={{ fontSize: 30, letterSpacing: 6 }}>{when ? when.label : ""}</div>
-        <div style={{ marginTop: 40, fontSize: 24, padding: "12px 28px", border: `2px solid ${t.accent}`, borderRadius: 999 }}>{inv?.template === "appel" ? og.calling : inv?.template === "boule-neige" ? og.shake : og.open}</div>
-      </div>
-    ),
-    size
-  );
+  const when = published ? dateParts(inv.data.dateISO, inv.data.lang) : null;
+  return renderEnvelope({
+    kicker: isBirthday(inv?.template) ? og.birthday : og.married,
+    names: published ? displayNames(inv.data) : og.fallback,
+    date: when ? when.label : "",
+    photo: published ? inv.data.photoUrl : null,
+    brand: og.brand,
+  });
 }

@@ -221,6 +221,13 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
   }
 
   /** Photo choisie : réduite dans le navigateur et affichée tout de suite ; envoyée seulement à l'enregistrement. */
+  /** Photo facultative : on peut toujours la retirer (enregistré au prochain « Enregistrer »). */
+  function removePhoto() {
+    if (pendingPhoto.current) { URL.revokeObjectURL(pendingPhoto.current.url); pendingPhoto.current = null; }
+    set("photoUrl", null);
+    setMsg(null);
+  }
+
   async function upload(file: File) {
     setMsg(null);
     try {
@@ -284,9 +291,11 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
               {data.photoUrl ? <img src={data.photoUrl} alt="" /> : <span className="muted">{e_.noPhoto}</span>}
               <label className="btn-s ghost">
                 {data.photoUrl ? e_.changePhoto : e_.addPhoto}
-                <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
+                <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => { if (e.target.files?.[0]) upload(e.target.files[0]); e.target.value = ""; }} />
               </label>
+              {data.photoUrl && <button type="button" className="btn-s ghost" onClick={removePhoto}>{e_.removePhoto}</button>}
             </div>
+            <p className="ed-help">{bday && data.bday?.age ? e_.photoAge : e_.photoOptional}</p>
           </Sec>
 
           <Sec title={e_.dateVenue}>

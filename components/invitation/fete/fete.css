@@ -56,3 +56,14 @@ body.fx-locked{overflow:hidden}
 .fx-preview{font-size:.8rem;color:var(--fx-muted)}
 .fx-replay{margin-top:1rem;background:none;border:1px solid var(--fx-line);color:inherit;font:inherit;font-size:.85rem;padding:9px 16px;border-radius:999px;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.fx-r{transition:none;opacity:1;transform:none}}
+
+/* ---------- Âge rempli par la photo (agePhoto) ---------- */
+.fx-agephoto{position:relative;margin:0 0 .06em;display:grid;justify-items:center;line-height:.9;font-size:clamp(9.5rem,66vw,17rem);font-weight:900;letter-spacing:-.05em;font-family:Montserrat,"Arial Black",sans-serif}
+.fx-agephoto::before,.fx-agephoto span{grid-area:1/1;text-align:center;padding:0 .04em}
+/* Contour : le chiffre plein, élargi par 16 ombres nettes autour (pas de -webkit-text-stroke, qui dessine les traits intérieurs des chiffres comme le 4) */
+.fx-agephoto::before{--r:calc(var(--ap-stroke,12px) / 2);content:attr(data-n);color:var(--ap-ring,#e3c67e);text-shadow:calc(var(--r) * 1.000) calc(var(--r) * 0.000) 0 var(--ap-ring,#e3c67e),calc(var(--r) * 0.924) calc(var(--r) * 0.383) 0 var(--ap-ring,#e3c67e),calc(var(--r) * 0.707) calc(var(--r) * 0.707) 0 var(--ap-ring,#e3c67e),calc(var(--r) * 0.383) calc(var(--r) * 0.924) 0 var(--ap-ring,#e3c67e),calc(var(--r) * 0.000) calc(var(--r) * 1.000) 0 var(--ap-ring,#e3c67e),calc(var(--r) * -0.383) calc(var(--r) * 0.924) 0 var(--ap-ring,#e3c67e),calc(var(--r) * -0.707) calc(var(--r) * 0.707) 0 var(--ap-ring,#e3c67e),calc(var(--r) * -0.924) calc(var(--r) * 0.383) 0 var(--ap-ring,#e3c67e),calc(var(--r) * -1.000) calc(var(--r) * 0.000) 0 var(--ap-ring,#e3c67e),calc(var(--r) * -0.924) calc(var(--r) * -0.383) 0 var(--ap-ring,#e3c67e),calc(var(--r) * -0.707) calc(var(--r) * -0.707) 0 var(--ap-ring,#e3c67e),calc(var(--r) * -0.383) calc(var(--r) * -0.924) 0 var(--ap-ring,#e3c67e),calc(var(--r) * -0.000) calc(var(--r) * -1.000) 0 var(--ap-ring,#e3c67e),calc(var(--r) * 0.383) calc(var(--r) * -0.924) 0 var(--ap-ring,#e3c67e),calc(var(--r) * 0.707) calc(var(--r) * -0.707) 0 var(--ap-ring,#e3c67e),calc(var(--r) * 0.924) calc(var(--r) * -0.383) 0 var(--ap-ring,#e3c67e);filter:var(--ap-shadow,drop-shadow(0 12px 22px rgba(0,0,0,.3)))}
+.fx-agephoto span{position:relative;z-index:1;background-color:var(--ap-ring,#e3c67e);background-size:cover;background-position:center 28%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:fx-ap-pan 14s ease-in-out infinite alternate}
+@keyframes fx-ap-pan{from{background-position:center 22%}to{background-position:center 40%}}
+@media (prefers-reduced-motion:reduce){.fx-agephoto span{animation:none}}
+/* un seul chiffre (enfants) : plus grand, pour bien voir la photo */
+.fx-agephoto.is-1{font-size:clamp(13rem,96vw,24rem);line-height:.86}

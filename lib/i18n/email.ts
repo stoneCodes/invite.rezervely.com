@@ -22,6 +22,7 @@ const fr = {
     body: "Voici le lien à envoyer à vos invités (WhatsApp, SMS, e-mail…). Chacun pourra l'ouvrir et vous répondre.",
     share: "Lien à partager",
     open: "Voir l'invitation",
+    cardAlt: (names: string) => `Invitation de ${names} : touchez pour l'ouvrir`,
     after: "Les réponses arrivent dans votre espace. Vous recevrez aussi un récapitulatif par e-mail, au plus une fois par jour.",
   },
   recap: {
@@ -61,6 +62,7 @@ const en: EmailDict = {
     body: "Here is the link to send to your guests (WhatsApp, text, email…). Everyone can open it and reply.",
     share: "Link to share",
     open: "View the invitation",
+    cardAlt: (names) => `${names}'s invitation: tap to open`,
     after: "Replies arrive in your space. You will also get an email summary, at most once a day.",
   },
   recap: {

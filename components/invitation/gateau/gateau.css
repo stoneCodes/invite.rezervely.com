@@ -107,3 +107,18 @@ body[data-tpl="gateau"]{background:#FFF0F5}
 .fx-gateau.is-gated .gt-plate{display:none}
 .gt-cream,.gt-stage{-webkit-user-select:none;user-select:none}
 .gt-gh{-webkit-user-select:none;user-select:none}
+
+/* Photo façon décor de gâteau : plaque en sucre ronde, perles de crème tout autour, vermicelles */
+.gt-topper{position:relative;width:176px;aspect-ratio:1;margin:6px 0 14px;display:grid;place-items:center}
+.gt-topper-photo{position:relative;width:150px;aspect-ratio:1;border-radius:50%;overflow:hidden;background:#fff;box-shadow:inset 0 0 0 5px #fff,0 10px 22px rgba(0,0,0,.14)}
+.gt-topper-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.gt-topper-pearls{position:absolute;inset:0;pointer-events:none}
+.gt-topper-pearls i{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px;border-radius:50%;transform:rotate(var(--a)) translateY(-78px);
+  background:radial-gradient(circle at 35% 30%,#fff 0 30%,color-mix(in srgb,var(--accent) 22%,#fff) 60%,color-mix(in srgb,var(--accent) 45%,#fff) 100%);box-shadow:0 2px 3px rgba(0,0,0,.12)}
+.gt-topper-pearls i:nth-child(even){width:17px;height:17px;margin:-8.5px;background:radial-gradient(circle at 35% 30%,#fff 0 30%,#fff7ef 60%,#efe2d6 100%)}
+.gt-topper-sprinkles{position:absolute;inset:-26px;pointer-events:none}
+.gt-topper-sprinkles b{position:absolute;left:50%;top:50%;width:14px;height:5px;margin:-2.5px -7px;border-radius:3px;transform:rotate(var(--a)) translateY(-104px) rotate(calc(var(--a) * 2));background:var(--c1)}
+.gt-topper-sprinkles b[style*="--d:1"]{background:var(--c2)}
+.gt-topper-sprinkles b[style*="--d:2"]{background:var(--c3)}
+@media (prefers-reduced-motion:no-preference){.gt-topper{animation:gt-topper-in 1s cubic-bezier(.2,1.4,.4,1) both}}
+@keyframes gt-topper-in{from{transform:scale(.6) rotate(-20deg);opacity:0}}

@@ -32,6 +32,14 @@ function candlesSvg(n, pal) {
 /** Textures d'étage (photos) : nappage + coulures en haut, rosaces en bas, couleur unie au milieu. */
 const TEX = { rose: "#f1a6ac", menthe: "#83dfa0", bleu: "#8ed8e7", jaune: "#fdd415" };
 
+/** Photo façon décor de gâteau (demandé par Glad le 10 nov. 2026) : photo ronde imprimée comme une plaque en sucre,
+ *  bordée de perles de crème fouettée, vermicelles autour. Seulement si les parents ont mis une photo. */
+function topper(P) {
+  const n = 20, pearls = Array.from({ length: n }, (_, i) => `<i style="--a:${(i * 360) / n}deg"></i>`).join("");
+  const sprinkles = Array.from({ length: 9 }, (_, i) => `<b style="--a:${i * 40 + 12}deg;--d:${i % 3}"></b>`).join("");
+  return `<div class="gt-topper"><div class="gt-topper-sprinkles" aria-hidden="true">${sprinkles}</div><div class="gt-topper-photo">${portrait(P, "")}</div><div class="gt-topper-pearls" aria-hidden="true">${pearls}</div></div>`;
+}
+
 export function mountGateau(root, data, OPTS = {}) {
   const P = prep(data, OPTS, "gateau"), { F, REDUCE } = P, G = F.gateau, w = P.when, dc = P.dc;
   const palId = P.bd.palette === "bleu" ? "bleu" : "rose", pal = PAL[palId];
@@ -64,7 +72,7 @@ export function mountGateau(root, data, OPTS = {}) {
     </section>
     <main class="gt-main">
       <header class="gt-top fx-r">
-        ${P.photo ? `<div class="gt-photo">${portrait(P, "")}</div>` : ""}
+        ${P.photo ? topper(P) : ""}
         <h1>${P.name}</h1>
         ${P.age ? `<p class="gt-age" aria-hidden="true">${P.age}</p>` : ""}
         <p class="gt-sub">${P.sub}</p>

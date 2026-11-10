@@ -2,7 +2,7 @@
 // Ouverture : on fait glisser le sabre le long du col, le bouchon saute, la mousse jaillit, l'écran se dore.
 // Défilement : on remonte avec les bulles ; chaque section naît dans une bulle de verre, le fond passe du bleu nuit au champagne.
 // Date : dans une grande bulle à faire éclater (obligatoire avant la suite).
-import { prep, life, sound, soundButton, particles, reveal, countdown, countHtml, extras, venueBtns, swatches, rsvpForm, bindRsvp, portrait, esc, ICON, clamp } from "../fete/core";
+import { prep, life, sound, soundButton, particles, reveal, countdown, countHtml, extras, venueBtns, swatches, rsvpForm, bindRsvp, portrait, agePhoto, esc, ICON, clamp } from "../fete/core";
 import { wishHtml } from "../wishlist";
 
 // Ouverture en photo (941 x 1672) : bouteille dont la capsule a été effacée + capsule détourée posée par-dessus,
@@ -42,9 +42,9 @@ export function mountToast(root, data, OPTS = {}) {
     </section>
     <main class="tt-main">
       <header class="tt-hero">
-        ${P.photo ? `<div class="tt-photo fx-r">${portrait(P, "")}</div>` : ""}
+        ${agePhoto(P) ? "" : P.photo ? `<div class="tt-photo fx-r">${portrait(P, "")}</div>` : ""}
         <h1 class="fx-r">${P.name}</h1>
-        ${P.age ? `<p class="tt-age fx-r" aria-hidden="true">${P.age}</p>` : ""}
+        ${agePhoto(P, "tt-agephoto fx-r") || (P.age ? `<p class="tt-age fx-r" aria-hidden="true">${P.age}</p>` : "")}
         <p class="tt-sub fx-r">${P.sub}</p>
         ${P.intro ? `<p class="tt-txt fx-r">${P.intro}</p>` : ""}
         ${X.surprise ? glass(X.surprise, "tt-small tt-shh") : ""}
