@@ -31,7 +31,7 @@ body:has(.gl){background:#EEE6D9}
 @keyframes gl-cue{50%{transform:scaleY(.4);transform-origin:top}}
 
 .gl-stick{position:sticky;top:0;height:100svh;overflow:hidden}
-/* « Du papier à l'écran » (components/HomeReveal.tsx) : enveloppe en velours sur satin → carte → téléphone doré.
+/* « Du papier à l'écran » (components/HomeReveal.tsx) : enveloppe 3D E-carte Studio sur satin → carte → téléphone doré (écran « Le domaine »).
    Variables pilotées au défilement : --a ouverture, --b carte qui monte, --c passage au téléphone, --d écran (compte à rebours, réponses). */
 @property --gl-rot{syntax:"<angle>";inherits:false;initial-value:0deg}
 .gl-pin{position:relative;height:200vh;margin-top:-14svh;pointer-events:none}
@@ -44,33 +44,31 @@ body:has(.gl){background:#EEE6D9}
     linear-gradient(180deg,#F1E9DC,#EADFCB 60%,#E6D9C2);
   -webkit-mask-image:linear-gradient(180deg,transparent,#000 20%);mask-image:linear-gradient(180deg,transparent,#000 20%)}
 .gl-stage{--a:0;--b:0;--c:0;--d:0;position:absolute;left:0;right:0;top:11svh;bottom:23svh;
-  --ew:min(74vw,330px);--es:calc(1 - var(--c) * .4);--ex:calc(var(--c) * -22vw);--ey:calc(-5svh + var(--c) * 20svh);
-  --pw:min(50vw,30svh,220px);--px0:30vw;--py0:12svh;--px1:9vw;--py1:-1svh}
+  --ew:min(86vw,370px);--es:calc(1 - var(--c) * .4);--ex:calc(var(--c) * -22vw);--ey:calc(-5svh + var(--c) * 20svh);
+  --pw:min(50vw,29svh,215px);--px0:30vw;--py0:12svh;--px1:9vw;--py1:3svh}
 .gl-stage>*{position:absolute;left:50%;top:50%}
 
-/* Enveloppe en velours bordeaux */
-.gl-env{width:var(--ew);aspect-ratio:1.45;perspective:1400px;transform:translate(-50%,-50%) translate(var(--ex),var(--ey)) scale(var(--es));z-index:2}
-.gl-env>div{position:absolute;inset:0;border-radius:10px}
-.gl-env-back{background:radial-gradient(120% 90% at 30% 15%,#6E2638,#3B111F 75%);box-shadow:0 34px 60px -24px rgba(58,20,31,.55),0 10px 22px -10px rgba(58,20,31,.35)}
-.gl-env-front,.gl-env-flap{background-color:#55192A}
-.gl-env-back::after,.gl-env-front::after,.gl-env-flap::after{content:"";position:absolute;inset:0;border-radius:inherit;opacity:.28;mix-blend-mode:soft-light;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.gl-env-card{left:6%!important;right:6%!important;top:8%!important;bottom:auto!important;height:112%;z-index:2;border-radius:8px!important;background:radial-gradient(90% 70% at 50% 40%,#FFFBF3,#F3E7D3);border:1px solid rgba(176,131,58,.35);box-shadow:0 18px 40px -18px rgba(40,14,22,.6);display:grid;place-items:center;text-align:center;color:#2A1C0C;
-  transform:translate(calc(var(--c) * 18vw),calc(var(--b) * -50% - var(--c) * 20%)) scale(calc(1 - var(--c) * .5));opacity:calc(1 - var(--c) * 2.6)}
-.gl-env-card>div{padding:14px 18px;border:1px solid rgba(176,131,58,.4);border-radius:4px;outline:1px solid rgba(176,131,58,.2);outline-offset:4px}
-.gl-env-card b{display:block;font:400 clamp(1.7rem,6vw,2.3rem)/1.05 var(--f-script);margin:4px 0}
-.gl-env-card small{letter-spacing:.3em;text-transform:uppercase;font-size:.55rem}
-.gl-env-front{background:linear-gradient(200deg,#6A2236,#3F1322);clip-path:polygon(0 0,50% 54%,100% 0,100% 100%,0 100%);z-index:3}
-.gl-env-flap{background:linear-gradient(180deg,#76293E,#4A1727);clip-path:polygon(0 0,100% 0,50% 58%);transform-origin:top;transform:rotateX(calc(var(--a) * 180deg));z-index:4;filter:drop-shadow(0 4px 6px rgba(30,8,15,.35))}
-.is-open .gl-env-flap{z-index:1}
-.gl-env-seal{inset:auto!important;left:50%!important;top:57%!important;width:20%;aspect-ratio:1;translate:-50% -50%;border-radius:50%!important;z-index:5;display:grid;place-items:center;
-  background:radial-gradient(circle at 34% 28%,#FBE8B4,#E2BD72 38%,#B0833A 72%,#8A6224);box-shadow:inset 0 0 0 3px rgba(255,240,200,.35),inset 0 -4px 8px rgba(90,60,20,.4),0 8px 18px rgba(40,10,20,.45);
-  opacity:calc(1 - var(--a) * 2.4);transform:scale(calc(1 + var(--a) * .3))}
-.gl-env-seal span{font:400 clamp(1rem,4.2vw,1.5rem)/1 var(--f-script);color:#5A3A12;text-shadow:0 1px 0 rgba(255,240,205,.6)}
+/* Enveloppe 3D E-carte Studio (même dessin que l'aperçu des liens ; calques faits par scripts/accueil-enveloppe.py).
+   Cadre commun des 3 calques : 807 × 603. La carte (12,14 % / 3,15 %, 69,89 × 69,65 %) est inclinée de -3° comme la scène.
+   --a : l'enveloppe se pose ; --b : la carte sort ; --c : la carte part vers le téléphone. */
+.gl-env{width:var(--ew);aspect-ratio:807/603;container-type:inline-size;z-index:2;
+  transform:translate(-50%,-50%) translate(var(--ex),var(--ey)) scale(calc(var(--es) * (.94 + var(--a) * .06)));opacity:calc(.4 + var(--a) * 1.5)}
+.gl-env>*{position:absolute;inset:0}
+.gl-env-l{width:100%;height:100%;display:block;pointer-events:none;user-select:none}
+/* Le bas de la carte, encore dans l'enveloppe, ne doit pas dépasser sous la poche */
+.gl-env-pocket{clip-path:polygon(-300% -300%,400% -300%,400% 300%,100% 300%,100% 92.4%,0 99%,0 300%,-300% 300%)}
+.gl-env-card{position:absolute;inset:0;
+  transform:translate(calc(var(--c) * 18vw),calc(26% - var(--b) * 33% - var(--c) * 10%)) scale(calc(1 - var(--c) * .5));opacity:calc(1 - var(--c) * 2.6)}
+.gl-env-card img{position:absolute;inset:0;width:100%;height:100%}
+.gl-env-txt{position:absolute;left:12.14%;top:3.15%;width:69.89%;height:69.65%;transform:rotate(-3deg);transform-origin:50% 64%;
+  display:grid;align-content:center;justify-items:center;padding:0 6% 22%;text-align:center;color:#2B2419}
+.gl-env-txt small{font:400 2.9cqw/1.2 var(--f-ui);letter-spacing:.3em;text-transform:uppercase;color:#A8884F}
+.gl-env-txt small:last-child{font:400 4.3cqw/1.2 var(--f-serif);letter-spacing:.04em;text-transform:none;color:#5C4E3C}
+.gl-env-txt b{display:block;font:400 10.5cqw/1.05 var(--f-script);margin:.12em 0 .1em;white-space:nowrap;color:#2B2419}
 
 /* Anneau de lumière dorée autour de l'enveloppe */
 .gl-ring{width:calc(var(--ew) * 1.32);height:calc(var(--ew) * .5);border-radius:50%;z-index:3;pointer-events:none;
-  transform:translate(-50%,-50%) translate(var(--ex),calc(var(--ey) + var(--ew) * .06)) scale(var(--es)) rotate(-9deg);
+  transform:translate(-50%,-50%) translate(var(--ex),calc(var(--ey) + var(--ew) * .16)) scale(var(--es)) rotate(-6deg);
   border:1.5px solid rgba(246,214,150,.9);box-shadow:0 0 14px rgba(246,206,130,.8),inset 0 0 12px rgba(246,206,130,.5);
   -webkit-mask-image:conic-gradient(from var(--gl-rot),transparent 0 8%,#000 30%,#000 55%,transparent 75%);mask-image:conic-gradient(from var(--gl-rot),transparent 0 8%,#000 30%,#000 55%,transparent 75%);
   animation:gl-ring 5s linear infinite;opacity:calc(.35 + var(--a) * .65 - var(--c) * 1.2)}
@@ -79,30 +77,45 @@ body:has(.gl){background:#EEE6D9}
 
 /* Faisceau de lumière qui monte de l'enveloppe ouverte */
 .gl-beam{width:calc(var(--ew) * .7);height:calc(var(--ew) * 1.05);z-index:1;pointer-events:none;
-  transform:translate(-50%,-92%) translate(var(--ex),var(--ey));
+  transform:translate(-50%,-92%) translate(var(--ex),calc(var(--ey) - var(--ew) * .1));
   background:radial-gradient(40% 18% at 50% 100%,rgba(255,236,180,.95),transparent 100%),linear-gradient(0deg,rgba(255,222,150,.75),rgba(255,230,170,.18) 60%,transparent);
   clip-path:polygon(38% 100%,62% 100%,100% 0,0 0);filter:blur(6px);opacity:calc(var(--b) * 1.4 - var(--c) * 1.6)}
 
-/* Téléphone doré */
-.gl-phone{width:var(--pw);aspect-ratio:9/19.3;border-radius:calc(var(--pw) * .17);padding:calc(var(--pw) * .035);z-index:4;
-  background:linear-gradient(135deg,#F7E3A8,#B98A3E 28%,#F4DA98 48%,#946828 74%,#EBCB82);
-  box-shadow:0 40px 70px -30px rgba(60,40,15,.6),0 0 0 1px rgba(120,85,30,.5),inset 0 0 0 1px rgba(255,245,215,.6);
+/* Téléphone réaliste (proportions d'un iPhone 15 : 70,6 × 146,6 mm) : cadre en titane naturel, boutons latéraux,
+   bordure noire, Dynamic Island, barre d'état, reflet de la vitre. */
+.gl-phone{width:var(--pw);aspect-ratio:70.6/146.6;border-radius:calc(var(--pw) * .165);padding:calc(var(--pw) * .02);z-index:4;
+  background:linear-gradient(90deg,#77736C,#E4E0D8 4%,#B9B4AB 9%,#CFCBC3 30%,#D9D5CD 50%,#C9C5BD 72%,#B3AEA5 91%,#E8E5DE 96%,#6F6B64);
+  box-shadow:0 50px 80px -34px rgba(40,30,15,.55),0 18px 30px -18px rgba(40,30,15,.45),inset 0 0 0 1px rgba(255,255,255,.55),inset 0 0 0 2px rgba(70,64,56,.35);
   transform:translate(-50%,-50%) translate(calc(var(--px0) + (var(--px1) - var(--px0)) * var(--c)),calc(var(--py0) + (var(--py1) - var(--py0)) * var(--c))) rotate(calc(8deg - var(--c) * 5deg)) scale(calc(.86 + var(--c) * .14));
   opacity:calc(var(--c) * 2)}
-.gl-phone-scr{position:relative;height:100%;border-radius:calc(var(--pw) * .14);overflow:hidden;display:flex;flex-direction:column;align-items:center;
-  padding:calc(var(--pw) * .2) calc(var(--pw) * .07) calc(var(--pw) * .08);color:#F6EAD4;text-align:center;font-size:calc(var(--pw) * .06);
-  background:linear-gradient(180deg,rgba(40,10,18,.55),rgba(40,10,18,.35) 40%,rgba(30,8,14,.82)),url(/img/velours-serre.webp) center/cover,#3B111F}
-.gl-phone-scr::before{content:"";position:absolute;top:calc(var(--pw) * .04);left:50%;translate:-50% 0;width:32%;height:calc(var(--pw) * .085);border-radius:99px;background:#0d0608}
+/* Boutons : action + volume à gauche, marche/arrêt à droite */
+.gl-phone::before,.gl-phone::after{content:"";position:absolute;width:calc(var(--pw) * .016);border-radius:2px;background:linear-gradient(90deg,#8A867F,#DAD6CE 50%,#9D9991)}
+.gl-phone::before{left:calc(var(--pw) * -.013);top:17%;height:5%;box-shadow:0 calc(var(--pw) * .17) 0 0 #B9B5AD,0 calc(var(--pw) * .32) 0 0 #B9B5AD;
+  border-radius:2px 0 0 2px}
+.gl-phone::after{right:calc(var(--pw) * -.013);top:27%;height:13%;border-radius:0 2px 2px 0}
+.gl-phone::before{background:#B9B5AD}
+.gl-phone-scr{position:relative;height:100%;border-radius:calc(var(--pw) * .145);overflow:hidden;display:flex;flex-direction:column;align-items:center;
+  border:calc(var(--pw) * .028) solid #050505;box-shadow:0 0 0 1px #1a1a1a;
+  padding:calc(var(--pw) * .2) calc(var(--pw) * .055) calc(var(--pw) * .07);color:#3B3128;text-align:center;font-size:calc(var(--pw) * .058);
+  /* Écran du modèle « Le domaine » (façade du domaine, palette ivoire, lin et or mat) */
+  background:linear-gradient(180deg,rgba(250,246,238,.9),rgba(250,246,238,.62) 30%,rgba(250,246,238,.08) 52%,rgba(59,49,40,.08) 70%,rgba(59,49,40,.42)),url(/img/accueil-phone-domaine.webp) center 40%/cover,#E9E0D0}
+.gl-phone-scr::before{content:"";position:absolute;z-index:3;top:calc(var(--pw) * .028);left:50%;translate:-50% 0;width:33%;height:calc(var(--pw) * .095);border-radius:99px;background:#000;
+  box-shadow:inset calc(var(--pw) * -.06) 0 calc(var(--pw) * .02) -2px #0b0d14}
+.gl-ph-status{position:absolute;z-index:2;top:calc(var(--pw) * .042);left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 9% 0 13%;
+  font:600 calc(var(--pw) * .052)/1 -apple-system,"SF Pro Text",system-ui,sans-serif;color:#1d1a16;letter-spacing:-.01em}
+.gl-ph-status svg{width:calc(var(--pw) * .25);height:auto;fill:currentColor}
+.gl-ph-glass{position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(118deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 34%,transparent 35%,transparent 70%,rgba(255,255,255,.07))}
 .gl-phone-scr::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 50% at 50% 35%,rgba(255,236,190,.95),transparent 70%);opacity:calc(1 - (var(--c) - .78) * (var(--c) - .78) * 30)}
 .gl-ph-head{opacity:calc((var(--c) - .6) * 3);transform:translateY(calc((1 - var(--c)) * 30px))}
-.gl-ph-head small{display:block;letter-spacing:.24em;text-transform:uppercase;font-size:.62em;color:#E9CB8A}
-.gl-ph-head b{display:block;font:400 2.3em/1.05 var(--f-script);white-space:nowrap;color:#F2D79A;margin:.18em 0 .1em;text-shadow:0 0 12px rgba(240,200,120,.35)}
+.gl-ph-head small{display:block;letter-spacing:.24em;text-transform:uppercase;font-size:.62em;color:#8E6E3C}
+.gl-ph-head b{display:block;font:400 2.3em/1.05 var(--f-script);white-space:nowrap;color:#3B3128;margin:.18em 0 .1em;text-shadow:0 0 10px rgba(250,246,238,.9)}
 .gl-ph-cd{display:flex;gap:.35em;margin-top:1.1em;opacity:calc(var(--d) * 4);transform:translateY(calc((1 - min(1,var(--d) * 4)) * 14px))}
-.gl-ph-cd span{display:grid;min-width:2.85em;padding:.4em .1em .35em;border-radius:.5em;background:rgba(255,240,215,.1);border:1px solid rgba(233,203,138,.35)}
-.gl-ph-cd b{font:400 1.45em/1 var(--f-display,serif);font-variant-numeric:tabular-nums;color:#FBEBC6}
-.gl-ph-cd small{font-size:.58em;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-top:.25em}
+.gl-ph-cd span{display:grid;min-width:2.85em;padding:.4em .1em .35em;border-radius:.5em;background:rgba(250,246,238,.82);border:1px solid rgba(168,132,79,.45);box-shadow:0 4px 10px rgba(59,49,40,.12)}
+.gl-ph-cd b{font:400 1.45em/1 var(--f-display,serif);font-variant-numeric:tabular-nums;color:#3B3128}
+.gl-ph-cd small{font-size:.58em;letter-spacing:.12em;text-transform:uppercase;color:#76685A;margin-top:.25em}
 .gl-ph-rsvp{margin-top:auto;width:100%;display:grid;gap:.45em}
-.gl-ph-live{display:flex;align-items:center;gap:.45em;margin:0 0 .1em .2em;font-size:.68em;letter-spacing:.2em;text-transform:uppercase;color:#E9CB8A;opacity:calc(var(--d) * 3)}
+.gl-ph-live{display:flex;align-items:center;justify-self:start;gap:.45em;margin:0 0 .1em;padding:.3em .7em;border-radius:99px;background:rgba(59,49,40,.55);font-size:.62em;letter-spacing:.2em;text-transform:uppercase;color:#FAF6EE;opacity:calc(var(--d) * 3)}
 .gl-ph-live i{width:.55em;height:.55em;border-radius:50%;background:#7EDC9A;box-shadow:0 0 0 0 rgba(126,220,154,.6);animation:gl-live 1.6s ease-out infinite}
 @keyframes gl-live{to{box-shadow:0 0 0 .6em rgba(126,220,154,0)}}
 .gl-ph-msg{display:flex;align-items:center;gap:.5em;padding:.5em .6em;border-radius:.8em;background:rgba(255,248,236,.94);color:#3A2418;text-align:left;font-size:.82em;line-height:1.25;
@@ -120,8 +133,8 @@ body:has(.gl){background:#EEE6D9}
 
 @media (min-width:768px){
   .gl-stage{top:13svh;bottom:25svh;--ew:min(34vw,420px,46svh);--es:calc(1 - var(--c) * .14);--ex:calc(var(--c) * -15vw);--ey:0px;
-    --pw:min(16vw,31svh,240px);--px0:24vw;--py0:6svh;--px1:15vw;--py1:0px}
-  .gl-env-card{transform:translate(calc(var(--c) * 20vw),calc(var(--b) * -50% - var(--c) * 10%)) scale(calc(1 - var(--c) * .45))}
+    --pw:min(16vw,29svh,235px);--px0:24vw;--py0:6svh;--px1:15vw;--py1:0px}
+  .gl-env-card{transform:translate(calc(var(--c) * 20vw),calc(26% - var(--b) * 33% - var(--c) * 4%)) scale(calc(1 - var(--c) * .45))}
 }
 @media (max-height:620px){.gl-pin-cap p{display:none}.gl-stage{bottom:22svh}}
 /* Mouvement réduit : état final, sans épinglage */
@@ -290,7 +303,6 @@ body:has(.gl){background:#F4EEE4}
 .gl-reel-veil{background:linear-gradient(180deg,rgba(255,253,249,.6),rgba(255,253,249,.7) 45%,rgba(255,253,249,.78))}
 .gl-hero h1,.gl-hero p{text-shadow:0 0 22px rgba(255,253,249,.95),0 0 6px rgba(255,253,249,.7)}
 .gl-hero h1 .gl-script{filter:drop-shadow(0 0 6px rgba(255,253,249,.95)) drop-shadow(0 0 14px rgba(255,253,249,.8))}
-.gl-nav.is-scrolled{background:rgba(255,253,249,.92)}
 @media (min-width:768px){.gl-reel-veil{background:linear-gradient(90deg,rgba(255,253,249,.94) 0,rgba(255,253,249,.84) 32%,rgba(255,253,249,.58) 58%,rgba(255,253,249,.48))}}
 @media (max-width:767px){.gl-hero{background:linear-gradient(180deg,#FFFDF9 80%,#F4EEE4)}.gl-reel-veil{background:linear-gradient(180deg,rgba(255,253,249,.62),rgba(255,253,249,.76) 22%,rgba(255,253,249,.8) 60%,rgba(255,253,249,.86))}}
 
@@ -309,3 +321,12 @@ body:has(.gl){background:#F4EEE4}
 .gl-step>div:last-child{background:linear-gradient(145deg,rgba(255,253,249,.92),rgba(249,245,237,.88))}
 .gl-faq-list{border-top-color:rgba(105,80,40,.14)}
 .gl-faq-item{border-bottom-color:rgba(105,80,40,.14)}
+
+/* Barre du haut au défilement : plus de trait, bas découpé en courbe douce comme les sections (10 nov. 2026, demandé par Glad).
+   Le fond est porté par ::before, qui déborde de --nv sous la barre et dont le bas est masqué en vague. */
+.gl-nav,.gl-nav.is-scrolled{border-bottom:0;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
+.gl-nav{--nv:clamp(14px,2.2vw,26px)}
+.gl-nav::before{content:"";position:absolute;inset:0 0 calc(-1 * var(--nv));z-index:-1;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:rgba(255,253,249,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - var(--nv) + 1px) no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 48' preserveAspectRatio='none'%3E%3Cpath d='M0 0V22C200 44 420 46 640 30S1060 4 1260 16S1400 36 1440 32V0Z'/%3E%3C/svg%3E") bottom/100% var(--nv) no-repeat;mask:linear-gradient(#000 0 0) top/100% calc(100% - var(--nv) + 1px) no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 48' preserveAspectRatio='none'%3E%3Cpath d='M0 0V22C200 44 420 46 640 30S1060 4 1260 16S1400 36 1440 32V0Z'/%3E%3C/svg%3E") bottom/100% var(--nv) no-repeat}
+.gl-nav.is-scrolled::before{opacity:1}
