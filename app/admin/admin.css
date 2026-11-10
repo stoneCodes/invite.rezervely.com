@@ -93,3 +93,20 @@
 .ad-detail-dialog::backdrop{background:rgba(43,37,32,.42)}
 .ad-detail-content>header button,.ad-detail-content dl>div,.ad-client-expand>div{border-color:rgba(105,80,40,.18);background:#F2EDE3}
 .ad-detail-content li{border-color:rgba(105,80,40,.14)}
+/* Ordre des modèles (/admin/modeles) */
+.ad-tpl-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:18px;align-items:start}
+.ad-tpl-group ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ad-tpl-group li{display:grid;grid-template-columns:22px 36px 1fr auto;align-items:center;gap:12px;padding:8px 10px;border:1px solid rgba(105,80,40,.16);border-radius:12px;background:#FBF9F4}
+.ad-tpl-rank{font:22px Italiana,Georgia,serif;color:#81643A;text-align:center}
+.ad-tpl-group img{width:36px;height:72px;object-fit:cover;border-radius:7px;box-shadow:0 0 0 1px rgba(43,37,32,.25)}
+.ad-tpl-name{display:grid;gap:2px;color:#2B2520;font-size:15px}
+.ad-tpl-name small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#81643A}
+.ad-tpl-moves{display:flex;gap:6px}
+.ad-tpl-moves button{width:40px;height:40px;border-radius:50%;border:1px solid rgba(129,100,58,.35);background:#fff;color:#2B2520;font:18px/1 Jost,sans-serif;cursor:pointer}
+.ad-tpl-moves button:hover:not(:disabled){border-color:#81643A;color:#81643A}
+.ad-tpl-moves button:disabled{opacity:.3;cursor:default}
+.ad-tpl-bar{position:sticky;bottom:0;display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:18px;padding:14px 0 max(14px,env(safe-area-inset-bottom));background:linear-gradient(transparent,#F3EEE6 30%)}
+.ad-tpl-save{padding:11px 20px;border:1px solid #B9A47A;border-radius:999px;background:linear-gradient(110deg,#D0C1A3,#B9A47A);color:#302A20;font:inherit;cursor:pointer}
+.ad-tpl-save:disabled{opacity:.45;cursor:default}
+.ad-tpl-reset{padding:11px 16px;border:1px solid rgba(105,80,40,.25);border-radius:999px;background:transparent;color:#2B2520;font:inherit;cursor:pointer}
+.ad-tpl-bar small.ok{color:#3d6b3a}.ad-tpl-bar small.err{color:#a3372c}

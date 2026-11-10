@@ -13,7 +13,7 @@ body[data-tpl="pinata"]{background:#FFF5DC}
 .pn-bunting{display:block;width:100%;height:58px}
 
 /* ---------- ouverture ---------- */
-.pn-intro{position:fixed;inset:0;z-index:50;display:grid;grid-template-rows:1fr auto auto;justify-items:center;align-items:end;text-align:center;overflow:hidden;
+.pn-intro{position:fixed;inset:0;z-index:50;display:grid;grid-template-rows:1fr auto auto max(0px,calc(100% - 100svh));justify-items:center;align-items:end;text-align:center;overflow:hidden;
   padding:0 16px max(24px,env(safe-area-inset-bottom));background:linear-gradient(rgba(255,250,236,.12),rgba(255,250,236,.1) 55%,rgba(255,250,236,.88)),url(/img/pinata-jardin.webp) center/cover;transition:opacity .7s ease}
 .pn-intro[hidden]{display:none}
 .pn-intro.is-out{opacity:0;pointer-events:none}

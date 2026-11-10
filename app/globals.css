@@ -42,7 +42,8 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 .ed-home:hover{color:var(--ink)}
 
 /* Pop-up de démo plein écran (éditeur et accueil), classes .ed-full* */
-.ed-full{position:fixed;inset:0;z-index:300;display:grid;grid-template-rows:auto 1fr;background:#F2EDE3}
+/* Hauteur visible seulement (100svh) : sur iPhone, la barre de Safari recouvrait le bas de la démo ; l'ombre remplit le dessous. */
+.ed-full{position:fixed;top:0;left:0;right:0;height:100svh;box-shadow:0 0 0 100vmax #F2EDE3;z-index:300;display:grid;grid-template-rows:auto 1fr;background:#F2EDE3}
 .ed-full-bar{display:flex;align-items:center;gap:12px;padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));background:rgba(242,237,227,.98);border-bottom:1px solid var(--line);box-shadow:0 4px 22px rgba(62,45,26,.07)}
 .ed-full-back{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--field);color:var(--ink);font:500 .85rem/1 var(--f-ui);cursor:pointer}
 .ed-full-back:hover{border-color:var(--accent)}

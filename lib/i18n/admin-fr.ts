@@ -241,5 +241,17 @@ const adminFr = {
   date: "Date",
   emptyUpcoming: "Aucun événement à venir.",
   loadError: "Les statistiques sont indisponibles pour le moment.",
+  templatesTitle: "Ordre des modèles",
+  templatesNav: "Modèles",
+  templatesKicker: "Galerie",
+  templatesDescription: "Choisissez l’ordre dans lequel les modèles apparaissent, catégorie par catégorie, sur l’accueil et dans l’éditeur. Le premier de chaque liste est le premier que l’on voit.",
+  moveUp: (name: string) => `Monter « ${name} »`,
+  moveDown: (name: string) => `Descendre « ${name} »`,
+  saveOrder: "Enregistrer l’ordre",
+  resetOrder: "Annuler les changements",
+  orderSaved: "Ordre enregistré. Il apparaît sur le site d’ici une minute environ.",
+  orderUnchanged: "Aucun changement à enregistrer.",
+  templateOrderAction: "Ordre des modèles modifié",
+  firstShown: "vu en premier",
 };
 export default adminFr;

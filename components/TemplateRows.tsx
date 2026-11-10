@@ -6,8 +6,10 @@ import { useT } from "@/components/I18n";
 import { CATEGORIES, TEMPLATES, type CategoryId, type TemplateId } from "@/lib/types";
 import type { Lang } from "@/lib/i18n";
 
-export default function TemplateRows({ names, lang, compact = false, noAll = false, selected, onPreview, onSelect, onCreate }: {
+export default function TemplateRows({ names, lang, compact = false, noAll = false, selected, order, onPreview, onSelect, onCreate }: {
   names: [string, string];
+  /** Ordre des modèles choisi dans l'admin (/admin/modeles) ; ordre du catalogue sinon. */
+  order?: readonly TemplateId[];
   lang: Lang;
   compact?: boolean;
   /** Sans l'onglet « Tout » (éditeur) : on part de la catégorie du modèle choisi. */
@@ -24,7 +26,8 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
     return own ?? CATEGORIES[0].id;
   });
   const ordered = (ids: TemplateId[]) => selected && ids.includes(selected) ? [selected, ...ids.filter((id) => id !== selected)] : ids;
-  const idsFor = (category: CategoryId) => ordered(TEMPLATES.filter((item) => (item.categories as readonly CategoryId[]).includes(category)).map((item) => item.id));
+  const rank = (id: TemplateId) => { const i = order ? order.indexOf(id) : -1; return i < 0 ? 999 + TEMPLATES.findIndex((item) => item.id === id) : i; };
+  const idsFor = (category: CategoryId) => ordered(TEMPLATES.filter((item) => (item.categories as readonly CategoryId[]).includes(category)).map((item) => item.id as TemplateId).sort((a, b) => rank(a) - rank(b)));
 
   const row = (title: string, ids: TemplateId[], key: string) => (
     <section className="ph-section" key={key} aria-label={title}>

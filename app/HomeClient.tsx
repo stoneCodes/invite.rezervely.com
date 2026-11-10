@@ -5,7 +5,8 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { TEMPLATES, type TemplateId } from "@/lib/types";
+import { type TemplateId } from "@/lib/types";
+import { cycleTemplate } from "@/lib/templateOrder";
 import TemplateRows from "@/components/TemplateRows";
 import HeroReel from "@/components/HeroReel";
 import HomeReveal from "@/components/HomeReveal";
@@ -14,7 +15,7 @@ import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { getLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 
 /** Page d'accueil « Nuit de gala » : poussière d'or, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal. */
-export default function HomeClient({publicPromo}:{publicPromo?:{code:string;label:string}}) {
+export default function HomeClient({publicPromo,order}:{publicPromo?:{code:string;label:string};order:TemplateId[]}) {
   const router = useRouter();
   const t = useT();
   const lang = useLang();
@@ -107,10 +108,7 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
 
   /* Démo en pop-up plein écran, sans quitter l'accueil (plus de nouvel onglet). */
   const [demo, setDemo] = useState<TemplateId | null>(null);
-  const cycle = (id: TemplateId, step: number) => {
-    const i = TEMPLATES.findIndex((t) => t.id === id);
-    return TEMPLATES[(i + step + TEMPLATES.length) % TEMPLATES.length].id as TemplateId;
-  };
+  const cycle = (id: TemplateId, step: number) => cycleTemplate(order, id, step);
   useEffect(() => {
     if (!demo) return;
     const unlock = lockScroll();
@@ -169,7 +167,7 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
 
       <section id="gl-hz" className="gl-hz">
         <div className="gl-hz-head"><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
-        <TemplateRows names={["Léa", "Samuel"]} lang={lang} onPreview={setDemo} onCreate={(id, event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return; celebrate(`/creer?t=${id}`)(event); }} />
+        <TemplateRows names={["Léa", "Samuel"]} lang={lang} order={order} onPreview={setDemo} onCreate={(id, event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return; celebrate(`/creer?t=${id}`)(event); }} />
       </section>
 
       <section className="wrap-site gl-steps">
@@ -193,7 +191,7 @@ export default function HomeClient({publicPromo}:{publicPromo?:{code:string;labe
               <button type="button" aria-label={t.common.prevTpl} onClick={() => setDemo(cycle(demo, -1))}>‹</button>
               <div className="ed-full-name">
                 <strong>{shown.name}</strong>
-                <small>{t.common.tplOf(TEMPLATES.findIndex((x) => x.id === demo) + 1, TEMPLATES.length)} · {h.demoSub}</small>
+                <small>{t.common.tplOf(order.indexOf(demo) + 1, order.length)} · {h.demoSub}</small>
               </div>
               <button type="button" aria-label={t.common.nextTpl} onClick={() => setDemo(cycle(demo, 1))}>›</button>
             </div>

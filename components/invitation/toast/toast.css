@@ -27,7 +27,7 @@ body[data-tpl="toast"]{background:#0a0f1f}
 .tt-stage.is-pop .tt-sabre-wrap{translate:0 -75%;rotate:-34deg;opacity:0;transition:translate .5s ease-out,rotate .5s ease-out,opacity .6s ease .3s}
 .tt-stage:not(.is-drag):not(.is-pop):not(.is-auto) .tt-sabre-wrap{animation:tt-nudge 2.6s ease-in-out 1s infinite}
 @keyframes tt-nudge{0%,55%,100%{translate:0 0}72%{translate:0 -10%}}
-.tt-hint{position:absolute;z-index:2;left:0;right:0;bottom:0;margin:0;max-width:none;padding:60px 16px max(28px,env(safe-area-inset-bottom));pointer-events:none;color:#efe2c2;font-size:1rem;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(transparent,rgba(4,8,22,.8) 60%)}
+.tt-hint{position:absolute;z-index:2;left:0;right:0;bottom:max(0px,calc(100% - 100svh));margin:0;max-width:none;padding:60px 16px max(28px,env(safe-area-inset-bottom));pointer-events:none;color:#efe2c2;font-size:1rem;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(transparent,rgba(4,8,22,.8) 60%)}
 .tt-hint::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--fx-accent);animation:vy-ping 1.8s ease-out infinite;box-shadow:0 0 0 0 rgba(227,198,126,.7)}
 .tt-flash{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .8s ease;background:radial-gradient(circle at 50% 12%,#fffaf0,#f3dc92 38%,#c9a24a 78%)}
 .tt-intro.is-flash .tt-flash{opacity:1}

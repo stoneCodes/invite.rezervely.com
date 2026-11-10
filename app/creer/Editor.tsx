@@ -13,6 +13,7 @@ import { invitePath } from "@/lib/slug";
 import { getLastInvite, setLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 import { LANGS } from "@/lib/i18n";
 import TemplateRows from "@/components/TemplateRows";
+import { cycleTemplate } from "@/lib/templateOrder";
 
 /* ---------- Dates : l'éditeur saisit l'heure de Paris, on stocke un ISO avec décalage ---------- */
 function toParisISO(local: string) {
@@ -51,13 +52,9 @@ async function shrink(file: File): Promise<Blob> {
   return new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error("photo"))), "image/jpeg", 0.85));
 }
 
-/** Modèle suivant / précédent dans le catalogue (en boucle). */
-function cycle(id: TemplateId, step: number): TemplateId {
-  const i = TEMPLATES.findIndex((t) => t.id === id);
-  return TEMPLATES[(i + step + TEMPLATES.length) % TEMPLATES.length].id as TemplateId;
-}
 
-export default function Editor({ payPrice = null }: { payPrice?: string | null }) {
+export default function Editor({ payPrice = null, order }: { payPrice?: string | null; order: TemplateId[] }) {
+  const cycle = (id: TemplateId, step: number) => cycleTemplate(order, id, step);
   const router = useRouter();
   const sp = useSearchParams();
   const t = useT();
@@ -258,7 +255,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
 
           <Sec open title={e_.style} meta={t.templates[template].name}>
             {/* Le modèle choisi passe en tête, en grand, avec un badge ; les autres restent disponibles mais en retrait. */}
-            <TemplateRows compact noAll names={[data.partner1, bday ? "" : data.partner2]} lang={siteLang} selected={template} onSelect={chooseTemplate} onPreview={setFull} />
+            <TemplateRows compact noAll order={order} names={[data.partner1, bday ? "" : data.partner2]} lang={siteLang} selected={template} onSelect={chooseTemplate} onPreview={setFull} />
             <p className="ed-help">{e_.styleHelp}</p>
             <label>{e_.inviteLang}
               <select id="ilang" value={data.lang ?? "fr"} onChange={(e) => set("lang", e.target.value as InvitationData["lang"])}>
@@ -458,7 +455,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
 
       {full && (() => {
         const shown = { id: full, name: tplName(full) };
-        const idx = TEMPLATES.findIndex((x) => x.id === full);
+        const idx = order.indexOf(full);
         const isMine = full === template;
         return (
           <div className="ed-full" role="dialog" aria-modal="true" aria-label={t.common.demoOf(shown.name)}>
@@ -468,7 +465,7 @@ export default function Editor({ payPrice = null }: { payPrice?: string | null }
                 <button type="button" aria-label={t.common.prevTpl} onClick={() => setFull(cycle(full, -1))}>‹</button>
                 <div className="ed-full-name">
                   <strong>{shown.name}</strong>
-                  <small>{isMine ? e_.yourModel : t.common.tplOf(idx + 1, TEMPLATES.length)} · {e_.withYourInfo}</small>
+                  <small>{isMine ? e_.yourModel : t.common.tplOf(idx + 1, order.length)} · {e_.withYourInfo}</small>
                 </div>
                 <button type="button" aria-label={t.common.nextTpl} onClick={() => setFull(cycle(full, 1))}>›</button>
               </div>

@@ -69,8 +69,8 @@ export const en: SiteDict = {
   home: {
     create: "Create",
     kicker: "Animated invitations to share",
-    title: "Make your",
-    titleScript: "moment shine",
+    title: "Bring your",
+    titleScript: "invitations to life",
     lead: "An envelope that opens, a shower of gold, a date revealed with a fingertip. Your guests won't forget it.",
     ctaCreate: "Create my invitation",
     ctaModels: "See the designs",

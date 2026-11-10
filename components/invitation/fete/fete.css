@@ -10,6 +10,8 @@ body.fx-locked{overflow:hidden}
 .fx-r{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
 .fx-r.is-in{opacity:1;transform:none}
 .fx.is-gated .fx-after{display:none}
+/* Ouvertures plein écran (inset:0) : leurs consignes et boutons du bas se calent sur la hauteur visible
+   (100svh), sinon la barre flottante de Safari sur iPhone les recouvre. */
 .fx-gatehint{text-align:center;font-size:.85rem;color:var(--fx-muted);margin:.8rem 0 0}
 /* bouton son */
 .fx-snd{position:fixed;right:14px;bottom:14px;z-index:70;width:44px;height:44px;border-radius:50%;border:1px solid var(--fx-line);background:var(--fx-card);color:var(--fx-ink);display:grid;place-items:center;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}

@@ -68,8 +68,8 @@ export const fr = {
   home: {
     create: "Créer",
     kicker: "Invitations animées à partager",
-    title: "Faites briller",
-    titleScript: "votre moment",
+    title: "Donnez vie",
+    titleScript: "à vos invitations",
     lead: "Une enveloppe qui s'ouvre, une pluie d'or, une date qu'on gratte du bout du doigt. Vos invités ne l'oublieront pas.",
     ctaCreate: "Créer mon invitation",
     ctaModels: "Voir les modèles",
