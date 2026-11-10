@@ -6,7 +6,7 @@ import { OG_BACK, OG_FRONT } from "./layers";
 
 /** Taille servie : la scène est dessinée en 1200 × 630 puis réduite (PNG plus léger : WhatsApp boude les aperçus trop lourds). */
 const OUT = 0.75;
-export const OG_SIZE = { width: 1200 * OUT, height: 630 * OUT };
+export const OG_SIZE = { width: Math.round(1200 * OUT), height: Math.round(630 * OUT) };
 
 export type EnvelopeCard = {
   kicker: string;   // « NOUS NOUS MARIONS », « JOYEUX ANNIVERSAIRE »…

@@ -8,6 +8,8 @@ import WebAnalytics from "@/components/WebAnalytics";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
   return {
+    // Adresse absolue des images d'aperçu (og:image) : sans elle, Next met http://localhost:3000 hors de Vercel.
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ecartestudio.com"),
     title: { default: t.meta.title, template: "%s · E-carte Studio" },
     applicationName: "E-carte Studio",
     appleWebApp: { title: "E-carte Studio" },
