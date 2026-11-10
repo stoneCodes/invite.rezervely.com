@@ -5,6 +5,7 @@
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { wishHtml } from "../wishlist";
+import { createMusic } from "../music";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 
 const ICON = {
@@ -104,19 +105,16 @@ export function mountVelours(root, data, OPTS = {}) {
 
   /* ---------- Son : arpèges feutrés (seulement après un geste) ---------- */
   let actx = null, master = null, soundOn = true, loopT = 0, looping = false;
-  const audio = () => { try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.11; master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
+  const music = createMusic(OPTS.music); // musique choisie par les mariés (remplace la mélodie synthétisée)
+  const audio = () => { music.unlock(); try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.11; master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
   const tone = (f, t, dur, vol = 0.25, type = "sine") => { if (!actx || !soundOn) return; const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(g).connect(master); o.start(t); o.stop(t + dur + 0.05); };
   // Valse lente en la mineur / fa majeur, notes longues comme un piano feutré
-  const BARS = [[220, 262, 330, 440], [175, 220, 262, 349], [131, 196, 262, 330], [165, 208, 247, 330]];
   const TOP = [659, 587, 523, 494, 523, 440, 523, 587, 659, 698, 659, 587, 523, 494, 440, 0];
-  const loop = () => { if (!actx || !soundOn || !alive) return; looping = true; const t0 = actx.currentTime + 0.05, st = 0.5;
-    BARS.forEach((b, i) => b.forEach((f, j) => tone(f, t0 + i * st * 4 + j * 0.12, 2.6, j ? 0.07 : 0.1)));
-    TOP.forEach((f, i) => f && tone(f, t0 + i * st, 1.6, 0.09, "triangle"));
-    loopT = later(loop, BARS.length * 4 * st * 1000); };
+  const loop = () => { if (!soundOn || !alive) return; looping = true; music.play(); };
   const chime = () => { if (!actx || !soundOn) return; const t = actx.currentTime; [880, 1109, 1319, 1760].forEach((f, i) => tone(f, t + i * 0.09, 1.4, 0.14)); };
   const sndBtn = q(".ve-snd");
   sndBtn.addEventListener("click", () => { soundOn = !soundOn; sndBtn.innerHTML = soundOn ? ICON.sound : ICON.mute; sndBtn.setAttribute("aria-label", soundOn ? V.mute : V.unmute);
-    if (soundOn) { audio(); if (ve.classList.contains("is-open")) loop(); } else { clearTimeout(loopT); looping = false; } });
+    if (soundOn) { audio(); if (ve.classList.contains("is-open")) loop(); } else { clearTimeout(loopT); music.pause(); looping = false; } });
 
   /* ---------- Apparitions au défilement ---------- */
   let io = null;
@@ -135,7 +133,7 @@ export function mountVelours(root, data, OPTS = {}) {
   function showIntro() {
     opening = false; ve.classList.remove("is-open", "is-opening"); intro.hidden = false; intro.classList.remove("is-out");
     qa(".ve-reveal.is-visible").forEach((el) => el.classList.remove("is-visible"));
-    document.body.classList.add("ve-locked"); scrollTo(0, 0); clearTimeout(loopT); looping = false;
+    document.body.classList.add("ve-locked"); scrollTo(0, 0); clearTimeout(loopT); music.pause(); looping = false;
   }
   function openMain(instant) {
     ve.classList.add("is-open"); document.body.classList.remove("ve-locked"); scrollTo(0, 0);
@@ -240,7 +238,7 @@ export function mountVelours(root, data, OPTS = {}) {
     destroy() {
       alive = false; couple?.destroy(); timers.forEach(clearTimeout); clearInterval(countI); clearInterval(dcTimer); cancelAnimationFrame(scrollFrame);
       io && io.disconnect(); removeEventListener("scroll", parallax); removeEventListener("resize", onResize);
-      document.body.classList.remove("ve-locked"); try { actx && actx.close(); } catch (e) {} root.innerHTML = "";
+      document.body.classList.remove("ve-locked"); music.destroy(); try { actx && actx.close(); } catch (e) {} root.innerHTML = "";
     },
   };
 }

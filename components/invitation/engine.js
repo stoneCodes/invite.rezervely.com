@@ -5,6 +5,7 @@ import { inviteDict } from "../../lib/i18n/invite";
 import { LOCALE } from "../../lib/i18n";
 import { mountCouple } from "./dresscode/couple";
 import { wishHtml } from "./wishlist";
+import { createMusic } from "./music";
 const CAP=s=>s.charAt(0).toUpperCase()+s.slice(1);
 export const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 export function dateParts(iso,lang="fr",tz="Europe/Paris"){
@@ -139,13 +140,12 @@ const fx=(()=>{
   return{setMode,burst,storm,fireworks,heart};
 })();
 
-/* ===== Musique (boîte à musique synthétisée) ===== */
-let actx,master,musicOn=false,loopTimer;
-const MELODY=[659,784,1047,988,784,659,587,659,698,880,1047,880,784,698,659,0];
+/* ===== Son : musique choisie par les mariés (music.js) + petits effets synthétisés ===== */
+let actx,master,musicOn=false,loopTimer,MUSIC=createMusic(OPTS.music);
 function note(f,t,dur=1.6,vol=.5){if(!f)return;const o=actx.createOscillator(),o2=actx.createOscillator(),g=actx.createGain(),g2=actx.createGain();o.frequency.value=f;o2.frequency.value=f*2;g2.gain.value=.18;o.connect(g);o2.connect(g2).connect(g);g.connect(master);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.start(t);o2.start(t);o.stop(t+dur);o2.stop(t+dur);}
-function playLoop(){const t0=actx.currentTime+.05,st=.42,k=tpl()==="nuit-doree"?.5:1;MELODY.forEach((f,i)=>note(f*k,t0+i*st,1.8,i%4===0?.55:.38));[262,349,392,330].forEach((f,i)=>note(f/2*k,t0+i*st*4,2.6,.35));loopTimer=setTimeout(playLoop,MELODY.length*st*1000);}
-function startMusic(){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();if(!master){master=actx.createGain();master.gain.value=.13;master.connect(actx.destination);}actx.resume();if(!musicOn){musicOn=true;playLoop();}$("sound").hidden=false;$("sound").textContent="♪";}catch(e){}}
-function stopMusic(){musicOn=false;clearTimeout(loopTimer);if(actx)actx.suspend();$("sound").textContent="✕";}
+function playLoop(){MUSIC&&MUSIC.play();}
+function startMusic(){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();if(!master){master=actx.createGain();master.gain.value=.13;master.connect(actx.destination);}actx.resume();MUSIC&&MUSIC.unlock();if(!musicOn){musicOn=true;playLoop();}$("sound").hidden=false;$("sound").textContent="♪";}catch(e){}}
+function stopMusic(){musicOn=false;clearTimeout(loopTimer);MUSIC&&MUSIC.pause();if(actx)actx.suspend();$("sound").textContent="✕";}
 function chime(){if(actx&&musicOn){const t=actx.currentTime;[1319,1568,2093].forEach((f,i)=>note(f,t+i*.08,1.2,.3));}}
 function boom(){if(!actx||!musicOn)return;const t=actx.currentTime;[131,196,262,392,523,784].forEach((f,i)=>note(f,t+i*.03,3.2,.5));}
 $("sound").onclick=()=>musicOn?stopMusic():startMusic();
@@ -332,7 +332,7 @@ function prepReveal(){
 
 function setTemplate(name){
   if(!TEMPLATES[name])name="cygnes";document.body.dataset.tpl=name;
-  fx.setMode(TEMPLATES[name].fx);if(musicOn){clearTimeout(loopTimer);playLoop();}
+  fx.setMode(TEMPLATES[name].fx);
   if(name==="jardin-nuit")ambientButterflies();
   buildStage();
 }
@@ -381,7 +381,7 @@ function skipIntro(){token++;opening=true;stage.hidden=true;stage.classList.add(
 if(OPTS.skipIntro)skipIntro();
 return{
   replay(){buildStage();},
-  destroy(){alive=false;token++;CLEAN.forEach(f=>f());clearInterval(dcTimer);couple?.destroy();musicOn=false;clearTimeout(loopTimer);try{actx&&actx.close();}catch(e){}
+  destroy(){alive=false;token++;CLEAN.forEach(f=>f());MUSIC&&MUSIC.destroy();MUSIC=null;clearInterval(dcTimer);couple?.destroy();musicOn=false;clearTimeout(loopTimer);try{actx&&actx.close();}catch(e){}
     if(io)io.disconnect();document.body.classList.remove("locked","gated");}
 };
 

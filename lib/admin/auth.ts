@@ -19,8 +19,37 @@ function equal(a: string, b: string) { let diff = a.length ^ b.length; for (let 
 export function originAllowed(req: Request) {
   const origin = req.headers.get("origin");
   const expected = process.env.NEXT_PUBLIC_SITE_URL;
-  if (!origin || !expected) return false;
-  try { return new URL(origin).origin === new URL(expected).origin; } catch { return false; }
+  if (!origin) return false;
+  // Même origine que la requête (local, adresse de secours) ou adresse officielle du site.
+  try { const o = new URL(origin).origin; return o === new URL(req.url).origin || (!!expected && o === new URL(expected).origin); } catch { return false; }
+}
+async function startSession(email: string) {
+  const payload = `${email}|${Date.now()+TTL}`;
+  const encoded = btoa(payload).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+  const signature = hex(await hmac(encoded));
+  (await cookies()).set(COOKIE, `${encoded}.${signature}`, { httpOnly: true, secure: true, sameSite: "strict", path: "/", maxAge: TTL / 1000 });
+}
+/** Connexion par mot de passe (ADMIN_PASSWORD, secret Cloudflare, 12 caractères minimum). */
+export const passwordLoginEnabled = () => (process.env.ADMIN_PASSWORD || "").length >= 12;
+/**
+ * Vérifie adresse autorisée + mot de passe (comparaison à temps constant).
+ * Limite : 10 échecs par adresse IP en 15 minutes ; chaque échec est noté dans admin_codes (code_hash « password »).
+ */
+export async function verifyAdminPassword(rawEmail: unknown, rawPassword: unknown) {
+  const email = cleanEmail(rawEmail);
+  const password = typeof rawPassword === "string" ? rawPassword : "";
+  if (!passwordLoginEnabled() || !email || !password || password.length > 200) return false;
+  const ip = (await headers()).get("cf-connecting-ip")?.slice(0, 80) || "unknown";
+  const since = new Date(Date.now() - 15 * 60_000).toISOString();
+  const { count } = await db().from("admin_codes").select("id", { count: "exact", head: true }).eq("ip", ip).eq("code_hash", "password").gte("created_at", since);
+  if ((count || 0) >= 10) return false;
+  const ok = allowed().includes(email) && equal(hex(await hmac(`pw:${password}`)), hex(await hmac(`pw:${process.env.ADMIN_PASSWORD}`)));
+  if (!ok) {
+    await db().from("admin_codes").insert({ email, code_hash: "password", expires_at: new Date().toISOString(), used_at: new Date().toISOString(), attempts: 1, ip });
+    return false;
+  }
+  await startSession(email);
+  return true;
 }
 export async function issueAdminCode(rawEmail: unknown, req: Request) {
   const email = cleanEmail(rawEmail);
@@ -53,13 +82,22 @@ export async function verifyAdminCode(rawEmail: unknown, rawCode: unknown) {
   const update = ok ? { used_at: new Date().toISOString(), attempts: data.attempts + 1 } : { attempts: data.attempts + 1, ...(data.attempts + 1 >= 5 ? { used_at: new Date().toISOString() } : {}) };
   await db().from("admin_codes").update(update).eq("id", data.id);
   if (!ok) return false;
-  const payload = `${email}|${Date.now()+TTL}`;
-  const encoded = btoa(payload).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
-  const signature = hex(await hmac(encoded));
-  (await cookies()).set(COOKIE, `${encoded}.${signature}`, { httpOnly: true, secure: true, sameSite: "strict", path: "/", maxAge: TTL / 1000 });
+  await startSession(email);
   return true;
 }
+/**
+ * Accès direct en local (demandé par Glad le 10 nov. 2026) : seulement avec `npm run dev` (NODE_ENV = development)
+ * ET une page ouverte sur localhost / 127.0.0.1. Le site en ligne (build de production) exige toujours le code ou le mot de passe.
+ */
+export async function localDevAdmin(): Promise<string | null> {
+  if (process.env.NODE_ENV !== "development") return null;
+  const host = ((await headers()).get("host") || "").split(":")[0];
+  if (host !== "localhost" && host !== "127.0.0.1") return null;
+  return allowed()[0] || null;
+}
 export async function requireAdmin(): Promise<string | null> {
+  const local = await localDevAdmin();
+  if (local) return local;
   const value = (await cookies()).get(COOKIE)?.value || "";
   const [payload, signature, extra] = value.split(".");
   if (!payload || !signature || extra) return null;

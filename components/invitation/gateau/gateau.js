@@ -36,7 +36,7 @@ export function mountGateau(root, data, OPTS = {}) {
   const P = prep(data, OPTS, "gateau"), { F, REDUCE } = P, G = F.gateau, w = P.when, dc = P.dc;
   const palId = P.bd.palette === "bleu" ? "bleu" : "rose", pal = PAL[palId];
   document.body.dataset.tpl = "gateau";
-  const L = life(), S = sound(L), X = extras(P);
+  const L = life(), S = sound(L, OPTS.music), X = extras(P);
   const n = P.age && P.age <= 12 ? P.age : 5;
   let ti = 0;
   const skins = palId === "bleu" ? ["bleu", "jaune"] : ["rose", "menthe"];

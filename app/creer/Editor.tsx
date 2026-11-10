@@ -13,6 +13,7 @@ import { invitePath } from "@/lib/slug";
 import { getLastInvite, setLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 import { LANGS } from "@/lib/i18n";
 import TemplateRows from "@/components/TemplateRows";
+import MusicPicker from "@/components/MusicPicker";
 import { cycleTemplate } from "@/lib/templateOrder";
 
 /* ---------- Dates : l'éditeur saisit l'heure de Paris, on stocke un ISO avec décalage ---------- */
@@ -263,6 +264,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
               </select>
             </label>
             <p className="ed-help">{e_.inviteLangHelp}</p>
+            <MusicPicker value={data.music} template={template} onChange={(v) => set("music", v)} />
           </Sec>
 
           <Sec title={bday ? e_.celebrant : e_.couple}>

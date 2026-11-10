@@ -6,6 +6,7 @@
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { wishHtml } from "../wishlist";
+import { createMusic } from "../music";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 
 const IMG = { washi: "/img/origami-washi.webp", table: "/img/origami-table.webp", cranes: "/img/origami-grues.webp" };
@@ -173,19 +174,19 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
 
   /* ---------- Son : papier froissé et kalimba (seulement après un geste) ---------- */
   let actx = null, master = null, soundOn = true, loopT = 0, looping = false;
-  const audio = () => { try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.12; master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
+  const music = createMusic(OPTS.music); // musique choisie par les mariés (remplace la mélodie synthétisée)
+  const audio = () => { music.unlock(); try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.12; master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
   const tone = (f, t, dur, vol = 0.3) => { if (!actx || !soundOn) return; const o = actx.createOscillator(), g = actx.createGain(); o.type = "sine"; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(g).connect(master); o.start(t); o.stop(t + dur + 0.05);
     const o2 = actx.createOscillator(), g2 = actx.createGain(); o2.frequency.value = f * 4.2; g2.gain.setValueAtTime(vol * 0.12, t); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.15); o2.connect(g2).connect(master); o2.start(t); o2.stop(t + 0.2); };
   const paper = (len = 0.18, vol = 0.5) => { if (!actx || !soundOn) return; const t = actx.currentTime, n = actx.sampleRate * len, b = actx.createBuffer(1, n, actx.sampleRate), d = b.getChannelData(0);
     for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2) * (Math.random() < 0.3 ? 1 : 0.35);
     const s = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain(); s.buffer = b; f.type = "highpass"; f.frequency.value = 1800; g.gain.value = vol; s.connect(f).connect(g).connect(master); s.start(t); };
   // Kalimba douce, gamme pentatonique
-  const MEL = [587, 659, 784, 880, 784, 659, 587, 0, 523, 587, 659, 784, 659, 0, 587, 0, 784, 880, 1047, 880, 784, 659, 784, 0, 659, 587, 523, 587, 0, 0, 0, 0];
-  const loop = () => { if (!actx || !soundOn || !alive) return; looping = true; const t0 = actx.currentTime + 0.05, st = 0.42; MEL.forEach((f, i) => f && tone(f, t0 + i * st, 1.8, i % 4 ? 0.14 : 0.2)); [294, 262, 220, 262].forEach((f, i) => tone(f, t0 + i * st * 8, 3, 0.1)); loopT = later(loop, MEL.length * st * 1000); };
+  const loop = () => { if (!soundOn || !alive) return; looping = true; music.play(); };
   const chime = () => { if (!actx || !soundOn) return; const t = actx.currentTime; [1047, 1319, 1568, 2093].forEach((f, i) => tone(f, t + i * 0.08, 1.2, 0.16)); };
   const sndBtn = q(".or-snd");
   sndBtn.addEventListener("click", () => { soundOn = !soundOn; sndBtn.innerHTML = soundOn ? ICON.sound : ICON.mute; sndBtn.setAttribute("aria-label", soundOn ? O.mute : O.unmute);
-    if (soundOn) { audio(); if (or.classList.contains("is-open")) loop(); } else { clearTimeout(loopT); looping = false; } });
+    if (soundOn) { audio(); if (or.classList.contains("is-open")) loop(); } else { clearTimeout(loopT); music.pause(); looping = false; } });
 
   /* ---------- Ouverture : le sceau se brise, les rabats s'ouvrent dans la lumière ---------- */
   const wax = q(".or-wax");
@@ -204,7 +205,7 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   function showIntro() {
     opening = false; or.classList.remove("is-open"); intro.hidden = false; intro.classList.remove("is-cracking", "is-broken", "is-t", "is-lr", "is-b", "is-burst", "is-out");
     document.body.classList.add("or-locked"); scrollTo(0, 0);
-    clearTimeout(loopT); looping = false;
+    clearTimeout(loopT); music.pause(); looping = false;
   }
   function openMain(instant) {
     intro.classList.add("is-out"); or.classList.add("is-open"); document.body.classList.remove("or-locked"); scrollTo(0, 0);
@@ -290,6 +291,6 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
 
   return {
     replay() { showIntro(); },
-    destroy() { alive = false; couple?.destroy(); timers.forEach(clearTimeout); clearInterval(countI); io && io.disconnect(); document.body.classList.remove("or-locked"); try { actx && actx.close(); } catch (e) {} root.innerHTML = ""; },
+    destroy() { alive = false; couple?.destroy(); timers.forEach(clearTimeout); clearInterval(countI); io && io.disconnect(); document.body.classList.remove("or-locked"); music.destroy(); try { actx && actx.close(); } catch (e) {} root.innerHTML = ""; },
   };
 }

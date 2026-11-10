@@ -14,7 +14,7 @@ const ARM = `<img src="/img/vinyle-bras.webp" alt="" draggable="false">`;
 export function mountVinyle(root, data, OPTS = {}) {
   const P = prep(data, OPTS, "vinyle"), { F, REDUCE } = P, V = F.vinyle;
   document.body.dataset.tpl = "vinyle";
-  const L = life(), S = sound(L), X = extras(P);
+  const L = life(), S = sound(L, OPTS.music), X = extras(P);
   const lbl = P.age ? String(P.age) : P.initial;
   const rec = (cls, inner = `<span>${lbl}</span>`) => `<div class="vy-rec ${cls}"><i class="vy-shine"></i><div class="vy-label">${inner}</div></div>`;
 

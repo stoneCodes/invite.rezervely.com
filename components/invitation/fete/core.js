@@ -4,6 +4,7 @@
 // Contrat : mountX(root, data, { onRsvp, skipIntro, noGate }) → { replay, destroy }.
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
+import { createMusic } from "../music";
 
 export { esc };
 
@@ -60,13 +61,15 @@ export function life() {
   };
 }
 
-/** Son synthétisé (jamais avant un geste de l'invité). */
-export function sound(L) {
-  let ctx = null, master = null, on = true, loopT = 0, pattern = null;
+/** Son : musique choisie par les mariés (music.js) + petits effets synthétisés (jamais avant un geste de l'invité). */
+export function sound(L, track) {
+  let ctx = null, master = null, on = true, pattern = null;
+  const music = createMusic(track);
   const S = {
     get on() { return on; },
     get ctx() { return ctx; },
     audio() {
+      music.unlock();
       try {
         if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)(); master = ctx.createGain(); master.gain.value = 0.12; master.connect(ctx.destination); }
         ctx.resume();
@@ -92,16 +95,11 @@ export function sound(L) {
       src.connect(f).connect(g).connect(master); src.start(t);
     },
     chime() { if (!ctx || !on) return; const t = ctx.currentTime; [784, 988, 1175, 1568].forEach((f, i) => S.tone(f, t + i * 0.08, 1.2, 0.12)); },
-    /** Boucle musicale : fn(t0) programme une mesure de len secondes. */
-    loop(fn, len) {
-      pattern = { fn, len }; clearTimeout(loopT);
-      if (!ctx || !on) return;
-      const run = () => { if (!on || !L.alive || !ctx) return; fn(ctx.currentTime + 0.05); loopT = L.later(run, len * 1000); };
-      run();
-    },
-    stopLoop() { clearTimeout(loopT); pattern = null; },
-    toggle() { on = !on; if (on) { S.audio(); if (pattern) S.loop(pattern.fn, pattern.len); } else clearTimeout(loopT); return on; },
-    close() { clearTimeout(loopT); try { ctx && ctx.close(); } catch (e) {} },
+    /** Musique de fond : démarre le morceau choisi (les anciennes mélodies synthétisées ne sont plus jouées). */
+    loop() { pattern = true; if (on && L.alive) music.play(); },
+    stopLoop() { pattern = null; music.pause(); },
+    toggle() { on = !on; if (on) { S.audio(); if (pattern) music.play(); } else music.pause(); return on; },
+    close() { music.destroy(); try { ctx && ctx.close(); } catch (e) {} },
   };
   return S;
 }

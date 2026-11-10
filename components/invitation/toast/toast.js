@@ -12,7 +12,7 @@ const DIR = { x: 0, y: -1 };
 export function mountToast(root, data, OPTS = {}) {
   const P = prep(data, OPTS, "toast"), { F, REDUCE } = P, K = F.toast;
   document.body.dataset.tpl = "toast";
-  const L = life(), S = sound(L), X = extras(P), w = P.when, dc = P.dc;
+  const L = life(), S = sound(L, OPTS.music), X = extras(P), w = P.when, dc = P.dc;
   const glass = (inner, cls = "") => `<div class="tt-glass fx-r ${cls}"><i class="tt-sheen" aria-hidden="true"></i>${inner}</div>`;
   const head = (k, t) => `<header class="tt-h fx-r"><small>${k}</small><h2>${t}</h2></header>`;
 

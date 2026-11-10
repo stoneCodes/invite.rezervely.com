@@ -51,6 +51,7 @@ export function sanitizeData(input: any, template?: string): InvitationData {
     story: arr(d.story, 6, (x) => ({ y: str(x?.y, 12), text: str(x?.text, 300) })),
     rsvpBy: str(d.rsvpBy, 120),
     photoUrl: photo,
+    music: typeof d.music === "string" && /^[a-z0-9][a-z0-9-]{0,63}$/.test(d.music) ? d.music : undefined,
     wishlist: {
       note: str(d.wishlist?.note, 240),
       items: arr(d.wishlist?.items, 20, (x) => ({ name: str(x?.name, 80), url: link(x?.url) })).filter((x) => x.name || x.url),

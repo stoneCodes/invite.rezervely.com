@@ -38,7 +38,7 @@ export function mountPinata(root, data, OPTS = {}) {
   const P = prep(data, OPTS, "pinata"), { F, REDUCE } = P, K = F.pinata, w = P.when, dc = P.dc;
   const palId = P.bd.palette === "bleu" ? "bleu" : "rose", pal = PAL[palId];
   document.body.dataset.tpl = "pinata";
-  const L = life(), S = sound(L), X = extras(P);
+  const L = life(), S = sound(L, OPTS.music), X = extras(P);
   const cols = [pal.body, ...pal.pts, "#FFD34E"];
   let si = 0;
   const candy = (cls, inner) => { const [nm, hex] = CANDIES[si++ % CANDIES.length]; return `<section class="pn-sec fx-r ${cls}" style="--cc:${hex};--candy:url(/img/pinata-bonbon-${nm}.webp);--tilt:${si % 2 ? -1.5 : 1.5}deg"><div class="pn-wrap"><i class="pn-twist pn-l" aria-hidden="true"></i><div class="pn-card">${inner}</div><i class="pn-twist pn-r" aria-hidden="true"></i></div></section>`; };

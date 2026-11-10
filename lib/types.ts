@@ -99,6 +99,8 @@ export type InvitationData = {
   bday?: BirthdayData;
   /** Liste de souhaits facultative (tous les modèles) : articles nom + lien, et lien de cagnotte. */
   wishlist?: Wishlist;
+  /** Musique de fond : id d'un morceau de la bibliothèque (/api/musiques), "none" = sans musique, absent = musique par défaut de la catégorie. */
+  music?: string;
 };
 
 /** Un souhait : nom affiché, lien facultatif (https) vers la page de l'article. */

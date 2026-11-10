@@ -7,6 +7,7 @@ import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 import { wishHtml } from "../wishlist";
+import { createMusic } from "../music";
 
 const IMG = (n) => `/img/domaine-${n}.webp`;
 // Lieux du parcours, dans l'ordre des sections (index = data-s).
@@ -141,13 +142,11 @@ export function mountDomaine(root, data, OPTS = {}) {
 
   /* ---------- Son : petite musique champêtre et chants d'oiseaux (seulement après un geste) ---------- */
   let actx = null, master = null, soundOn = true, loopT = 0, birdT = 0, looping = false;
-  const audio = () => { try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.1; master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
+  const music = createMusic(OPTS.music); // musique choisie par les mariés (remplace la mélodie synthétisée)
+  const audio = () => { music.unlock(); try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.1; master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
   const tone = (f, t, dur, vol = 0.25, type = "sine") => { if (!actx || !soundOn) return; const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(g).connect(master); o.start(t); o.stop(t + dur + 0.05); };
   // Arpèges de harpe en sol majeur, lents et clairs
-  const BARS = [[196, 247, 294, 392, 494], [165, 247, 330, 392, 494], [131, 196, 262, 330, 392], [147, 220, 294, 370, 440]];
-  const loop = () => { if (!actx || !soundOn || !alive) return; looping = true; const t0 = actx.currentTime + 0.05, st = 0.42;
-    BARS.forEach((b, i) => [...b, ...b.slice(1, 4).reverse()].forEach((f, j) => tone(f, t0 + (i * 8 + j) * st, 2.4, j ? 0.06 : 0.09, "triangle")));
-    loopT = later(loop, BARS.length * 8 * st * 1000); };
+  const loop = () => { if (!soundOn || !alive) return; looping = true; music.play(); };
   const bird = () => { if (!actx || !soundOn || !alive) return; const t = actx.currentTime + 0.05, n = 2 + Math.floor(Math.random() * 3), base = 2600 + Math.random() * 1400;
     for (let i = 0; i < n; i++) { const o = actx.createOscillator(), g = actx.createGain(), s = t + i * 0.13; o.type = "sine"; o.frequency.setValueAtTime(base, s); o.frequency.exponentialRampToValueAtTime(base * (1.25 + Math.random() * 0.3), s + 0.06); o.frequency.exponentialRampToValueAtTime(base * 0.9, s + 0.1);
       g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(0.035, s + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.11); o.connect(g).connect(master); o.start(s); o.stop(s + 0.13); }
@@ -156,7 +155,7 @@ export function mountDomaine(root, data, OPTS = {}) {
   const chime = () => { if (!actx || !soundOn) return; const t = actx.currentTime; [784, 988, 1175, 1568].forEach((f, i) => tone(f, t + i * 0.09, 1.4, 0.12)); };
   const sndBtn = q(".dm-snd");
   sndBtn.addEventListener("click", () => { soundOn = !soundOn; sndBtn.innerHTML = soundOn ? ICON.sound : ICON.mute; sndBtn.setAttribute("aria-label", soundOn ? M.mute : M.unmute);
-    if (soundOn) { audio(); if (dm.classList.contains("is-open")) { loop(); bird(); } } else { clearTimeout(loopT); clearTimeout(birdT); looping = false; } });
+    if (soundOn) { audio(); if (dm.classList.contains("is-open")) { loop(); bird(); } } else { clearTimeout(loopT); music.pause(); clearTimeout(birdT); looping = false; } });
 
   /* ---------- Promenade : la caméra avance dans le lieu, puis marche jusqu'au suivant ---------- */
   let io = null, cur = -1, frame = 0;
@@ -231,7 +230,7 @@ export function mountDomaine(root, data, OPTS = {}) {
     opening = false; dm.classList.remove("is-open", "is-opening", "is-turned"); intro.hidden = false; intro.classList.remove("is-out");
     keyAnim?.cancel(); keyAnim = null; keyBtn.style.transform = "";
     qa(".dm-rv.is-in").forEach((el) => el.classList.remove("is-in"));
-    document.body.classList.add("dm-locked"); scrollTo(0, 0); clearTimeout(loopT); clearTimeout(birdT); looping = false;
+    document.body.classList.add("dm-locked"); scrollTo(0, 0); clearTimeout(loopT); music.pause(); clearTimeout(birdT); looping = false;
   }
   function openMain(instant) {
     dm.classList.add("is-open"); document.body.classList.remove("dm-locked"); scrollTo(0, 0);
@@ -388,7 +387,7 @@ export function mountDomaine(root, data, OPTS = {}) {
     destroy() {
       alive = false; couple?.destroy(); timers.forEach(clearTimeout); clearInterval(countI); clearInterval(dcTimer); cancelAnimationFrame(frame); keyAnim?.cancel();
       io && io.disconnect(); ro?.disconnect(); cancelAnimationFrame(tFrame); removeEventListener("scroll", onScroll); removeEventListener("resize", onResize);
-      document.body.classList.remove("dm-locked"); try { actx && actx.close(); } catch (e) {} root.innerHTML = "";
+      document.body.classList.remove("dm-locked"); music.destroy(); try { actx && actx.close(); } catch (e) {} root.innerHTML = "";
     },
   };
 }

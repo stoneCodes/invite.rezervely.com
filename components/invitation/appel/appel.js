@@ -6,6 +6,7 @@ import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 import { wishHtml } from "../wishlist";
+import { createMusic } from "../music";
 
 const IMG = { call: "/img/appel-fond-defaut.webp", end: "/img/appel-fin.webp" };
 const ICON = {
@@ -137,12 +138,12 @@ export function mountAppel(root, INPUT, OPTS = {}) {
 
   /* ---------- Son : tonalité de connexion, « pop » des messages, petite boîte à musique ---------- */
   let actx = null, master = null, soundOn = true, loopT = 0;
-  const audio = () => { try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.12; master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
+  const music = createMusic(OPTS.music); // musique choisie par les mariés (remplace la mélodie synthétisée)
+  const audio = () => { music.unlock(); try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.12; master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
   const tone = (f, t, dur, vol = 0.5, type = "sine") => { if (!actx || !soundOn) return; const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(g).connect(master); o.start(t); o.stop(t + dur + 0.05); };
   const pop = () => { if (actx && soundOn) { const t = actx.currentTime; tone(880, t, 0.12, 0.35); tone(1320, t + 0.05, 0.1, 0.2); } };
   const connect = () => { if (!audio()) return; const t = actx.currentTime; tone(523, t, 0.18, 0.4); tone(784, t + 0.16, 0.3, 0.4); };
-  const MEL = [523, 659, 784, 659, 698, 880, 784, 0, 587, 698, 880, 698, 659, 784, 659, 0];
-  const loop = () => { if (!actx || !soundOn || !alive) return; const t0 = actx.currentTime + 0.05, st = 0.5; MEL.forEach((f, i) => f && tone(f, t0 + i * st, 1.4, i % 4 ? 0.18 : 0.26, "triangle")); [262, 220, 175, 196].forEach((f, i) => tone(f, t0 + i * st * 4, 2.2, 0.16, "sine")); loopT = later(loop, MEL.length * st * 1000); };
+  const loop = () => { if (!soundOn || !alive) return; music.play(); };
   const sparkle = () => { if (actx && soundOn) { const t = actx.currentTime; [1047, 1319, 1568, 2093].forEach((f, i) => tone(f, t + i * 0.07, 0.9, 0.25)); } };
 
   /* ---------- Effets : cœurs et confettis ---------- */
@@ -257,7 +258,7 @@ export function mountAppel(root, INPUT, OPTS = {}) {
   }
   function hangUp() {
     q(".ap-dur").textContent = fmt(Math.floor((Date.now() - (started || Date.now())) / 1000));
-    clearInterval(timerI); clearTimeout(loopT); endEl.hidden = false; void endEl.offsetWidth; endEl.classList.add("is-on"); lock(true);
+    clearInterval(timerI); clearTimeout(loopT); music.pause(); endEl.hidden = false; void endEl.offsetWidth; endEl.classList.add("is-on"); lock(true);
     if (actx && soundOn) { const t = actx.currentTime; tone(659, t, 0.2, 0.35); tone(523, t + 0.2, 0.35, 0.35); }
   }
   function ring() {
@@ -285,7 +286,7 @@ export function mountAppel(root, INPUT, OPTS = {}) {
   q(".ap-recall").addEventListener("click", () => ring());
   q(".ap-theme").addEventListener("click", (e) => { const night = ap.dataset.theme !== "nuit"; ap.dataset.theme = night ? "nuit" : "clair"; e.currentTarget.setAttribute("aria-pressed", String(night)); });
   q(".ap-snd").addEventListener("click", (e) => { soundOn = !soundOn; e.currentTarget.innerHTML = soundOn ? ICON.sound : ICON.mute; e.currentTarget.setAttribute("aria-label", soundOn ? A.mute : A.unmute);
-    if (soundOn) { audio(); loop(); } else clearTimeout(loopT); });
+    if (soundOn) { audio(); loop(); } else { clearTimeout(loopT); music.pause(); } });
 
   /* Dress code : le couple change de tenue au fil des couleurs ; toucher une pastille la choisit. */
   const dcEl = q(".ap-dcphoto .dcc"), couple = dcEl ? mountCouple(dcEl, dc.couple) : null;
@@ -301,6 +302,6 @@ export function mountAppel(root, INPUT, OPTS = {}) {
 
   return {
     replay() { ring(); },
-    destroy() { alive = false; couple?.destroy(); clearInterval(dcTimer); timers.forEach(clearTimeout); clearInterval(timerI); clearInterval(countI); io && io.disconnect(); removeEventListener("resize", size); lock(false); try { actx && actx.close(); } catch (e) {} root.innerHTML = ""; },
+    destroy() { alive = false; couple?.destroy(); clearInterval(dcTimer); timers.forEach(clearTimeout); clearInterval(timerI); clearInterval(countI); io && io.disconnect(); removeEventListener("resize", size); lock(false); music.destroy(); try { actx && actx.close(); } catch (e) {} root.innerHTML = ""; },
   };
 }

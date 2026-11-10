@@ -25,6 +25,7 @@ import { mountGateau } from "./gateau/gateau";
 import { mountPinata } from "./pinata/pinata";
 import type { InvitationData, TemplateId } from "@/lib/types";
 import { DEMO_PHOTOS } from "@/lib/demoPhotos";
+import { trackRefFor } from "@/lib/musicClient";
 
 type Props = {
   data: InvitationData;
@@ -38,8 +39,9 @@ type Props = {
   onReady?: (api: { replay(): void }) => void;
 };
 
-function options(slug: string | undefined, skipIntro?: boolean, noGate?: boolean): MountOptions {
-  const opts: MountOptions = { skipIntro, noGate };
+/** music : morceau choisi par les mariés (data.music) ou défaut de la catégorie du modèle, résolu depuis /api/musiques. */
+function options(slug: string | undefined, skipIntro: boolean | undefined, noGate: boolean | undefined, data: InvitationData, template: TemplateId): MountOptions {
+  const opts: MountOptions = { skipIntro, noGate, music: trackRefFor(data.music, template) };
   if (slug) {
     opts.onRsvp = async (r) => {
       const res = await fetch("/api/rsvp", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, ...r }) });
@@ -70,7 +72,7 @@ type Mount = (root: HTMLElement, data: InvitationData, opts?: MountOptions) => {
 function ClassicInvitation({ data, template, slug, skipIntro, noGate, onReady }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const api = mountInvitation(data, template, options(slug, skipIntro, noGate));
+    const api = mountInvitation(data, template, options(slug, skipIntro, noGate, data, template));
     onReady?.(api);
     return () => { api.destroy(); delete document.body.dataset.tpl; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,10 +83,10 @@ function ClassicInvitation({ data, template, slug, skipIntro, noGate, onReady }:
   return <div ref={ref} dangerouslySetInnerHTML={html} />;
 }
 
-function OwnEngine({ data, slug, skipIntro, noGate, onReady, mount }: Props & { mount: Mount }) {
+function OwnEngine({ data, template, slug, skipIntro, noGate, onReady, mount }: Props & { mount: Mount }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const api = mount(ref.current!, data, options(slug, skipIntro, noGate));
+    const api = mount(ref.current!, data, options(slug, skipIntro, noGate, data, template));
     onReady?.(api);
     return () => { api.destroy(); delete document.body.dataset.tpl; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
