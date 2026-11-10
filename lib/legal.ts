@@ -12,7 +12,7 @@ export const LEGAL = {
   vatFranchise: true, // franchise en base de TVA : « TVA non applicable, art. 293 B du CGI »
   /** Médiateur de la consommation : à renseigner dès l'adhésion (nom + site). */
   mediator: null as null | { name: string; url: string },
-  updated: "2026-11-06",
+  updated: "2026-11-10",
 } as const;
 
 /** Durées de conservation (appliquées par la tâche quotidienne, lib/purge.ts). */

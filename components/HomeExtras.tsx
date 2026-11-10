@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { useT } from "@/components/I18n";
+import { useLang, useT } from "@/components/I18n";
+import { LOCALE } from "@/lib/i18n";
 import { LEGAL } from "@/lib/legal";
 import { loadMusicLibrary } from "@/lib/musicClient";
 import { defaultTrack, MUSIC_BASE_VOLUME } from "@/lib/music";
@@ -84,6 +85,40 @@ export function HomeFaq({ price }: { price: string | null }) {
         ))}
       </div>
       <p className="gl-faq-more">{h.faqMore} <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a></p>
+    </div></section>
+  );
+}
+
+export type HomeReview = { id: string; rating: number; body: string; display_name: string; kind: string; event_date: string | null; created_at: string };
+
+/** Avis publiés depuis /admin/avis. Section absente tant qu'aucun avis n'est publié ; note moyenne à partir de 5 avis.
+    Mentions obligatoires (avis en ligne) : date de l'avis, date de l'événement, modération expliquée. */
+export function HomeReviews({ reviews, stats }: { reviews: HomeReview[]; stats: { count: number; avg: number } }) {
+  const h = useT().home;
+  const lang = useLang();
+  if (!reviews.length) return null;
+  const day = new Intl.DateTimeFormat(LOCALE[lang], { dateStyle: "long", timeZone: "Europe/Paris" });
+  const month = new Intl.DateTimeFormat(LOCALE[lang], { month: "long", year: "numeric", timeZone: "UTC" });
+  const avg = new Intl.NumberFormat(LOCALE[lang], { maximumFractionDigits: 1 }).format(stats.avg);
+  return (
+    <section className="gl-rev gl-wave" aria-labelledby="gl-rev-t"><div className="wrap-site">
+      <div className="gl-kicker">{h.reviewsKicker}</div>
+      <h2 id="gl-rev-t">{h.reviewsTitle} <span className="gold-text">{h.reviewsGold}</span></h2>
+      {stats.count >= 5 && <p className="gl-rev-avg"><span aria-hidden="true">★</span> {h.reviewsAvg(avg, stats.count)}</p>}
+      <ul className={`gl-rev-list${reviews.length > 3 ? " is-rail" : ""}`}>
+        {reviews.map((r) => (
+          <li key={r.id} className="gl-rev-card">
+            <span className="gl-rev-stars" role="img" aria-label={h.reviewStars(r.rating)}>{"★".repeat(r.rating)}<i>{"★".repeat(5 - r.rating)}</i></span>
+            <blockquote>{r.body}</blockquote>
+            <div className="gl-rev-who">
+              <b>{r.display_name}</b>
+              <small>{h.reviewKind[r.kind] ?? r.kind}{r.event_date ? ` · ${month.format(new Date(r.event_date))}` : ""}</small>
+              <small>{h.reviewPosted(day.format(new Date(r.created_at)))}</small>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <p className="gl-rev-note">{h.reviewsNote}</p>
     </div></section>
   );
 }

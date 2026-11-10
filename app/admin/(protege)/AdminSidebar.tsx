@@ -14,6 +14,7 @@ const I = {
   phone: <><rect x="7" y="2.5" width="10" height="19" rx="2.2" /><path d="M10.5 18.5h3" /></>,
   music: <><path d="M9 18V5.5l11-2V16" /><circle cx="6.5" cy="18" r="2.5" /><circle cx="17.5" cy="16" r="2.5" /></>,
   euro: <><path d="M17.5 6.5A6.5 6.5 0 1 0 17.5 17.5M4 10.5h9M4 13.5h9" /></>,
+  star: <><path d="m12 3.6 2.5 5.3 5.8.7-4.3 4 1.1 5.7L12 16.5l-5.1 2.8 1.1-5.7-4.3-4 5.8-.7z" /></>,
   menu: <><path d="M4 7h16M4 12h16M4 17h16" /></>,
 };
 const Icon = ({ d }: { d: React.ReactNode }) => <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{d}</svg>;
@@ -25,6 +26,7 @@ const items = [
   { href: "/admin/clients", label: adminFr.clientManagement, short: adminFr.navShortClients, icon: I.people, main: true },
   { href: "/admin/modeles", label: adminFr.templatesNav, short: adminFr.templatesNav, icon: I.phone, main: false },
   { href: "/admin/musiques", label: adminFr.musicNav, short: adminFr.musicNav, icon: I.music, main: true },
+  { href: "/admin/avis", label: adminFr.reviewsNav, short: adminFr.reviewsNav, icon: I.star, main: false },
   { href: "/admin/prix", label: adminFr.priceTitle, short: adminFr.navShortPrice, icon: I.euro, main: false },
 ];
 

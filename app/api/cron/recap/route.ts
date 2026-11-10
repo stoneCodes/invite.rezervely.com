@@ -4,10 +4,12 @@ import { recapEmail, sendEmail, type RecapLine } from "@/lib/email";
 import type { InvitationData } from "@/lib/types";
 import type { Lang } from "@/lib/i18n";
 import { purgeExpired } from "@/lib/purge";
+import { sendAftercare } from "@/lib/aftercare";
 
 /* Récapitulatif quotidien des nouvelles réponses, un e-mail par couple (pas un par invité : quotas gratuits).
    Appelé une fois par jour par la tâche planifiée Cloudflare (wrangler.jsonc > triggers, worker.ts), avec l'en-tête Authorization: Bearer <CRON_SECRET>.
-   Fait aussi le ménage : suppression des invitations expirées (lib/purge.ts). */
+   Envoie aussi les e-mails « après l'événement » (demande d'avis, relance : lib/aftercare.ts), puis fait le ménage :
+   suppression des invitations expirées (lib/purge.ts). La relance passe avant la purge. */
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -42,6 +44,7 @@ export async function GET(req: Request) {
     await db().from("rsvps").update({ notified_at: new Date().toISOString() }).in("id", rows.map((r) => r.id));
     sent++;
   }
+  const aftercare = await sendAftercare();
   const purge = await purgeExpired();
-  return NextResponse.json({ couples: byInvite.size, sent, failed, purge });
+  return NextResponse.json({ couples: byInvite.size, sent, failed, aftercare, purge });
 }

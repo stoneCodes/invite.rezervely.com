@@ -10,13 +10,13 @@ import { cycleTemplate } from "@/lib/templateOrder";
 import TemplateRows from "@/components/TemplateRows";
 import HeroReel from "@/components/HeroReel";
 import HomeReveal from "@/components/HomeReveal";
-import { HomeFaq, HomeFeatures } from "@/components/HomeExtras";
+import { HomeFaq, HomeFeatures, HomeReviews, type HomeReview } from "@/components/HomeExtras";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { getLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 
 /** Page d'accueil « Nuit de gala » : poussière d'or, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal. */
-export default function HomeClient({publicPromo,order,price}:{publicPromo?:{code:string;label:string};order:TemplateId[];price:string|null}) {
+export default function HomeClient({publicPromo,order,price,reviews,reviewStats}:{publicPromo?:{code:string;label:string};order:TemplateId[];price:string|null;reviews:HomeReview[];reviewStats:{count:number;avg:number}}) {
   const router = useRouter();
   const t = useT();
   const lang = useLang();
@@ -171,6 +171,7 @@ export default function HomeClient({publicPromo,order,price}:{publicPromo?:{code
         ))}
       </div></section>
 
+      <HomeReviews reviews={reviews} stats={reviewStats} />
       <HomeFaq price={price} />
 
       <section className="gl-final gl-wave is-b">

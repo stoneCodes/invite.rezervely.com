@@ -94,6 +94,11 @@ const fr: LegalDict = {
         "Prénoms, date et lieu de l'événement, programme, textes, photo, préférences (modèle, langue) et adresse e-mail.",
         "Finalités : créer et afficher l'invitation, vous envoyer le lien de votre espace, la confirmation de publication et le récapitulatif quotidien des réponses. Base légale : exécution du contrat.",
         "Paiement : traité directement par Stripe ; nous conservons seulement la date, le montant et la référence du paiement.",
+        "Après l'événement : un e-mail pour vous demander votre avis, puis éventuellement un e-mail pour un prochain événement (avec parfois un code de réduction). Base légale : intérêt légitime (suivi de la prestation, offres pour un service similaire). Chaque e-mail contient un lien pour ne plus les recevoir.",
+      ] },
+      { h: "Avis des clients", p: [
+        "Si vous laissez un avis : note, texte, nom affiché que vous choisissez, type et date de l'événement. Il n'est publié sur le site qu'avec votre accord (case à cocher) et après relecture.",
+        "Contrôle des avis : seuls les clients ayant publié une invitation peuvent en laisser un, depuis leur lien personnel. Les avis sont lus avant publication ; nous refusons seulement les contenus injurieux, hors sujet ou sans rapport avec le service, et ne les modifions jamais. Ils sont affichés avec leur date et celle de l'événement, et conservés tant qu'ils sont en ligne (même après la suppression de l'invitation). Pour faire retirer le vôtre, écrivez-nous.",
       ] },
       { h: "Données des invités", p: [
         "Nom, réponse (présent ou non), nombre de personnes et message facultatif.",
@@ -203,6 +208,11 @@ const en: LegalDict = {
         "First names, event date and venue, schedule, texts, photo, preferences (template, language) and email address.",
         "Purposes: create and display the invitation, send you your space link, the publishing confirmation and the daily summary of replies. Legal basis: performance of the contract.",
         "Payment: handled directly by Stripe; we only keep the payment date, amount and reference.",
+        "After the event: an email asking for your review, then possibly an email about a future event (sometimes with a discount code). Legal basis: legitimate interest (service follow-up, offers for a similar service). Each email contains a link to stop receiving them.",
+      ] },
+      { h: "Customer reviews", p: [
+        "If you leave a review: rating, text, the display name you choose, event type and date. It is only published on the site with your consent (checkbox) and after being read.",
+        "How reviews are checked: only customers who published an invitation can leave one, from their personal link. Reviews are read before publication; we only turn down abusive, off-topic or unrelated content, and never edit them. They are shown with their date and the event date, and kept as long as they are online (even after the invitation is deleted). To have yours removed, write to us.",
       ] },
       { h: "Guests' data", p: [
         "Name, reply (attending or not), number of people and optional message.",

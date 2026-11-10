@@ -136,5 +136,46 @@ export function linksEmail(lang: Lang | null | undefined, invites: (Who & { toke
   };
 }
 
+/* ---------- Après l'événement (lib/aftercare.ts) ---------- */
+
+const stopLine = (lang: Lang | null | undefined, token: string) => {
+  const c = emailDict(lang).aftercare;
+  return `<p style="margin:8px 0 0;${FONT};font-size:12px;line-height:1.5;color:#9A8F94">${esc(c.stop)} <a href="${esc(`${siteUrl()}/avis/${token}?stop=1`)}" style="color:#9A8F94">${esc(c.stopLink)}</a></p>`;
+};
+
+export function reviewRequestEmail(lang: Lang | null | undefined, d: Who, token: string, kind: string): Omit<Mail, "to"> {
+  const t = emailDict(lang), n = names(lang, d), ev = t.aftercare.event[kind] ?? t.aftercare.event.mariage;
+  const url = `${siteUrl()}/avis/${token}`;
+  const stars = `<div style="margin:0 0 14px;font-size:30px;letter-spacing:6px;color:#D9B76E">★★★★★</div>`;
+  return {
+    subject: t.review.subject(ev),
+    html: layout(lang, [h1(t.review.subject(ev)), p(t.common.hello(n)), p(t.review.body(ev)), p(t.review.ask), `<div style="margin:0 0 18px;text-align:center">${stars}${button(url, t.review.button)}</div>`, p(t.review.thanks), stopLine(lang, token)]),
+    text: text([t.common.hello(n), t.review.body(ev), t.review.ask, `${t.review.button} : ${url}`, t.review.thanks, `${t.aftercare.stopLink} : ${siteUrl()}/avis/${token}?stop=1`]),
+  };
+}
+
+export function followupEmail(lang: Lang | null | undefined, d: Who, token: string, kind: string, code: string | null): Omit<Mail, "to"> {
+  const t = emailDict(lang), n = names(lang, d), ev = t.aftercare.event[kind] ?? t.aftercare.event.mariage;
+  const create = `${siteUrl()}/creer`;
+  const codeBox = code ? `<div style="margin:0 0 18px;padding:16px;border-radius:12px;background:#F7F1E6;border:1px dashed #C9A86A;text-align:center"><div style="${FONT};font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9A7B3F;margin-bottom:8px">${esc(t.followup.code)}</div><div style="font-family:Georgia,serif;font-size:26px;letter-spacing:.12em;color:#1D1418">${esc(code)}</div></div>` : "";
+  return {
+    subject: t.followup.subject,
+    html: layout(lang, [h1(t.followup.subject), p(t.common.hello(n)), p(t.followup.body(ev)), p(t.followup.next), codeBox, `<div style="margin:0 0 18px">${button(create, t.followup.button)}</div>`, p(t.followup.friend), stopLine(lang, token)]),
+    text: text([t.common.hello(n), t.followup.body(ev), t.followup.next, code && `${t.followup.code} : ${code}`, `${t.followup.button} : ${create}`, t.followup.friend, `${t.aftercare.stopLink} : ${siteUrl()}/avis/${token}?stop=1`]),
+  };
+}
+
+/** Alerte à l'administrateur : nouvel avis à valider (en français, comme toute l'admin). */
+export function newReviewEmail(r: { rating: number; display_name: string; body: string; kind: string }): Omit<Mail, "to"> {
+  const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+  const url = `${siteUrl()}/admin/avis`;
+  const subject = `Nouvel avis ${stars} de ${r.display_name}`;
+  return {
+    subject,
+    html: layout("fr", [h1("Nouvel avis à valider"), `<div style="margin:0 0 10px;font-size:24px;letter-spacing:4px;color:#D9B76E">${stars}</div>`, p(`${r.display_name} · ${r.kind}`), `<div style="margin:0 0 18px;padding:14px 16px;border-radius:12px;background:#F7F1E6;border:1px solid #EADBBE;${FONT};font-size:15px;line-height:1.6;color:#2B2128;white-space:pre-wrap">${esc(r.body)}</div>`, p("Il n'apparaîtra sur le site qu'après votre validation."), `<div style="margin:0 0 18px">${button(url, "Ouvrir les avis")}</div>`]),
+    text: text([subject, r.body, `Ouvrir les avis : ${url}`]),
+  };
+}
+
 /** Adresse e-mail valide (forme simple) ou null. */
 export const cleanEmail = (v: unknown) => (typeof v === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? v.trim().toLowerCase().slice(0, 200) : null);

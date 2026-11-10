@@ -1,6 +1,6 @@
-import { welcomeEmail, publishedEmail, recapEmail, linksEmail } from "@/lib/email";
+import { welcomeEmail, publishedEmail, recapEmail, linksEmail, reviewRequestEmail, followupEmail, newReviewEmail } from "@/lib/email";
 
-/* Aperçu des e-mails en local uniquement : /api/dev/email?type=welcome|published|recap|links&lang=fr|en
+/* Aperçu des e-mails en local uniquement : /api/dev/email?type=welcome|published|recap|links|review|followup|newreview&lang=fr|en
    Renvoie 404 en production. */
 export async function GET(req: Request) {
   if (process.env.NODE_ENV === "production") return new Response("Not found", { status: 404 });
@@ -16,6 +16,9 @@ export async function GET(req: Request) {
       { name: "Paul <script>", attending: false, guests: 0, message: null },
       { name: "Awa Diallo", attending: true, guests: 1, message: null },
     ], { yes: 14, no: 3 }),
+    review: () => reviewRequestEmail(lang, who, tok, u.searchParams.get("kind") ?? "mariage"),
+    followup: () => followupEmail(lang, who, tok, u.searchParams.get("kind") ?? "mariage", u.searchParams.get("code") ?? "AMI10"),
+    newreview: () => newReviewEmail({ rating: 4, display_name: "Léa & Samuel", kind: "mariage", body: "Nos invités ont adoré ouvrir l'invitation ! Le compte à rebours a fait sensation." }),
     links: () => linksEmail(lang, [{ ...who, token: tok }, { partner1: "Awa", partner2: "Moussa", token: tok }]),
   }[u.searchParams.get("type") ?? "welcome"] ?? (() => welcomeEmail(lang, who, tok));
   const m = mail();

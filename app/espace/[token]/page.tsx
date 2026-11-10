@@ -13,6 +13,7 @@ import { LangSwitch } from "@/components/I18n";
 import PdfDownloadButton from "./PdfDownloadButton";
 import PublishButton from "./PublishButton";
 import { displayNames } from "@/lib/types";
+import { reviewOf } from "@/lib/reviews";
 import { formatPrice, getPriceCents, needsPayment, paymentsOn, pdfAllowed as canPdf } from "@/lib/payment";
 
 export const dynamic = "force-dynamic";
@@ -39,6 +40,9 @@ export default async function Espace({ params, searchParams }: { params: Promise
   const yes = rsvps.filter((r) => r.attending);
   const guests = yes.reduce((n, r) => n + r.guests, 0);
   const link = `${siteUrl()}${invitePath(inv.slug)}`;
+  // Après l'événement : invitation à laisser un avis (tant qu'il n'y en a pas).
+  const ev = new Date(inv.data.dateISO).getTime();
+  const askReview = inv.status === "published" && ev < Date.now() && !(await reviewOf(inv.id));
   const fmt = new Intl.DateTimeFormat(LOCALE[lang], { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Paris" });
   return (
     <main className="site">
@@ -73,6 +77,13 @@ export default async function Espace({ params, searchParams }: { params: Promise
             </div>
           )}
         </section>
+
+        {askReview && (
+          <section className="card-s" style={{ padding: 20, display: "flex", gap: 14, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
+            <p style={{ margin: 0, flex: "1 1 260px" }}><span aria-hidden="true" style={{ color: "#C29B52", letterSpacing: 2 }}>★★★★★ </span>{t.review.spaceAsk}</p>
+            <Link className="btn-s" href={`/avis/${token}`}>{t.review.spaceCta}</Link>
+          </section>
+        )}
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
           {([[s.stats.replies, rsvps.length], [s.stats.yes, guests], [s.stats.no, rsvps.length - yes.length]] as [string, number][]).map(([l, n]) => (

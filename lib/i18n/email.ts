@@ -32,6 +32,26 @@ const fr = {
     no: "Ne pourra pas venir",
     totals: (yes: number, no: number) => `Depuis le début : ${yes} personne${yes > 1 ? "s" : ""} présente${yes > 1 ? "s" : ""}, ${no} absence${no > 1 ? "s" : ""}.`,
   },
+  aftercare: {
+    event: { mariage: "votre mariage", anniversaire: "votre fête", "baby-shower": "votre baby shower" } as Record<string, string>,
+    stop: "Vous ne souhaitez plus recevoir ce type d'e-mail ?",
+    stopLink: "Se désabonner",
+  },
+  review: {
+    subject: (event: string) => `Comment s'est passé${event === "votre fête" ? "e" : ""} ${event} ?`,
+    body: (event: string) => `Nous espérons que ${event} a été un très beau moment, et que vos invités ont aimé recevoir votre invitation.`,
+    ask: "Votre avis compte beaucoup pour nous : il nous aide à nous améliorer et guide celles et ceux qui préparent leur événement. Cela prend une minute.",
+    button: "Donner mon avis",
+    thanks: "Merci encore de nous avoir fait confiance pour ce moment.",
+  },
+  followup: {
+    subject: "Un nouvel événement en vue ?",
+    body: (event: string) => `Il y a quelques semaines, vous avez invité vos proches à ${event} avec E-carte Studio. Nous espérons que vous en gardez un très beau souvenir.`,
+    next: "Un anniversaire, une fête de famille… Si un nouvel événement se prépare, votre prochaine invitation se crée en quelques minutes.",
+    friend: "Et si un proche prépare son mariage ou sa fête, n'hésitez pas à lui parler de nous.",
+    code: "Votre code de réduction, à utiliser ou à offrir",
+    button: "Créer une invitation",
+  },
   links: {
     subject: "Vos liens E-carte Studio",
     title: "Vos invitations",
@@ -71,6 +91,26 @@ const en: EmailDict = {
     yes: (g) => `Attending · ${g} guest${g > 1 ? "s" : ""}`,
     no: "Can't make it",
     totals: (yes, no) => `So far: ${yes} guest${yes > 1 ? "s" : ""} attending, ${no} declined.`,
+  },
+  aftercare: {
+    event: { mariage: "your wedding", anniversaire: "your party", "baby-shower": "your baby shower" },
+    stop: "Don't want to receive this kind of email?",
+    stopLink: "Unsubscribe",
+  },
+  review: {
+    subject: (event) => `How was ${event}?`,
+    body: (event) => `We hope ${event} was a wonderful moment, and that your guests loved receiving your invitation.`,
+    ask: "Your opinion means a lot to us: it helps us improve and guides people planning their own event. It only takes a minute.",
+    button: "Leave a review",
+    thanks: "Thank you again for trusting us with this moment.",
+  },
+  followup: {
+    subject: "Another event coming up?",
+    body: (event) => `A few weeks ago, you invited your loved ones to ${event} with E-carte Studio. We hope you have wonderful memories of it.`,
+    next: "A birthday, a family party… If a new event is on the way, your next invitation only takes a few minutes to create.",
+    friend: "And if someone close to you is planning a wedding or a party, feel free to tell them about us.",
+    code: "Your discount code, to use or to share",
+    button: "Create an invitation",
   },
   links: {
     subject: "Your E-carte Studio links",

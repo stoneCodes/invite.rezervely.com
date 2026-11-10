@@ -330,3 +330,19 @@ body:has(.gl){background:#F4EEE4}
   background:rgba(255,253,249,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - var(--nv) + 1px) no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 48' preserveAspectRatio='none'%3E%3Cpath d='M0 0V22C200 44 420 46 640 30S1060 4 1260 16S1400 36 1440 32V0Z'/%3E%3C/svg%3E") bottom/100% var(--nv) no-repeat;mask:linear-gradient(#000 0 0) top/100% calc(100% - var(--nv) + 1px) no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 48' preserveAspectRatio='none'%3E%3Cpath d='M0 0V22C200 44 420 46 640 30S1060 4 1260 16S1400 36 1440 32V0Z'/%3E%3C/svg%3E") bottom/100% var(--nv) no-repeat}
 .gl-nav.is-scrolled::before{opacity:1}
+
+/* Avis des clients (components/HomeExtras.tsx, HomeReviews) : section blanche entre les étapes et la FAQ, absente sans avis publié */
+.gl-rev{background:var(--gl-w);padding:calc(11vh + var(--wv)) 0 11vh;text-align:center}
+.gl-rev h2{font-size:clamp(2rem,5vw,3.2rem);margin:.2em 0 0}
+.gl-rev-avg{margin:.8em 0 0;color:var(--muted);letter-spacing:.06em}.gl-rev-avg span{color:#C29B52}
+.gl-rev-list{list-style:none;margin:34px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:18px;text-align:left}
+.gl-rev-list.is-rail{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:min(86%,340px);overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 4px 16px;scrollbar-width:thin}
+.gl-rev-list.is-rail>li{scroll-snap-align:start}
+.gl-rev-card{display:flex;flex-direction:column;gap:14px;padding:24px 22px;border-radius:18px;background:linear-gradient(145deg,#F8F3EA,#EFE6D7);border:1px solid rgba(176,140,80,.2);box-shadow:0 18px 40px -26px rgba(80,58,25,.35)}
+.gl-rev-stars{color:#C29B52;letter-spacing:3px;font-size:1.1rem}.gl-rev-stars i{font-style:normal;color:#DCCFB7}
+.gl-rev-card blockquote{margin:0;flex:1;white-space:pre-line;font:400 1.08rem/1.6 var(--f-serif);color:var(--ink)}
+.gl-rev-card blockquote::before{content:"“";display:block;height:.45em;font:400 2.6rem/1 var(--f-serif);color:#C29B52;opacity:.7}
+.gl-rev-who{display:grid;gap:3px;padding-top:12px;border-top:1px solid rgba(176,140,80,.22)}
+.gl-rev-who b{font-weight:500}
+.gl-rev-who small{color:var(--muted);font-size:.8rem}
+.gl-rev-note{max-width:44em;margin:22px auto 0;color:var(--muted);font-size:.8rem;line-height:1.5}
