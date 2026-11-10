@@ -32,7 +32,7 @@ export function createMusic(track) {
     cancelAnimationFrame(fadeT);
     if (!el) return;
     const t0 = performance.now();
-    const step = (t) => { if (!el || !on) return; const k = Math.min(1, (t - t0) / 1600); el.volume = level() * k; if (k < 1) fadeT = requestAnimationFrame(step); };
+    const step = (t) => { if (!el || !on) return; const k = Math.min(1, Math.max(0, (t - t0) / 1600)); el.volume = level() * k; if (k < 1) fadeT = requestAnimationFrame(step); };
     el.volume = 0; fadeT = requestAnimationFrame(step);
   };
   const go = () => {

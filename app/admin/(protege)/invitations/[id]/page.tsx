@@ -28,7 +28,7 @@ export default async function InvitationDetails({params,searchParams}:{params:Pr
   const data=inv.data;
   const publicHref=invitePath(inv.slug);
   const paymentHref=inv.stripe_session_id?`https://dashboard.stripe.com/payments/${encodeURIComponent(inv.stripe_session_id)}`:null;
-  const templateName=({cygnes:"Lac aux cygnes","nuit-doree":"Nuit dorée","jardin-nuit":"Le jardin secret",appel:"Appel entrant","boule-neige":"Le domaine",origami:"Origami",velours:"Éclat de velours",vinyle:"Face A",toast:"Le toast",gateau:"Le gâteau magique",pinata:"La piñata"} as Record<string,string>)[inv.template]||inv.template;
+  const templateName=({cygnes:"Lac aux cygnes","nuit-doree":"Nuit dorée","jardin-nuit":"Le jardin secret",appel:"Appel entrant","boule-neige":"Le domaine",origami:"Origami",velours:"Éclat de velours",vinyle:"Face A",toast:"Le toast",gateau:"Le gâteau magique",pinata:"La piñata",livre:"Il était une fois"} as Record<string,string>)[inv.template]||inv.template;
   return <main className="ad-main">
     <p><Link href="/admin/invitations">← {adminFr.backToList}</Link></p>
     <div className="ad-title"><h1>{[data.partner1, data.partner2].filter(Boolean).join(" & ")}</h1></div>

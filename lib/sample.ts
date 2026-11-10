@@ -1,4 +1,4 @@
-import { isBirthday, isKids, type InvitationData, type TemplateId, type Wishlist } from "./types";
+import { isBaby, isBirthday, isKids, type InvitationData, type TemplateId, type Wishlist } from "./types";
 import type { Lang } from "./i18n";
 
 /** Données d'exemple : démo publique et point de départ de l'éditeur, dans la langue demandée. */
@@ -125,7 +125,47 @@ function sampleEn(): InvitationData {
 export function sampleFor(template: TemplateId, lang: Lang = "fr"): InvitationData {
   if (template === "velours") return veloursSampleData(lang);
   if (isBirthday(template)) return birthdaySample(template, lang);
+  if (isBaby(template)) return babySample(lang);
   return sampleData(lang);
+}
+
+/** Exemple de baby shower (« Il était une fois ») : deux parents, bébé surprise, pronostics activés. */
+export function babySample(lang: Lang = "fr"): InvitationData {
+  const en = lang === "en";
+  const base = sampleData(lang);
+  return {
+    ...base,
+    partner1: "Chloé",
+    partner2: "Malik",
+    intro: en ? "Join us for a gentle afternoon to celebrate our baby before the big arrival." : "Venez partager un après-midi tout en douceur pour fêter bébé avant sa grande arrivée.",
+    dateISO: "2027-02-20T15:00:00+01:00",
+    venue: en ? { name: "Lilac House", address: "4 allée des Lilas, 31000 Toulouse, France" } : { name: "La Maison des Lilas", address: "4 allée des Lilas, 31000 Toulouse" },
+    programme: en ? [
+      { t: "3:00 pm", title: "Welcome and tea", note: "Cakes and lemonade" },
+      { t: "4:00 pm", title: "Games and guesses", note: "Who will guess right?" },
+      { t: "5:00 pm", title: "Opening the gifts", note: "With a lot of emotion" },
+    ] : [
+      { t: "15h00", title: "Accueil et goûter", note: "Gâteaux et citronnade" },
+      { t: "16h00", title: "Jeux et pronostics", note: "Qui verra juste ?" },
+      { t: "17h00", title: "Ouverture des cadeaux", note: "Avec beaucoup d'émotion" },
+    ],
+    dressCode: {
+      enabled: true,
+      title: en ? "Soft pastels" : "Douceur pastel",
+      note: en ? "Gentle tones if you like: linen, sage, dusty pink." : "Des tons doux si vous le souhaitez : lin, sauge, rose poudré.",
+      men: { label: "", text: "" }, women: { label: "", text: "" },
+      colors: [
+        { name: en ? "Linen" : "Lin", hex: "#E6D7BF" },
+        { name: en ? "Sage" : "Sauge", hex: "#A9B8A0" },
+        { name: en ? "Dusty pink" : "Rose poudré", hex: "#DDB3AA" },
+      ],
+    },
+    verse: null,
+    story: [],
+    rsvpBy: en ? "Please reply before 1 February 2027" : "Merci de répondre avant le 1er février 2027",
+    photoUrl: null,
+    baby: { sex: "surprise", due: "2027-04", guesses: true, palette: "ivoire" },
+  };
 }
 
 /** Exemples d'anniversaire : adulte (vinyle, toast) ou enfant (gâteau, piñata). */
@@ -187,7 +227,9 @@ export function birthdaySample(template: TemplateId, lang: Lang = "fr"): Invitat
 /** Liste de souhaits d'exemple, montrée seulement dans les démos (jamais pré-remplie dans l'éditeur). Liens example.com. */
 export function demoWishlist(template: TemplateId, lang: Lang = "fr"): Wishlist {
   const en = lang === "en";
-  const names = isKids(template)
+  const names = isBaby(template)
+    ? (en ? ["Organic cotton sleeping bag", "Wooden baby mobile", "First picture books"] : ["Gigoteuse en coton bio", "Mobile en bois", "Premiers livres d'éveil"])
+    : isKids(template)
     ? (en ? ["Illustrated story book", "Wooden building blocks", "Watercolour paint set"] : ["Livre d'histoires illustré", "Jeu de construction en bois", "Coffret de peinture"])
     : isBirthday(template)
       ? (en ? ["Signed vinyl record", "Cooking class for two", "Linen throw"] : ["Vinyle dédicacé", "Cours de cuisine pour deux", "Plaid en lin"])

@@ -16,4 +16,6 @@ export const DEMO_PHOTOS: Record<TemplateId, string | null> = {
   toast: null,
   gateau: null,
   pinata: null,
+  // Baby shower : couple attendant un bébé (démos seulement).
+  livre: "/img/demo-couple-livre.webp",
 };

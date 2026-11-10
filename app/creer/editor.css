@@ -105,3 +105,8 @@
 .ed-music-play:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
 .ed-music-play[aria-pressed="true"]{border-color:var(--accent);background:rgba(207,190,157,.25)}
 .ed-music-play:disabled{opacity:.45;cursor:default}
+/* Palettes du baby shower « Il était une fois » */
+.ed-pal-b-ivoire span:first-child{background:#EFE4D0}.ed-pal-b-ivoire span+span{background:#CFB68E}
+.ed-pal-b-rose span:first-child{background:#EED6CE}.ed-pal-b-rose span+span{background:#E2D2BD}
+.ed-pal-b-bleu span:first-child{background:#D5E0E5}.ed-pal-b-bleu span+span{background:#A7B89F}
+.ed-palettes.is-3{grid-template-columns:1fr}

@@ -4,7 +4,7 @@ import { getBySlug } from "@/lib/supabase";
 import { dateParts } from "@/components/invitation/engine";
 import InviteClient from "./InviteClient";
 import { siteDict } from "@/lib/i18n/site";
-import { isBirthday } from "@/lib/types";
+import { displayNames, isBaby, isBirthday } from "@/lib/types";
 
 type P = { params: Promise<{ slug: string }> };
 export const dynamic = "force-dynamic";
@@ -15,8 +15,9 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   if (!inv || inv.status !== "published") return { title: t.meta.invitation, robots: { index: false } };
   const d = inv.data;
   const when = dateParts(d.dateISO, d.lang);
-  const title = isBirthday(inv.template) ? t.meta.birthday(d.partner1) : t.meta.invites(d.partner1, d.partner2);
-  const description = when ? (isBirthday(inv.template) ? t.meta.partyOn : t.meta.weddingOn)(`${when.day} ${when.month} ${when.year}`) : t.meta.openInvite;
+  const baby = isBaby(inv.template);
+  const title = isBirthday(inv.template) ? t.meta.birthday(d.partner1) : baby ? t.meta.baby(displayNames(d)) : t.meta.invites(d.partner1, d.partner2);
+  const description = when ? (isBirthday(inv.template) ? t.meta.partyOn : baby ? t.meta.babyOn : t.meta.weddingOn)(`${when.day} ${when.month} ${when.year}`) : t.meta.openInvite;
   return {
     title: { absolute: title },
     description,

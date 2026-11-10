@@ -1,7 +1,7 @@
 import { getBySlug } from "@/lib/supabase";
 import { dateParts } from "@/components/invitation/engine";
 import { inviteDict } from "@/lib/i18n/invite";
-import { displayNames, isBirthday } from "@/lib/types";
+import { displayNames, isBaby, isBirthday } from "@/lib/types";
 import { OG_SIZE, renderEnvelope } from "@/lib/og/envelope";
 
 export const size = OG_SIZE;
@@ -15,7 +15,7 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
   const og = inviteDict(inv?.data.lang).og;
   const when = published ? dateParts(inv.data.dateISO, inv.data.lang) : null;
   return renderEnvelope({
-    kicker: isBirthday(inv?.template) ? og.birthday : og.married,
+    kicker: isBirthday(inv?.template) ? og.birthday : isBaby(inv?.template) ? og.baby : og.married,
     names: published ? displayNames(inv.data) : og.fallback,
     date: when ? when.label : "",
     photo: published ? inv.data.photoUrl : null,

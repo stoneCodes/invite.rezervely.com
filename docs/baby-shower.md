@@ -6,7 +6,7 @@ Choisi par Glad le 10 nov. 2026, avec le style de papier **B, papier découpé e
 
 | Modèle | Statut |
 |---|---|
-| **« Il était une fois » / « Once Upon a Time »** (livre en papier découpé) | à développer |
+| **« Il était une fois » / « Once Upon a Time »** (livre en papier découpé) | codé le 10 nov. 2026, à valider par Glad |
 | « Le mobile de berceau » | **plus tard** |
 | « Sur un petit nuage » (montgolfière) | **plus tard** |
 

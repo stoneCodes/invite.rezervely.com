@@ -33,6 +33,8 @@ export const TEMPLATES = [
   { id: "toast", name: "Le toast", tagline: "On sabre le champagne, la mousse jaillit et chaque section arrive dans une bulle", cover: "/img/phone-toast.webp", categories: ["anniversaire"], featured: true, kids: false, phone: { screen: "/img/phone-toast.webp", names: { top: 69.5, size: 12 }, hint: { top: 90, ink: "#F3E6CC" }, seal: null, ink: "#3b2a0b", font: "serif" } },
   { id: "gateau", name: "Le gâteau magique", tagline: "On souffle les bougies, puis on descend le gâteau étage par étage", cover: "/img/phone-gateau.webp", categories: ["anniversaire"], featured: true, kids: true, phone: { screen: "/img/phone-gateau.webp", names: { top: 13, size: 13 }, hint: { top: 85.5 }, seal: null, ink: "#1f3f63", font: "serif" } },
   { id: "pinata", name: "La piñata", tagline: "Trois coups sur la piñata, et chaque section tombe dans un bonbon à déballer", cover: "/img/phone-pinata.webp", categories: ["anniversaire"], featured: true, kids: true, phone: { screen: "/img/phone-pinata.webp", names: { top: 78, size: 13 }, hint: { top: 88.5 }, seal: null, ink: "#5a2140", font: "serif" } },
+  // Baby shower (docs/baby-shower.md) : un ou deux parents (partner2 facultatif), données propres dans data.baby.
+  { id: "livre", name: "Il était une fois", tagline: "Un livre pop-up en papier découpé : on tourne les pages, et chaque scène se déplie en relief", cover: "/img/phone-livre.webp", categories: ["baby-shower"], featured: true, phone: { screen: "/img/phone-livre.webp", names: { top: 43, size: 12 }, hint: { top: 88 }, seal: null, ink: "#8a6534", font: "script" } },
 ] as const;
 
 export type TemplateId = (typeof TEMPLATES)[number]["id"];
@@ -42,6 +44,8 @@ export const TEMPLATE_IDS = TEMPLATES.map((t) => t.id) as TemplateId[];
 export const isBirthday = (id: string | null | undefined) => TEMPLATES.some((t) => t.id === id && (t.categories as readonly string[]).includes("anniversaire"));
 /** Anniversaire d'enfant : palette au choix, heure de fin, téléphone d'un parent, allergies dans la réponse. */
 export const isKids = (id: string | null | undefined) => TEMPLATES.some((t) => t.id === id && "kids" in t && t.kids);
+/** Baby shower (un ou deux parents, data.baby, pas de verset ni d'histoire). */
+export const isBaby = (id: string | null | undefined) => TEMPLATES.some((t) => t.id === id && (t.categories as readonly string[]).includes("baby-shower"));
 /** Prénoms affichés : « Léa & Samuel », ou un seul prénom pour un anniversaire. */
 export const displayNames = (d: { partner1?: string; partner2?: string }) => [d.partner1, d.partner2].map((x) => (x ?? "").trim()).filter(Boolean).join(" & ");
 
@@ -62,6 +66,23 @@ export type BirthdayData = {
   /** Téléphone d'un parent (enfants) */
   parentPhone: string;
   palette: PaletteId;
+};
+
+/** Palettes du baby shower (choix des parents, sans étiquette fille / garçon). */
+export const BABY_PALETTES = ["ivoire", "rose", "bleu"] as const;
+export type BabyPaletteId = (typeof BABY_PALETTES)[number];
+export const BABY_SEXES = ["surprise", "fille", "garcon"] as const;
+export type BabySex = (typeof BABY_SEXES)[number];
+
+/** Données propres au baby shower. */
+export type BabyData = {
+  /** Sert seulement au texte (« Bébé », « notre fille », « notre fils ») */
+  sex: BabySex;
+  /** Mois de naissance prévu « AAAA-MM », "" = non précisé */
+  due: string;
+  /** Pronostics des invités (prénom, date, poids) ajoutés en tête du message de réponse */
+  guesses: boolean;
+  palette: BabyPaletteId;
 };
 
 /** Types de lieu d'une étape du programme (parcours du modèle « Le domaine »). */
@@ -97,6 +118,8 @@ export type InvitationData = {
   photoUrl: string | null;
   /** Anniversaires seulement (partner1 = personne fêtée, partner2 vide). */
   bday?: BirthdayData;
+  /** Baby shower seulement (partner2 facultatif). */
+  baby?: BabyData;
   /** Liste de souhaits facultative (tous les modèles) : articles nom + lien, et lien de cagnotte. */
   wishlist?: Wishlist;
   /** Musique de fond : id d'un morceau de la bibliothèque (/api/musiques), "none" = sans musique, absent = musique par défaut de la catégorie. */

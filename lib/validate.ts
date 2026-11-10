@@ -1,4 +1,4 @@
-import { PALETTES, PLACES, TEMPLATE_IDS, isBirthday, type InvitationData, type PaletteId, type PlaceId, type TemplateId } from "./types";
+import { BABY_PALETTES, BABY_SEXES, PALETTES, PLACES, TEMPLATE_IDS, isBaby, isBirthday, type BabyPaletteId, type BabySex, type InvitationData, type PaletteId, type PlaceId, type TemplateId } from "./types";
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const hex = (v: unknown) => (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v) ? v : undefined);
@@ -20,6 +20,8 @@ export function sanitizeData(input: any, template?: string): InvitationData {
   const d = input ?? {};
   const bdayTpl = isBirthday(template);
   const b = d.bday ?? {};
+  const babyTpl = isBaby(template);
+  const bb = d.baby ?? {};
   const age = parseInt(b.age, 10);
   const date = new Date(d.dateISO);
   const dc = d.dressCode ?? {};
@@ -28,7 +30,7 @@ export function sanitizeData(input: any, template?: string): InvitationData {
   return {
     lang: d.lang === "en" ? "en" : "fr",
     partner1: str(d.partner1, 40) || "Prénom",
-    partner2: bdayTpl ? "" : str(d.partner2, 40) || "Prénom",
+    partner2: bdayTpl ? "" : babyTpl ? str(d.partner2, 40) : str(d.partner2, 40) || "Prénom",
     intro: str(d.intro, 200),
     dateISO: isNaN(date.getTime()) ? new Date().toISOString() : str(d.dateISO, 40),
     venue: { name: str(d.venue?.name, 120), address: str(d.venue?.address, 200) },
@@ -64,6 +66,12 @@ export function sanitizeData(input: any, template?: string): InvitationData {
       endTime: str(b.endTime, 12),
       parentPhone: str(b.parentPhone, 30).replace(/[^\d+ ().-]/g, ""),
       palette: (PALETTES as readonly string[]).includes(b.palette) ? (b.palette as PaletteId) : "rose",
+    } } : {}),
+    ...(babyTpl ? { baby: {
+      sex: (BABY_SEXES as readonly string[]).includes(bb.sex) ? (bb.sex as BabySex) : "surprise",
+      due: typeof bb.due === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(bb.due) ? bb.due : "",
+      guesses: bb.guesses === true,
+      palette: (BABY_PALETTES as readonly string[]).includes(bb.palette) ? (bb.palette as BabyPaletteId) : "ivoire",
     } } : {}),
   };
 }

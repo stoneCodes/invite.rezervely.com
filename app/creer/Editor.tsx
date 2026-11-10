@@ -6,7 +6,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import { useRouter, useSearchParams } from "next/navigation";
 import { sampleFor } from "@/lib/sample";
-import { PLACES, TEMPLATES, displayNames, isBirthday, isKids, PALETTES, type InvitationData, type PlaceId, type TemplateId } from "@/lib/types";
+import { PLACES, TEMPLATES, displayNames, isBaby, isBirthday, isKids, PALETTES, BABY_PALETTES, BABY_SEXES, type BabySex, type InvitationData, type PlaceId, type TemplateId } from "@/lib/types";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { invitePath } from "@/lib/slug";
@@ -65,7 +65,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
   const siteLang = useLang();
   const [template, setTemplate] = useState<TemplateId>((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId);
   const [data, setData] = useState<InvitationData>(() => sampleFor((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId, siteLang));
-  const bday = isBirthday(template), kids = isKids(template);
+  const bday = isBirthday(template), kids = isKids(template), baby = isBaby(template);
   const [email, setEmail] = useState("");
   const [emailErr, setEmailErr] = useState(false);
   const [last, setLast] = useState<LastInvite | null>(null);
@@ -150,12 +150,15 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
   const wl = data.wishlist ?? { note: "", items: [], fund: "" };
   const setWl = (patch: Partial<NonNullable<InvitationData["wishlist"]>>) => set("wishlist", { ...wl, ...patch });
   const setBd = (patch: Partial<NonNullable<InvitationData["bday"]>>) => set("bday", { ...bd, ...patch });
+  const bb = data.baby ?? { sex: "surprise" as const, due: "", guesses: true, palette: "ivoire" as const };
+  const setBb = (patch: Partial<NonNullable<InvitationData["baby"]>>) => set("baby", { ...bb, ...patch });
   /** Changement de modèle : un exemple encore intact est remplacé par celui du nouveau modèle (mariage, velours, anniversaire) ;
    *  sinon les textes sont gardés, et un anniversaire reçoit ses champs propres. */
   const chooseTemplate = (id: TemplateId) => {
     const lang = data.lang ?? siteLang;
     if (!token && JSON.stringify(data) === JSON.stringify(sampleFor(template, lang))) setData(sampleFor(id, lang));
     else if (isBirthday(id) && !data.bday) setData((d) => ({ ...d, bday: sampleFor(id, lang).bday }));
+    else if (isBaby(id) && !data.baby) setData((d) => ({ ...d, baby: sampleFor(id, lang).baby }));
     setTemplate(id);
   };
 
@@ -274,7 +277,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
             <MusicPicker value={data.music} template={template} onChange={(v) => set("music", v)} />
           </Sec>
 
-          <Sec title={bday ? e_.celebrant : e_.couple}>
+          <Sec title={bday ? e_.celebrant : baby ? e_.parents : e_.couple}>
             {bday ? (
               <div className="ed-row2">
                 <label>{e_.firstName}<input id="p1" value={data.partner1} maxLength={40} onChange={(e) => set("partner1", e.target.value)} /></label>
@@ -282,8 +285,8 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
               </div>
             ) : (
               <div className="ed-row2">
-                <label>{e_.first}<input id="p1" value={data.partner1} maxLength={40} onChange={(e) => set("partner1", e.target.value)} /></label>
-                <label>{e_.second}<input id="p2" value={data.partner2} maxLength={40} onChange={(e) => set("partner2", e.target.value)} /></label>
+                <label>{baby ? e_.parent1 : e_.first}<input id="p1" value={data.partner1} maxLength={40} onChange={(e) => set("partner1", e.target.value)} /></label>
+                <label>{baby ? e_.parent2 : e_.second}<input id="p2" value={data.partner2} maxLength={40} onChange={(e) => set("partner2", e.target.value)} /></label>
               </div>
             )}
             <label>{e_.intro}<textarea id="intro" rows={2} maxLength={200} value={data.intro} onChange={(e) => set("intro", e.target.value)} /></label>
@@ -324,7 +327,28 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
             </Sec>
           )}
 
-          {!bday && <Sec title={e_.verse}>
+          {baby && (
+            <Sec title={e_.babySec}>
+              <div className="ed-palettes is-3" role="radiogroup" aria-label={e_.palette}>
+                <p className="ed-sub">{e_.palette}</p>
+                {BABY_PALETTES.map((pl) => (
+                  <button key={pl} type="button" role="radio" aria-checked={bb.palette === pl} className={`ed-pal ed-pal-b-${pl}`} onClick={() => setBb({ palette: pl })}>
+                    <span aria-hidden="true" /><span aria-hidden="true" />{e_.babyPalettes[pl]}
+                  </button>
+                ))}
+              </div>
+              <label>{e_.babySex}
+                <select id="bsex" value={bb.sex} onChange={(e) => setBb({ sex: e.target.value as BabySex })}>
+                  {BABY_SEXES.map((s) => <option key={s} value={s}>{e_.babySexes[s]}</option>)}
+                </select>
+              </label>
+              <p className="ed-help">{e_.babySexHelp}</p>
+              <label>{e_.babyDue}<input id="bdue" type="month" value={bb.due} onChange={(e) => setBb({ due: e.target.value })} /></label>
+              <label className="ed-check"><input type="checkbox" checked={bb.guesses} onChange={(e) => setBb({ guesses: e.target.checked })} /> {e_.babyGuesses}</label>
+            </Sec>
+          )}
+
+          {!bday && !baby && <Sec title={e_.verse}>
             <label>{e_.type}
               <select id="vkind" value={data.verse?.kind ?? "none"} onChange={(e) => {
                 const k = e.target.value;
@@ -367,8 +391,8 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
             {data.programme.length < 10 && <button type="button" className="ed-add" onClick={() => set("programme", [...data.programme, { t: "", title: "", note: "" }])}>{e_.addStep}</button>}
           </Sec>
 
-          <Sec title={bday ? e_.dressTheme : e_.dress}>
-            <label className="ed-check"><input type="checkbox" checked={dc.enabled} onChange={(e) => setDc({ enabled: e.target.checked })} /> {bday ? e_.showTheme : e_.showDress}</label>
+          <Sec title={bday || baby ? e_.dressTheme : e_.dress}>
+            <label className="ed-check"><input type="checkbox" checked={dc.enabled} onChange={(e) => setDc({ enabled: e.target.checked })} /> {bday || baby ? e_.showTheme : e_.showDress}</label>
             {dc.enabled && (
               <>
                 <label>{e_.dTitle}<input id="dctitle" maxLength={60} value={dc.title} onChange={(e) => setDc({ title: e.target.value })} /></label>
@@ -384,7 +408,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
                         <input aria-label={e_.colorName} value={c.name} maxLength={30} placeholder={e_.colorPh} onChange={(e) => upd({ name: e.target.value })} />
                         <button type="button" className="ed-x" aria-label={e_.removeColor} onClick={() => setDc({ colors: dc.colors.filter((_, j) => j !== i) })}>×</button>
                       </div>
-                      {!bday && <label className="ed-check"><input type="checkbox" checked={split} onChange={(e) => upd(e.target.checked ? { men: c.hex, women: c.hex } : { men: undefined, women: undefined })} /> {e_.split}</label>}
+                      {!bday && !baby && <label className="ed-check"><input type="checkbox" checked={split} onChange={(e) => upd(e.target.checked ? { men: c.hex, women: c.hex } : { men: undefined, women: undefined })} /> {e_.split}</label>}
                       {split && (
                         <div className="ed-row2">
                           <label className="ed-inline">{e_.men} <input type="color" value={c.men ?? c.hex} onChange={(e) => upd({ men: e.target.value, hex: e.target.value })} /></label>
@@ -395,7 +419,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
                   );
                 })}
                 {dc.colors.length < 4 && <button type="button" className="ed-add" onClick={() => setDc({ colors: [...dc.colors, { name: "", hex: "#C9A46A" }] })}>{e_.addColor}</button>}
-                {!bday && <div className="ed-row2">
+                {!bday && !baby && <div className="ed-row2">
                   <label>{e_.menNote}<textarea rows={2} maxLength={160} value={dc.men.text} onChange={(e) => setDc({ men: { ...dc.men, text: e.target.value } })} /></label>
                   <label>{e_.womenNote}<textarea rows={2} maxLength={160} value={dc.women.text} onChange={(e) => setDc({ women: { ...dc.women, text: e.target.value } })} /></label>
                 </div>}
@@ -403,7 +427,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
             )}
           </Sec>
 
-          {!bday && <Sec title={e_.story}>
+          {!bday && !baby && <Sec title={e_.story}>
             {data.story.map((s, i) => (
               <div className="ed-item" key={i}>
                 <input aria-label={e_.year} className="ed-time" value={s.y} maxLength={12} placeholder="2019" onChange={(e) => set("story", data.story.map((x, j) => (j === i ? { ...x, y: e.target.value } : x)))} />
