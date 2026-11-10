@@ -3,7 +3,22 @@ import { CATEGORIES, TEMPLATES, type CategoryId } from "@/lib/types";
 /** Bibliothèque de musiques (10 nov. 2026) : morceaux choisis par Glad, que les mariés sélectionnent dans l'éditeur. */
 export type Track = { id: string; title: string; src: string; start: number };
 export type MusicDefaults = Partial<Record<CategoryId, string>>;
-export type MusicLibrary = { tracks: Track[]; defaults: MusicDefaults };
+/** Volumes généraux réglés dans l'admin, en % (100 = niveau d'origine) : musique de fond et petits effets sonores. */
+export type SoundLevels = { music: number; effects: number };
+export type MusicLibrary = { tracks: Track[]; defaults: MusicDefaults; levels?: SoundLevels };
+export const SOUND_LEVELS_KEY = "sound_levels";
+export const DEFAULT_LEVELS: SoundLevels = { music: 100, effects: 100 };
+/** Volume de lecture de la musique à 100 % (élément audio, 0 à 1). */
+export const MUSIC_BASE_VOLUME = 0.55;
+/** Borne un pourcentage de volume (0 à 100, par pas de 5). */
+export function clampLevel(v: unknown, fallback = 100): number {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.min(100, Math.max(0, Math.round(n / 5) * 5)) : fallback;
+}
+export function normalizeLevels(v: unknown): SoundLevels {
+  const o = (v && typeof v === "object" ? v : {}) as Record<string, unknown>;
+  return { music: clampLevel(o.music), effects: clampLevel(o.effects) };
+}
 
 /** Valeur de `data.music` pour une invitation sans musique. */
 export const NO_MUSIC = "none";

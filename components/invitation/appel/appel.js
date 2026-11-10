@@ -6,7 +6,7 @@ import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 import { wishHtml } from "../wishlist";
-import { createMusic } from "../music";
+import { createMusic, fxLevel } from "../music";
 
 const IMG = { call: "/img/appel-fond-defaut.webp", end: "/img/appel-fin.webp" };
 const ICON = {
@@ -139,7 +139,7 @@ export function mountAppel(root, INPUT, OPTS = {}) {
   /* ---------- Son : tonalité de connexion, « pop » des messages, petite boîte à musique ---------- */
   let actx = null, master = null, soundOn = true, loopT = 0;
   const music = createMusic(OPTS.music); // musique choisie par les mariés (remplace la mélodie synthétisée)
-  const audio = () => { music.unlock(); try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.12; master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
+  const audio = () => { music.unlock(); try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.12 * fxLevel(OPTS.music); master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
   const tone = (f, t, dur, vol = 0.5, type = "sine") => { if (!actx || !soundOn) return; const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(g).connect(master); o.start(t); o.stop(t + dur + 0.05); };
   const pop = () => { if (actx && soundOn) { const t = actx.currentTime; tone(880, t, 0.12, 0.35); tone(1320, t + 0.05, 0.1, 0.2); } };
   const connect = () => { if (!audio()) return; const t = actx.currentTime; tone(523, t, 0.18, 0.4); tone(784, t + 0.16, 0.3, 0.4); };

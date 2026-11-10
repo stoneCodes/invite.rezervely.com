@@ -6,7 +6,7 @@
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { wishHtml } from "../wishlist";
-import { createMusic } from "../music";
+import { createMusic, fxLevel } from "../music";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 
 const IMG = { washi: "/img/origami-washi.webp", table: "/img/origami-table.webp", cranes: "/img/origami-grues.webp" };
@@ -175,7 +175,7 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
   /* ---------- Son : papier froissé et kalimba (seulement après un geste) ---------- */
   let actx = null, master = null, soundOn = true, loopT = 0, looping = false;
   const music = createMusic(OPTS.music); // musique choisie par les mariés (remplace la mélodie synthétisée)
-  const audio = () => { music.unlock(); try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.12; master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
+  const audio = () => { music.unlock(); try { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); master = actx.createGain(); master.gain.value = 0.12 * fxLevel(OPTS.music); master.connect(actx.destination); } actx.resume(); } catch (e) {} return actx; };
   const tone = (f, t, dur, vol = 0.3) => { if (!actx || !soundOn) return; const o = actx.createOscillator(), g = actx.createGain(); o.type = "sine"; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(g).connect(master); o.start(t); o.stop(t + dur + 0.05);
     const o2 = actx.createOscillator(), g2 = actx.createGain(); o2.frequency.value = f * 4.2; g2.gain.setValueAtTime(vol * 0.12, t); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.15); o2.connect(g2).connect(master); o2.start(t); o2.stop(t + 0.2); };
   const paper = (len = 0.18, vol = 0.5) => { if (!actx || !soundOn) return; const t = actx.currentTime, n = actx.sampleRate * len, b = actx.createBuffer(1, n, actx.sampleRate), d = b.getChannelData(0);

@@ -4,7 +4,7 @@
 // Contrat : mountX(root, data, { onRsvp, skipIntro, noGate }) → { replay, destroy }.
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
-import { createMusic } from "../music";
+import { createMusic, fxLevel } from "../music";
 
 export { esc };
 
@@ -71,7 +71,7 @@ export function sound(L, track) {
     audio() {
       music.unlock();
       try {
-        if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)(); master = ctx.createGain(); master.gain.value = 0.12; master.connect(ctx.destination); }
+        if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)(); master = ctx.createGain(); master.gain.value = 0.12 * fxLevel(track); master.connect(ctx.destination); }
         ctx.resume();
       } catch (e) {}
       return ctx;

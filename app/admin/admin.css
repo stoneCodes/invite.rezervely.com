@@ -167,3 +167,10 @@ details[open] .ad-music-chev{rotate:225deg;translate:0 2px}
 }
 @keyframes ad-sheet{from{opacity:0;transform:translateY(12px)}}
 @media(prefers-reduced-motion:reduce){.ad-sheet{animation:none}}
+
+/* Volume général (musique, effets) */
+.ad-levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px 28px}
+.ad-level{display:grid;grid-template-rows:1fr auto;align-items:end;gap:8px;font-size:14px;color:#2B2520}
+.ad-level span{display:flex;justify-content:space-between;gap:12px}
+.ad-level b{font-weight:500;color:#8A6D3B;white-space:nowrap}
+.ad-level input[type=range]{width:100%;accent-color:#A8884F;min-height:28px}

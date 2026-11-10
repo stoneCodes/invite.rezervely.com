@@ -292,5 +292,10 @@ const adminFr = {
   musicBadType: "Format non accepté : choisissez un fichier MP3, M4A, OGG ou WAV.",
   musicEmpty: "Aucun morceau.",
   musicAction: "Musiques modifiées",
+  levelsTitle: "Volume général",
+  levelsHelp: "S’applique à toutes les invitations, publiées ou non (100 % = niveau d’origine). Enregistré dès que vous relâchez le curseur ; peut mettre une minute à s’appliquer.",
+  levelsMusic: "Musique de fond",
+  levelsEffects: "Effets sonores (carillon, bouchon, oiseaux…)",
+  levelsMuted: "coupé",
 };
 export default adminFr;

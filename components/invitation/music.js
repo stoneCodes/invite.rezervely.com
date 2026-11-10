@@ -6,10 +6,17 @@
  * iPhone : un élément audio ne peut démarrer qu'après un geste. `unlock()` est appelé dans le geste d'ouverture
  * (lecture puis pause immédiate), ce qui autorise ensuite `play()` depuis un minuteur.
  */
-const VOLUME = 0.55;
+const VOLUME = 0.55; // = MUSIC_BASE_VOLUME (lib/music.ts), multiplié par le volume « musique » de l'admin
+
+/** Multiplicateur des effets sonores synthétisés (volume « effets » de l'admin), 1 par défaut. */
+export function fxLevel(track) {
+  const v = Number(track && track.fx);
+  return Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 1;
+}
 
 export function createMusic(track) {
   let el = null, on = false, dead = false, unlocked = false, fadeT = 0;
+  const level = () => { const v = Number(track && track.volume); return VOLUME * (Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 1); };
   const startAt = () => Math.max(0, Number(track && track.start) || 0);
   const ensure = () => {
     if (el || dead || !track || !track.src) return el;
@@ -25,12 +32,13 @@ export function createMusic(track) {
     cancelAnimationFrame(fadeT);
     if (!el) return;
     const t0 = performance.now();
-    const step = (t) => { if (!el || !on) return; const k = Math.min(1, (t - t0) / 1600); el.volume = VOLUME * k; if (k < 1) fadeT = requestAnimationFrame(step); };
+    const step = (t) => { if (!el || !on) return; const k = Math.min(1, (t - t0) / 1600); el.volume = level() * k; if (k < 1) fadeT = requestAnimationFrame(step); };
     el.volume = 0; fadeT = requestAnimationFrame(step);
   };
   const go = () => {
     const a = ensure();
     if (!a || !on || dead) return;
+    if (level() <= 0) return; // musique coupée dans l'admin
     if (!a.paused && !a.muted) return; // déjà en lecture
     a.muted = false;
     if (a.readyState >= 1 && startAt() && a.currentTime < startAt()) try { a.currentTime = startAt(); } catch (e) {}

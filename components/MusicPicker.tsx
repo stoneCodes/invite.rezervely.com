@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@/components/I18n";
 import { loadMusicLibrary } from "@/lib/musicClient";
-import { defaultTrack, NO_MUSIC, resolveTrack, type MusicLibrary } from "@/lib/music";
+import { defaultTrack, MUSIC_BASE_VOLUME, NO_MUSIC, resolveTrack, type MusicLibrary } from "@/lib/music";
 
 /** Choix de la musique dans l'éditeur : morceau de la bibliothèque, musique par défaut du modèle, ou sans musique ; bouton pour écouter. */
 export default function MusicPicker({ value, template, onChange }: { value?: string; template: string; onChange: (v: string | undefined) => void }) {
@@ -21,6 +21,7 @@ export default function MusicPicker({ value, template, onChange }: { value?: str
     if (playing || !current) return stop();
     const a = audio.current ?? (audio.current = new Audio());
     if (a.src !== new URL(current.src, location.href).href) { a.src = current.src; a.currentTime = current.start; }
+    a.volume = MUSIC_BASE_VOLUME * ((lib?.levels?.music ?? 100) / 100); // même volume que dans l'invitation
     a.onended = () => setPlaying(false);
     a.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
   }

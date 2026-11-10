@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import adminFr from "@/lib/i18n/admin-fr";
+import { MUSIC_BASE_VOLUME, type SoundLevels } from "@/lib/music";
 
 type Track = { id: string; title: string; src: string; start: number; active: boolean; uploaded: boolean };
 type Msg = { ok: boolean; text: string } | null;
@@ -16,7 +17,7 @@ async function post(body: unknown) {
 }
 const errText = (e: unknown) => (e instanceof Error ? e.message : A.actionFailed);
 
-export default function MusicAdmin({ tracks, defaults, categories, ready }: { tracks: Track[]; defaults: Record<string, string | undefined>; categories: { id: string; label: string }[]; ready: boolean }) {
+export default function MusicAdmin({ tracks, defaults, levels: initialLevels, categories, ready }: { tracks: Track[]; defaults: Record<string, string | undefined>; levels: SoundLevels; categories: { id: string; label: string }[]; ready: boolean }) {
   const router = useRouter();
   const audio = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState<string | null>(null);
@@ -24,10 +25,29 @@ export default function MusicAdmin({ tracks, defaults, categories, ready }: { tr
   function listen(t: { id: string; src: string; start: number }) {
     const a = audio.current ?? (audio.current = new Audio());
     if (playing === t.id) { a.pause(); setPlaying(null); return; }
+    a.volume = MUSIC_BASE_VOLUME * (levels.music / 100); // comme dans les invitations
     a.src = t.src; a.onended = () => setPlaying(null);
     a.onloadedmetadata = () => { try { a.currentTime = t.start; } catch {} };
     a.play().then(() => setPlaying(t.id)).catch(() => setPlaying(null));
   }
+
+  // Volume général (musique, effets), enregistré au relâchement du curseur
+  const [levels, setLevels] = useState(initialLevels);
+  const [lvMsg, setLvMsg] = useState<Msg>(null);
+  const savedLevels = useRef(initialLevels);
+  useEffect(() => { if (audio.current) audio.current.volume = MUSIC_BASE_VOLUME * (levels.music / 100); }, [levels.music]);
+  async function saveLevels(next: SoundLevels) {
+    if (next.music === savedLevels.current.music && next.effects === savedLevels.current.effects) return;
+    setLvMsg(null);
+    try { await post({ action: "levels", levels: next }); savedLevels.current = next; setLvMsg({ ok: true, text: A.musicDone }); }
+    catch (e) { setLvMsg({ ok: false, text: errText(e) }); }
+  }
+  const slider = (key: keyof SoundLevels, label: string) => <label className="ad-level">
+    <span>{label}<b>{levels[key] === 0 ? A.levelsMuted : `${levels[key]} %`}</b></span>
+    <input type="range" min={0} max={100} step={5} value={levels[key]}
+      onChange={(e) => setLevels((l) => ({ ...l, [key]: Number(e.target.value) }))}
+      onPointerUp={() => void saveLevels(levels)} onKeyUp={() => void saveLevels(levels)} onBlur={() => void saveLevels(levels)} />
+  </label>;
 
   // Musique par défaut de chaque catégorie
   const active = tracks.filter((t) => t.active);
@@ -63,6 +83,16 @@ export default function MusicAdmin({ tracks, defaults, categories, ready }: { tr
   }
 
   return <div className="ad-music">
+    <section className="ad-panel">
+      <h2>{A.levelsTitle}</h2>
+      <p className="ad-music-help">{A.levelsHelp}</p>
+      <div className="ad-levels">
+        {slider("music", A.levelsMusic)}
+        {slider("effects", A.levelsEffects)}
+      </div>
+      {lvMsg && <small role={lvMsg.ok ? "status" : "alert"} className={`ad-music-msg ${lvMsg.ok ? "ok" : "err"}`}>{lvMsg.ok ? "✓ " : ""}{lvMsg.text}</small>}
+    </section>
+
     <section className="ad-panel">
       <h2>{A.musicDefaultsTitle}</h2>
       <p className="ad-music-help">{A.musicDefaultsHelp}</p>

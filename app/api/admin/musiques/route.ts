@@ -3,7 +3,7 @@ import { requireAdmin, originAllowed } from "@/lib/admin/auth";
 import { recordAdminEvent } from "@/lib/admin/audit";
 import { setAdminSetting } from "@/lib/admin/settings";
 import { listTrackRows } from "@/lib/admin/music";
-import { MUSIC_DEFAULTS_KEY } from "@/lib/music";
+import { MUSIC_DEFAULTS_KEY, SOUND_LEVELS_KEY, normalizeLevels } from "@/lib/music";
 import { CATEGORIES } from "@/lib/types";
 import { db } from "@/lib/supabase";
 import adminFr from "@/lib/i18n/admin-fr";
@@ -25,6 +25,15 @@ const slugify = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowe
 export async function POST(req: Request) {
   const actor = await requireAdmin();
   if (!actor || !originAllowed(req)) return new NextResponse(null, { status: 404 });
+  const isJson = (req.headers.get("content-type") || "").startsWith("application/json");
+  const json = isJson ? await req.clone().json().catch(() => null) : null;
+  // Volumes généraux : table settings (migration 007), indépendant de la table tracks.
+  if (json?.action === "levels") {
+    const levels = normalizeLevels(json.levels);
+    await setAdminSetting(SOUND_LEVELS_KEY, levels);
+    await recordAdminEvent({ actor, action: adminFr.musicAction, details: { stage: "completed", op: "levels", levels } });
+    return NextResponse.json({ ok: true, levels });
+  }
   const rows = await listTrackRows();
   if (!rows) return fail(adminFr.musicMigration, 409);
 
