@@ -3,7 +3,8 @@ import { useRef, useState } from "react";
 
 type F = "all" | "yes" | "no";
 
-/* Filtre des réponses : pose data-f sur la section, le CSS masque les lignes qui ne correspondent pas
+/* Filtre des réponses (Présents = nombre de personnes, Absents = nombre de réponses ; « Tous » sans nombre
+   pour ne pas mélanger les deux) : pose data-f sur la section, le CSS masque les lignes qui ne correspondent pas
    (le tableau reste rendu côté serveur). */
 export default function ReplyFilter({ counts, labels }: {
   counts: Record<F, number>;
@@ -23,7 +24,7 @@ export default function ReplyFilter({ counts, labels }: {
           className={`sp-chip is-${v}${f === v ? " is-on" : ""}`}
           disabled={v !== "all" && counts[v] === 0}
           onClick={() => pick(v)}>
-          {labels[v]} <span className="sp-chip-n">{counts[v]}</span>
+          {labels[v]}{v !== "all" && <span className="sp-chip-n">{counts[v]}</span>}
         </button>
       ))}
     </div>

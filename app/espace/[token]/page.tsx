@@ -105,7 +105,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
           </div>
           {rsvps.length > 0 && (
             <ReplyFilter
-              counts={{ all: rsvps.length, yes: yes.length, no: rsvps.length - yes.length }}
+              counts={{ all: rsvps.length, yes: guests, no: rsvps.length - yes.length }}
               labels={{ all: s.filterAll, yes: s.stats.yes, no: s.stats.no, aria: s.filterAria }}
             />
           )}
