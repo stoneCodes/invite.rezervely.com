@@ -9,6 +9,7 @@ const fr = {
     edit: "Modifier l'invitation",
     keep: "Gardez cet e-mail : le lien de votre espace est personnel, il donne accès à vos réponses et à la modification de l'invitation.",
     footer: "Vous recevez cet e-mail parce que cette adresse a été indiquée lors de la création d'une invitation sur E-carte Studio.",
+    tagline: "Invitations animées à partager",
     couple: (a: string, b: string) => `${a} & ${b}`,
   },
   welcome: {
@@ -72,6 +73,7 @@ const en: EmailDict = {
     edit: "Edit the invitation",
     keep: "Keep this email: your space link is personal. It gives access to your replies and lets you edit the invitation.",
     footer: "You are receiving this email because this address was entered when an invitation was created on E-carte Studio.",
+    tagline: "Animated invitations to share",
     couple: (a, b) => `${a} & ${b}`,
   },
   welcome: {

@@ -1,7 +1,7 @@
 import "server-only";
 import { cookies, headers } from "next/headers";
 import { db } from "@/lib/supabase";
-import { cleanEmail, sendEmail } from "@/lib/email";
+import { adminCodeEmail, cleanEmail, sendEmail } from "@/lib/email";
 import adminFr from "@/lib/i18n/admin-fr";
 
 const COOKIE = "admin";
@@ -64,8 +64,7 @@ export async function issueAdminCode(rawEmail: unknown, req: Request) {
   const codeHash = hex(await hmac(`${email}:${code}`));
   const { error } = await db().from("admin_codes").insert({ email, code_hash: codeHash, expires_at: new Date(Date.now()+10*60_000).toISOString(), ip });
   if (error) throw error;
-  const body = `${adminFr.emailCodeIntro} ${code}\n\n${adminFr.emailExpiry}`;
-  await sendEmail({ to: email, subject: adminFr.emailSubject, text: body, html: `<div style="font-family:Arial,sans-serif;background:#0D0911;color:#F4EADB;padding:28px;border-radius:16px"><p>${adminFr.brand}</p><h1 style="font-weight:400">${adminFr.emailCodeIntro}</h1><p style="font-size:32px;letter-spacing:.2em;color:#D9B76E">${code}</p><p>${adminFr.emailExpiry}</p></div>` });
+  await sendEmail({ to: email, ...adminCodeEmail(code, { subject: adminFr.emailSubject, intro: adminFr.emailCodeIntro, expiry: adminFr.emailExpiry }) });
 }
 export async function verifyAdminCode(rawEmail: unknown, rawCode: unknown) {
   const email = cleanEmail(rawEmail);

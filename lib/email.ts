@@ -58,25 +58,40 @@ const button = (href: string, label: string, ghost = false) =>
   }">${esc(label)}</a>`;
 
 type Block = string;
-const p = (t: string, muted = false) => `<p style="margin:0 0 16px;${FONT};font-size:15px;line-height:1.6;color:${muted ? "#7B6F75" : "#2B2128"}">${esc(t)}</p>`;
-const h1 = (t: string) => `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-weight:normal;font-size:28px;line-height:1.2;color:#1D1418">${esc(t)}</h1>`;
+const p = (t: string, muted = false) => `<p style="margin:0 0 16px;${FONT};font-size:15px;line-height:1.6;color:${muted ? "#857867" : "#2B2419"}">${esc(t)}</p>`;
+const h1 = (t: string) => `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-weight:normal;font-size:28px;line-height:1.25;color:#1E1812">${esc(t)}</h1>`;
 const linkBox = (label: string, url: string) =>
-  `<div style="margin:0 0 18px;padding:14px 16px;border-radius:12px;background:#F7F1E6;border:1px solid #EADBBE"><div style="${FONT};font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9A7B3F;margin-bottom:6px">${esc(label)}</div><div style="${FONT};font-size:15px;color:#5E3B4F;word-break:break-all;-webkit-user-select:all;user-select:all">${esc(url)}</div></div>`;
+  `<div style="margin:0 0 18px;padding:14px 16px;border-radius:12px;background:#F7F1E6;border:1px solid #EADBBE"><div style="${FONT};font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9A7B3F;margin-bottom:6px">${esc(label)}</div><div style="${FONT};font-size:15px;color:#5A4524;word-break:break-all;-webkit-user-select:all;user-select:all">${esc(url)}</div></div>`;
 /* Lien d'envoi WhatsApp : Brevo réécrit le bouton pour suivre le clic, mais il redirige vers wa.me
    avec le message déjà écrit, qui contient le lien propre de l'invitation (pas l'adresse de suivi). */
 const waLink = (msg: string) => `https://wa.me/?text=${encodeURIComponent(msg)}`;
 
 function layout(lang: Lang | null | undefined, blocks: Block[]) {
   const c = emailDict(lang).common;
-  // Logo en texte (pas d'image) : beaucoup d'applis mail bloquent les images par défaut et affichaient un grand cadre vide.
-  const home = siteUrl();
-  return `<!doctype html><html lang="${lang === "en" ? "en" : "fr"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head>
+  const home = siteUrl(), domain = home.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  // En-tête : monogramme ES en image (PNG 2x, taille fixe : si les images sont bloquées, il ne reste qu'un petit cadre
+  // avec le texte de remplacement) + nom de la marque en texte, toujours lisible.
+  const logo = `${home}/brand/es-email-clair.png`;
+  const SERIF = "font-family:Georgia,'Times New Roman',serif";
+  const rule = (w: number) => `<td style="width:${w}px;height:1px;font-size:0;line-height:0;border-top:1px solid #8A7448">&nbsp;</td>`;
+  return `<!doctype html><html lang="${lang === "en" ? "en" : "fr"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
 <body style="margin:0;padding:0;background:#F3ECE3">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3ECE3"><tr><td align="center" style="padding:28px 12px">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;border-radius:18px;overflow:hidden;background:#ffffff">
-<tr><td align="center" style="background:#0D0911;padding:22px 24px"><a href="${esc(home)}" style="text-decoration:none;${FONT};font-size:28px;letter-spacing:.02em;line-height:1"><span style="color:#F4EADB">E-carte</span> <span style="color:#D9B76E">Studio</span></a></td></tr>
-<tr><td style="padding:30px 28px 14px">${blocks.join("")}</td></tr>
-<tr><td style="padding:0 28px 26px">${p(c.footer, true)}</td></tr>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;border-radius:18px;overflow:hidden;background:#FFFDF9;border:1px solid #E6D9C2">
+<tr><td align="center" style="background:#1E1812;padding:34px 24px 26px">
+ <a href="${esc(home)}" style="text-decoration:none;display:inline-block"><img src="${esc(logo)}" width="96" height="81" alt="E-carte Studio" style="display:block;width:96px;height:81px;border:0;margin:0 auto;${FONT};font-size:14px;color:#D2B67F"></a>
+ <div style="margin:18px 0 0;${SERIF};font-size:22px;letter-spacing:.32em;text-transform:uppercase;color:#F3EBDC;line-height:1">E-carte&nbsp;Studio</div>
+ <table role="presentation" cellpadding="0" cellspacing="0" style="margin:16px auto 0"><tr>${rule(46)}<td style="padding:0 10px;${FONT};font-size:10px;line-height:1;color:#D2B67F">&#9670;</td>${rule(46)}</tr></table>
+ <div style="margin:12px 0 0;${FONT};font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#B8A27A;line-height:1.4">${esc(c.tagline)}</div>
+</td></tr>
+<tr><td style="height:4px;font-size:0;line-height:0;background:#A8884F">&nbsp;</td></tr>
+<tr><td style="padding:34px 30px 14px">${blocks.join("")}</td></tr>
+<tr><td style="padding:0 30px"><div style="border-top:1px solid #EADFCB;font-size:0;line-height:0">&nbsp;</div></td></tr>
+<tr><td align="center" style="padding:22px 30px 26px">
+ <div style="${SERIF};font-size:14px;letter-spacing:.24em;text-transform:uppercase;color:#7A6640">E-carte&nbsp;Studio</div>
+ <div style="margin:6px 0 14px"><a href="${esc(home)}" style="${FONT};font-size:13px;color:#A8884F;text-decoration:none">${esc(domain)}</a></div>
+ <p style="margin:0;${FONT};font-size:12px;line-height:1.55;color:#9A8F84">${esc(c.footer)}</p>
+</td></tr>
 </table></td></tr></table></body></html>`;
 }
 
@@ -182,3 +197,12 @@ export function newReviewEmail(r: { rating: number; display_name: string; body: 
 
 /** Adresse e-mail valide (forme simple) ou null. */
 export const cleanEmail = (v: unknown) => (typeof v === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? v.trim().toLowerCase().slice(0, 200) : null);
+
+/** Code de connexion à l'administration (en français, comme toute l'admin), même en-tête que les autres e-mails. */
+export function adminCodeEmail(code: string, t: { subject: string; intro: string; expiry: string }): Omit<Mail, "to"> {
+  return {
+    subject: t.subject,
+    html: layout("fr", [h1(t.intro), `<div style="margin:0 0 18px;padding:18px;border-radius:12px;background:#F7F1E6;border:1px solid #EADBBE;text-align:center;font-family:Georgia,serif;font-size:34px;letter-spacing:.3em;color:#1E1812">${esc(code)}</div>`, p(t.expiry, true)]),
+    text: text([`${t.intro} ${code}`, t.expiry]),
+  };
+}
