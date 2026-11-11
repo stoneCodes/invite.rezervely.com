@@ -190,3 +190,45 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 .rv-stars button.on{color:#C29B52}
 .rv-stars button:hover{transform:scale(1.12)}
 @media (prefers-reduced-motion:reduce){.rv-stars button{transition:none}.rv-stars button:hover{transform:none}}
+
+/* Espace des mariés (/espace/<jeton>) : une seule colonne qui ne s'élargit jamais au contenu,
+   réponses en cartes sur téléphone. */
+.sp-wrap{padding-block:40px 64px;max-width:860px;display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.sp-wrap>*{min-width:0}
+.sp-title{font-size:clamp(1.9rem,8vw,2.6rem);margin:.2em 0;overflow-wrap:anywhere;line-height:1.1}
+.sp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sp-stat{padding:16px 8px;text-align:center}
+.sp-stat-n{font-family:var(--f-serif);font-size:2.2rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.sp-stat-l{font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;overflow-wrap:anywhere}
+.sp-replies{padding:20px}
+.sp-replies-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sp-table-wrap{overflow-x:auto}
+.sp-table{width:100%;border-collapse:collapse;font-size:.92rem}
+.sp-table th{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-weight:500}
+.sp-table td{padding:8px 10px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.sp-yes{color:var(--ok)}.sp-no{color:var(--err)}
+.sp-num{font-variant-numeric:tabular-nums}
+.sp-msg{min-width:180px}
+.sp-date{white-space:nowrap}
+@media (max-width:600px){
+  .sp-wrap{padding-block:24px 48px;gap:16px}
+  .sp-wrap .card-s{padding:16px!important}
+  .sp-stats{gap:8px}
+  .sp-stat{padding:12px 4px}
+  .sp-stat-n{font-size:1.7rem}
+  .sp-stat-l{font-size:.62rem;letter-spacing:.06em}
+  .sp-replies-head .space-export-actions{justify-content:flex-start;width:100%}
+  .sp-replies-head .space-export-actions .btn-s{padding:12px 16px;font-size:.68rem;letter-spacing:.1em}
+  .sp-wrap .card-s .btn-s{width:100%}
+  .sp-wrap .space-pdf-action{width:100%;justify-items:stretch}
+  .sp-table thead{display:none}
+  .sp-table,.sp-table tbody,.sp-table tr,.sp-table td{display:block;width:100%}
+  .sp-table tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .sp-table td{padding:0;border:0}
+  .sp-table .sp-name{font-weight:500;font-size:1rem}
+  .sp-table .sp-yes,.sp-table .sp-no{text-align:right}
+  .sp-table .sp-num::before{content:attr(data-label) " : ";color:var(--muted)}
+  .sp-table .sp-date{text-align:right;color:var(--muted);font-size:.8rem}
+  .sp-table .sp-msg{grid-column:1/-1;min-width:0;order:5;font-style:italic;margin-top:4px}
+  .sp-table .sp-msg.is-empty{display:none}
+}

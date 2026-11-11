@@ -46,11 +46,11 @@ export default async function Espace({ params, searchParams }: { params: Promise
   const fmt = new Intl.DateTimeFormat(LOCALE[lang], { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Paris" });
   return (
     <main className="site">
-      <div className="wrap-site" style={{ paddingBlock: "40px 64px", maxWidth: 860, display: "grid", gap: 22 }}>
+      <div className="wrap-site sp-wrap">
         <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}><Link href="/" className="ed-home" aria-label={t.common.backHome}><span aria-hidden="true">←</span> <Logo height={28} /></Link><LangSwitch /></nav>
         <header>
           <p className="muted" style={{ letterSpacing: ".3em", textTransform: "uppercase", fontSize: ".72rem", margin: 0 }}>{s.kicker}</p>
-          <h1 style={{ fontSize: "2.6rem", margin: ".2em 0" }}>{displayNames(inv.data)}</h1>
+          <h1 className="sp-title">{displayNames(inv.data)}</h1>
           <p className="muted" style={{ margin: 0 }}>{s.keep}</p>
         </header>
 
@@ -85,17 +85,17 @@ export default async function Espace({ params, searchParams }: { params: Promise
           </section>
         )}
 
-        <section style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
+        <section className="sp-stats">
           {([[s.stats.replies, rsvps.length], [s.stats.yes, guests], [s.stats.no, rsvps.length - yes.length]] as [string, number][]).map(([l, n]) => (
-            <div key={l} className="card-s" style={{ padding: 16, textAlign: "center" }}>
-              <div style={{ fontFamily: "var(--f-serif)", fontSize: "2.2rem", fontVariantNumeric: "tabular-nums" }}>{n}</div>
-              <div className="muted" style={{ fontSize: ".75rem", letterSpacing: ".15em", textTransform: "uppercase" }}>{l}</div>
+            <div key={l} className="card-s sp-stat">
+              <div className="sp-stat-n">{n}</div>
+              <div className="muted sp-stat-l">{l}</div>
             </div>
           ))}
         </section>
 
-        <section className="card-s" style={{ padding: 20 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
+        <section className="card-s sp-replies">
+          <div className="sp-replies-head">
             <strong>{s.repliesTitle}</strong>
             <div className="space-export-actions">
               <PdfDownloadButton token={token} allowed={pdfAllowed} partner1={inv.data.partner1} partner2={inv.data.partner2} dateISO={inv.data.dateISO} copy={{ download: s.pdfDownload, reserved: payOn ? s.pdfReserved : s.pdfAfterPublish, preparing: s.pdfPreparing, error: s.pdfError }} />
@@ -105,17 +105,17 @@ export default async function Espace({ params, searchParams }: { params: Promise
           {rsvps.length === 0 ? (
             <p className="muted" style={{ margin: 0 }}>{s.empty}</p>
           ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: ".92rem" }}>
-                <thead><tr style={{ textAlign: "left" }}>{s.cols.map((h) => <th key={h} style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)", fontWeight: 500 }}>{h}</th>)}</tr></thead>
+            <div className="sp-table-wrap">
+              <table className="sp-table">
+                <thead><tr>{s.cols.map((h) => <th key={h}>{h}</th>)}</tr></thead>
                 <tbody>
                   {rsvps.map((r) => (
                     <tr key={r.id}>
-                      <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)" }}>{r.name}</td>
-                      <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)", color: r.attending ? "var(--ok)" : "var(--err)" }}>{r.attending ? s.present : s.absent}</td>
-                      <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)", fontVariantNumeric: "tabular-nums" }}>{r.guests}</td>
-                      <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)", minWidth: 180 }}>{r.message}</td>
-                      <td style={{ padding: "8px 10px", borderBottom: "1px solid var(--line)", whiteSpace: "nowrap" }}>{fmt.format(new Date(r.created_at))}</td>
+                      <td className="sp-name" data-label={s.cols[0]}>{r.name}</td>
+                      <td className={r.attending ? "sp-yes" : "sp-no"} data-label={s.cols[1]}>{r.attending ? s.present : s.absent}</td>
+                      <td className="sp-num" data-label={s.cols[2]}>{r.guests}</td>
+                      <td className={`sp-msg${r.message ? "" : " is-empty"}`} data-label={s.cols[3]}>{r.message}</td>
+                      <td className="sp-date" data-label={s.cols[4]}>{fmt.format(new Date(r.created_at))}</td>
                     </tr>
                   ))}
                 </tbody>
