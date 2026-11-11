@@ -319,6 +319,8 @@ export const fr = {
     see: "Voir mon invitation",
     stats: { replies: "Réponses", yes: "Présents", no: "Absents" },
     repliesTitle: "Réponses des invités",
+    filterAll: "Tous",
+    filterAria: "Afficher les réponses",
     export: "Exporter (CSV)",
     pdfDownload: "Télécharger la liste en PDF",
     pdfReserved: "Disponible avec une publication payée ou offerte.",

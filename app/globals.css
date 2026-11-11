@@ -232,3 +232,19 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
   .sp-table .sp-msg{grid-column:1/-1;min-width:0;order:5;font-style:italic;margin-top:4px}
   .sp-table .sp-msg.is-empty{display:none}
 }
+
+/* Filtre Tous / Présents / Absents des réponses (espace des mariés) */
+.sp-filter{display:inline-flex;gap:4px;padding:4px;margin:0 0 10px;border:1px solid var(--line);border-radius:999px;background:var(--field);max-width:100%}
+.sp-chip{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--muted);font:500 .72rem/1 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s;white-space:nowrap}
+.sp-chip:hover:not(:disabled){color:var(--ink)}
+.sp-chip:disabled{opacity:.4;cursor:default}
+.sp-chip-n{font-variant-numeric:tabular-nums;font-size:.7rem;padding:3px 7px;border-radius:999px;background:rgba(168,136,79,.12);color:inherit}
+.sp-chip.is-on{background:var(--card);color:var(--ink);box-shadow:0 2px 8px -3px rgba(43,36,25,.25)}
+.sp-chip.is-on.is-yes .sp-chip-n{background:var(--ok);color:#fff}
+.sp-chip.is-on.is-no .sp-chip-n{background:var(--err);color:#fff}
+.sp-chip.is-on.is-all .sp-chip-n{background:var(--gold);color:var(--accent-ink)}
+.sp-replies[data-f="yes"] tr[data-att="no"],.sp-replies[data-f="no"] tr[data-att="yes"]{display:none!important}
+@media (max-width:600px){
+  .sp-filter{display:flex;width:100%}
+  .sp-chip{flex:1;justify-content:center;padding:9px 6px;letter-spacing:.04em;font-size:.66rem}
+}

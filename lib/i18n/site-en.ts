@@ -320,6 +320,8 @@ export const en: SiteDict = {
     see: "View my invitation",
     stats: { replies: "Replies", yes: "Attending", no: "Not attending" },
     repliesTitle: "Guest replies",
+    filterAll: "All",
+    filterAria: "Show replies",
     export: "Export (CSV)",
     pdfDownload: "Download the guest list as PDF",
     pdfReserved: "Available with a paid or complimentary publication.",

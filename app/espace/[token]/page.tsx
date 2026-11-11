@@ -5,6 +5,7 @@ import Logo from "@/components/Logo";
 import { notFound } from "next/navigation";
 import { db, getByToken, siteUrl } from "@/lib/supabase";
 import CopyLink from "./CopyLink";
+import ReplyFilter from "./ReplyFilter";
 import { invitePath } from "@/lib/slug";
 import { getLang } from "@/lib/i18n/server";
 import { siteDict } from "@/lib/i18n/site";
@@ -102,6 +103,12 @@ export default async function Espace({ params, searchParams }: { params: Promise
               {rsvps.length > 0 && <a className="btn-s ghost" href={`/espace/${token}/csv`}>{s.export}</a>}
             </div>
           </div>
+          {rsvps.length > 0 && (
+            <ReplyFilter
+              counts={{ all: rsvps.length, yes: yes.length, no: rsvps.length - yes.length }}
+              labels={{ all: s.filterAll, yes: s.stats.yes, no: s.stats.no, aria: s.filterAria }}
+            />
+          )}
           {rsvps.length === 0 ? (
             <p className="muted" style={{ margin: 0 }}>{s.empty}</p>
           ) : (
@@ -110,7 +117,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
                 <thead><tr>{s.cols.map((h) => <th key={h}>{h}</th>)}</tr></thead>
                 <tbody>
                   {rsvps.map((r) => (
-                    <tr key={r.id}>
+                    <tr key={r.id} data-att={r.attending ? "yes" : "no"}>
                       <td className="sp-name" data-label={s.cols[0]}>{r.name}</td>
                       <td className={r.attending ? "sp-yes" : "sp-no"} data-label={s.cols[1]}>{r.attending ? s.present : s.absent}</td>
                       <td className="sp-num" data-label={s.cols[2]}>{r.guests}</td>
