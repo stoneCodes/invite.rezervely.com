@@ -13,6 +13,7 @@ import { invitePath } from "@/lib/slug";
 import { getLastInvite, setLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 import { LANGS } from "@/lib/i18n";
 import TemplateRows from "@/components/TemplateRows";
+import PhoneTemplate from "@/components/PhoneTemplate";
 import MusicPicker from "@/components/MusicPicker";
 import { cycleTemplate } from "@/lib/templateOrder";
 
@@ -113,6 +114,8 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
   /* Rendu plein écran : l'invitation complète (ouverture, date à révéler…) avec les données en cours, même non enregistrées. */
   // Modèle affiché en plein écran (celui choisi, ou un autre qu'on découvre depuis les cartes).
   const [full, setFull] = useState<TemplateId | null>(null);
+  // Galerie des autres modèles dans la section « Style » : fermée par défaut, l'éditeur reste court.
+  const [pick, setPick] = useState(false);
   const fullFrame = useRef<HTMLIFrameElement>(null);
   useEffect(() => {
     if (!full) return;
@@ -265,9 +268,26 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
           {!token && <p className="ed-help ed-back">{e_.already} {last ? <a href={spaceHref(last)}>{t.find.resume(last.names)}</a> : <a href="/espace">{t.find.title}</a>}</p>}
 
           <Sec open title={e_.style} meta={t.templates[template].name}>
-            {/* Le modèle choisi passe en tête, en grand, avec un badge ; les autres restent disponibles mais en retrait. */}
-            <TemplateRows compact noAll order={order} names={[data.partner1, bday ? "" : data.partner2]} lang={siteLang} selected={template} onSelect={chooseTemplate} onPreview={setFull} />
-            <p className="ed-help">{e_.styleHelp}</p>
+            {/* Seul le modèle choisi est affiché ; la galerie ne s'ouvre que sur demande (« Changer de modèle »).
+                Dans la galerie, toucher une carte montre le modèle sans rien changer : il faut « Choisir ce modèle ». */}
+            <div className="ed-chosen">
+              <button type="button" className="ed-chosen-phone" aria-label={e_.seeRender} onClick={() => setFull(template)}>
+                <PhoneTemplate key={template} template={template} names={[data.partner1, bday ? "" : data.partner2]} lang={siteLang} compact />
+              </button>
+              <div className="ed-chosen-info">
+                <span className="ed-chosen-kick">{e_.yourModel}</span>
+                <strong>{t.templates[template].name}</strong>
+                <p>{t.templates[template].tagline}</p>
+                <div className="ed-btns">
+                  <button type="button" className="btn-s" onClick={() => setFull(template)}>{e_.seeRender}</button>
+                  <button type="button" className="btn-s ghost" aria-expanded={pick} onClick={() => setPick((v) => !v)}>{pick ? e_.keepModel : e_.changeModel}</button>
+                </div>
+              </div>
+            </div>
+            {pick && <div className="ed-pick">
+              <p className="ed-help">{e_.pickHelp}</p>
+              <TemplateRows compact noAll order={order} names={[data.partner1, bday ? "" : data.partner2]} lang={siteLang} selected={template} onPreview={setFull} />
+            </div>}
             <label>{e_.inviteLang}
               <select id="ilang" value={data.lang ?? "fr"} onChange={(e) => set("lang", e.target.value as InvitationData["lang"])}>
                 {LANGS.map((l) => <option key={l} value={l}>{t.common.langNames[l]}</option>)}
@@ -495,18 +515,18 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
         return (
           <div className="ed-full" role="dialog" aria-modal="true" aria-label={t.common.demoOf(shown.name)}>
             <div className="ed-full-bar">
-              <button type="button" className="ed-full-back" onClick={() => setFull(null)}><span aria-hidden="true">←</span> <span>{e_.backEdit}</span></button>
-              <div className="ed-full-nav">
-                <button type="button" aria-label={t.common.prevTpl} onClick={() => setFull(cycle(full, -1))}>‹</button>
+              <button type="button" className="ed-full-back" onClick={() => setFull(null)}><span aria-hidden="true">←</span> <span className="lbl-lg">{e_.backEdit}</span><span className="lbl-sm">{isMine ? e_.backEditShort : e_.backShort}</span></button>
+              <div className={`ed-full-nav${isMine ? " is-mine" : ""}`}>
+                {!isMine && <button type="button" aria-label={t.common.prevTpl} onClick={() => setFull(cycle(full, -1))}>‹</button>}
                 <div className="ed-full-name">
                   <strong>{shown.name}</strong>
                   <small>{isMine ? e_.yourModel : t.common.tplOf(idx + 1, order.length)} · {e_.withYourInfo}</small>
                 </div>
-                <button type="button" aria-label={t.common.nextTpl} onClick={() => setFull(cycle(full, 1))}>›</button>
+                {!isMine && <button type="button" aria-label={t.common.nextTpl} onClick={() => setFull(cycle(full, 1))}>›</button>}
               </div>
               {isMine
                 ? status !== "published" && <button type="button" className="btn-s" disabled={busy} onClick={() => { setFull(null); publish(); }}>{publishLabel}</button>
-                : <button type="button" className="btn-s" onClick={() => { chooseTemplate(full); setFull(null); setMsg({ kind: "ok", text: e_.msgChosen(shown.name) }); }}><span className="lbl-lg">{e_.choose}</span><span className="lbl-sm">{e_.chooseShort}</span></button>}
+                : <button type="button" className="btn-s" onClick={() => { chooseTemplate(full); setFull(null); setPick(false); setMsg({ kind: "ok", text: e_.msgChosen(shown.name) }); }}><span className="lbl-lg">{e_.choose}</span><span className="lbl-sm">{e_.chooseShort}</span></button>}
             </div>
             {/* key : chaque modèle recharge l'iframe, qui rejoue son ouverture. */}
             <iframe key={full} ref={fullFrame} src="/apercu?plein=1" title={t.common.demoOf(shown.name)} allow="accelerometer; gyroscope" />

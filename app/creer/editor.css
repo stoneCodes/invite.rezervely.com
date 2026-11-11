@@ -110,3 +110,26 @@
 .ed-pal-b-rose span:first-child{background:#EED6CE}.ed-pal-b-rose span+span{background:#E2D2BD}
 .ed-pal-b-bleu span:first-child{background:#D5E0E5}.ed-pal-b-bleu span+span{background:#A7B89F}
 .ed-palettes.is-3{grid-template-columns:1fr}
+
+/* Section « Style » : seul le modèle choisi est montré (demandé par Glad le 11 nov. 2026), la galerie s'ouvre sur demande. */
+.ed-chosen{display:grid;grid-template-columns:128px minmax(0,1fr);gap:18px;align-items:center}
+.ed-chosen-phone{width:128px;padding:0;border:0;background:none;cursor:pointer;border-radius:24px;-webkit-tap-highlight-color:transparent}
+.ed-chosen-phone .ph-device{width:128px;padding:4px;border-radius:22px}
+.ed-chosen-phone .ph-frame{inset:4px;border-radius:18px}
+.ed-chosen-phone .ph-hint{display:none}
+.ed-chosen-phone:hover .ph-device{transform:translateY(-3px)}
+.ed-chosen-phone:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.ed-chosen-info{display:grid;gap:6px;min-width:0}
+.ed-chosen-kick{font:500 .66rem/1.2 var(--f-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.ed-chosen-info strong{font:400 1.45rem/1.15 var(--f-display);font-weight:400}
+.ed-chosen-info p{margin:0;font-size:.9rem;line-height:1.45;color:var(--muted)}
+.ed-chosen-info .ed-btns{margin-top:6px}
+.ed-pick{margin-top:8px;padding-top:14px;border-top:1px solid var(--line)}
+.ed-full-nav.is-mine{justify-content:center}
+@media (max-width:420px){
+  .ed-chosen{grid-template-columns:104px minmax(0,1fr);gap:14px}
+  .ed-chosen-phone,.ed-chosen-phone .ph-device{width:104px}
+  .ed-chosen-info strong{font-size:1.2rem}
+  .ed-chosen-info p{font-size:.82rem}
+  .ed-chosen-info .ed-btns .btn-s{padding:10px 12px;font-size:.62rem}
+}

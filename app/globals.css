@@ -62,6 +62,9 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
   .ed-full-bar{gap:6px;padding:calc(6px + env(safe-area-inset-top,0px)) 8px 6px}
   .ed-full-back{width:40px;min-height:40px;padding:0;justify-content:center;flex:none}
   .ed-full-back span:last-child{display:none}
+  /* Éditeur : le bouton garde un mot court (« Modifier », « Retour ») au lieu de la seule flèche. */
+  .ed-full-back:has(.lbl-sm){width:auto;padding:0 12px;gap:6px}
+  .ed-full .ed-full-back .lbl-sm{display:inline}
   .ed-full-nav{gap:4px}
   .ed-full-nav>button{width:32px;height:32px;font-size:1.25rem}
   .ed-full-name strong{font-size:1rem}
