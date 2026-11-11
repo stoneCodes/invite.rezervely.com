@@ -20,7 +20,10 @@ const fr = {
     subject: (names: string) => `L'invitation de ${names} est en ligne`,
     title: "Votre invitation est en ligne",
     body: "Voici le lien à envoyer à vos invités (WhatsApp, SMS, e-mail…). Chacun pourra l'ouvrir et vous répondre.",
-    share: "Lien à partager",
+    share: "Lien à partager (à copier)",
+    wa: "Envoyer sur WhatsApp",
+    waMsg: (url: string) => `Vous êtes invités 💌
+${url}`,
     open: "Voir l'invitation",
     cardAlt: (names: string) => `Invitation de ${names} : touchez pour l'ouvrir`,
     after: "Les réponses arrivent dans votre espace. Vous recevrez aussi un récapitulatif par e-mail, au plus une fois par jour.",
@@ -80,7 +83,10 @@ const en: EmailDict = {
     subject: (names) => `${names}'s invitation is live`,
     title: "Your invitation is live",
     body: "Here is the link to send to your guests (WhatsApp, text, email…). Everyone can open it and reply.",
-    share: "Link to share",
+    share: "Link to share (copy it)",
+    wa: "Send on WhatsApp",
+    waMsg: (url) => `You're invited 💌
+${url}`,
     open: "View the invitation",
     cardAlt: (names) => `${names}'s invitation: tap to open`,
     after: "Replies arrive in your space. You will also get an email summary, at most once a day.",

@@ -326,6 +326,10 @@ export const fr = {
     absent: "Absent",
     copy: "Copier",
     copied: "Copié",
+    shareWa: "Envoyer sur WhatsApp",
+    shareOther: "Partager…",
+    shareMsg: (url: string) => `Vous êtes invités 💌
+${url}`,
     csvCols: ["Nom", "Présent", "Personnes", "Message", "Date"],
     csvYes: "oui",
     csvNo: "non",

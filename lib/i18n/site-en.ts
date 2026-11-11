@@ -327,6 +327,10 @@ export const en: SiteDict = {
     absent: "Not attending",
     copy: "Copy",
     copied: "Copied",
+    shareWa: "Send on WhatsApp",
+    shareOther: "Share…",
+    shareMsg: (url) => `You're invited 💌
+${url}`,
     csvCols: ["Name", "Attending", "Guests", "Message", "Date"],
     csvYes: "yes",
     csvNo: "no",

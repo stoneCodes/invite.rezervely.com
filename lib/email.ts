@@ -61,7 +61,10 @@ type Block = string;
 const p = (t: string, muted = false) => `<p style="margin:0 0 16px;${FONT};font-size:15px;line-height:1.6;color:${muted ? "#7B6F75" : "#2B2128"}">${esc(t)}</p>`;
 const h1 = (t: string) => `<h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-weight:normal;font-size:28px;line-height:1.2;color:#1D1418">${esc(t)}</h1>`;
 const linkBox = (label: string, url: string) =>
-  `<div style="margin:0 0 18px;padding:14px 16px;border-radius:12px;background:#F7F1E6;border:1px solid #EADBBE"><div style="${FONT};font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9A7B3F;margin-bottom:6px">${esc(label)}</div><a href="${esc(url)}" style="${FONT};font-size:15px;color:#5E3B4F;word-break:break-all">${esc(url)}</a></div>`;
+  `<div style="margin:0 0 18px;padding:14px 16px;border-radius:12px;background:#F7F1E6;border:1px solid #EADBBE"><div style="${FONT};font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9A7B3F;margin-bottom:6px">${esc(label)}</div><div style="${FONT};font-size:15px;color:#5E3B4F;word-break:break-all;-webkit-user-select:all;user-select:all">${esc(url)}</div></div>`;
+/* Lien d'envoi WhatsApp : Brevo réécrit le bouton pour suivre le clic, mais il redirige vers wa.me
+   avec le message déjà écrit, qui contient le lien propre de l'invitation (pas l'adresse de suivi). */
+const waLink = (msg: string) => `https://wa.me/?text=${encodeURIComponent(msg)}`;
 
 function layout(lang: Lang | null | undefined, blocks: Block[]) {
   const c = emailDict(lang).common;
@@ -105,7 +108,7 @@ export function publishedEmail(lang: Lang | null | undefined, d: Who, token: str
   const pub = `${siteUrl()}${invitePath(slug)}`, space = `${siteUrl()}/espace/${token}`;
   return {
     subject: t.published.subject(n),
-    html: layout(lang, [h1(t.published.title), p(t.common.hello(n)), p(t.published.body), envelope(pub, t.published.cardAlt(n)), linkBox(t.published.share, pub), `<div style="margin:0 0 18px">${button(pub, t.published.open)}${button(space, t.common.openSpace, true)}</div>`, p(t.published.after), p(t.common.keep, true)]),
+    html: layout(lang, [h1(t.published.title), p(t.common.hello(n)), p(t.published.body), envelope(pub, t.published.cardAlt(n)), linkBox(t.published.share, pub), `<div style="margin:0 0 18px">${button(waLink(t.published.waMsg(pub)), t.published.wa)}${button(pub, t.published.open, true)}${button(space, t.common.openSpace, true)}</div>`, p(t.published.after), p(t.common.keep, true)]),
     text: text([t.common.hello(n), t.published.body, `${t.published.share} : ${pub}`, t.published.after, `${t.common.openSpace} : ${space}`, t.common.keep]),
   };
 }

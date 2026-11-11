@@ -62,7 +62,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
         <section className="card-s" style={{ padding: 20, display: "grid", gap: 12 }}>
           <strong>{s.linkTitle}</strong>
           {inv.status === "published" ? (
-            <CopyLink url={link} />
+            <CopyLink url={link} share={{ wa: s.shareWa, other: s.shareOther, msg: s.shareMsg(link) }} />
           ) : (
             <p className="muted" style={{ margin: 0 }}>{s.notPublished}</p>
           )}
