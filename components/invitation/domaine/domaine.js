@@ -15,8 +15,17 @@ const SCENES = ["portail", "allee", "orangerie", "cour", "arche", "vestibule", "
 // Repères mesurés sur les images (en %) : à remesurer si une image change.
 const HOLE = { x: 49.45, y: 44 }; // centre du trou de la serrure (domaine-serrure.webp, 856 × 1500)
 const TIP = { x: 99.8, y: 48.7 }; // bout de la tige de la clé (domaine-cle.webp, 1200 × 430)
-// Intérieur du cadre doré du chevalet (domaine-allee.webp, 941 × 1672) : boîte englobante + quadrilatère.
-const FRAME = { l: 63.44, t: 31.58, w: 30.39, h: 25.84, clip: "polygon(7.3% 5.6%,100% 0,91.3% 100%,0 95.4%)" };
+// Intérieur du cadre doré du chevalet (domaine-allee.webp, 941 × 1672) : boîte englobante + quadrilatère
+// (coins haut-gauche, haut-droit, bas-droit, bas-gauche, en % de la boîte). La photo y est posée en perspective.
+const FRAME = { l: 63.44, t: 31.58, w: 30.39, h: 25.84, q: [[7.3, 5.6], [100, 0], [91.3, 100], [0, 95.4]] };
+// matrix3d qui envoie un rectangle w × h sur le quadrilatère q (homographie)
+function quadMatrix(w, h, q) {
+  const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = q;
+  const dx1 = x1 - x2, dx2 = x3 - x2, dy1 = y1 - y2, dy2 = y3 - y2, sx = x0 - x1 + x2 - x3, sy = y0 - y1 + y2 - y3;
+  const den = dx1 * dy2 - dx2 * dy1, g = (sx * dy2 - dx2 * sy) / den, k = (dx1 * sy - sx * dy1) / den;
+  const a = x1 - x0 + g * x1, b = x3 - x0 + k * x3, d = y1 - y0 + g * y1, e = y3 - y0 + k * y3;
+  return `matrix3d(${[a / w, d / w, 0, g / w, b / h, e / h, 0, k / h, 0, 0, 1, 0, x0, y0, 0, 1].map((n) => +n.toFixed(6)).join(",")})`;
+}
 
 // Point de fuite de chaque image (en %) : la caméra « marche » vers ce point pour passer au lieu suivant.
 const FOCAL = { portail: [50, 60], allee: [32, 52], orangerie: [50, 58], cour: [60, 48], arche: [50, 52], vestibule: [50, 52], facade: [50, 64], terrasse: [52, 46], table: [60, 40], "table-flou": [50, 50],
@@ -80,7 +89,7 @@ export function mountDomaine(root, data, OPTS = {}) {
   const add = (k, img, say, html, cls = "") => st.push({ k, img, say, html, cls });
   add("cover", "portail", "", `<div class="dm-cover-in dm-rv"><small>${M.married}</small><h1>${p1}<i>&amp;</i>${p2}</h1>${D.intro ? `<p>${esc(D.intro)}</p>` : ""}</div>
         <div class="dm-cue" aria-hidden="true">${M.scroll}<i></i></div>`, "dm-cover");
-  add("portrait", "allee", M.say.portrait, `<figure class="dm-easel dm-rv"><img class="dm-easel-bg" src="${IMG("allee")}" alt="" loading="lazy"><div class="dm-frame" style="left:${FRAME.l}%;top:${FRAME.t}%;width:${FRAME.w}%;height:${FRAME.h}%;clip-path:${FRAME.clip}">${inFrame}</div></figure>
+  add("portrait", "allee", M.say.portrait, `<figure class="dm-easel dm-rv"><img class="dm-easel-bg" src="${IMG("allee")}" alt="" loading="lazy"><div class="dm-frame" style="left:${FRAME.l}%;top:${FRAME.t}%;width:${FRAME.w}%;height:${FRAME.h}%"><div class="dm-pic">${inFrame}</div></div></figure>
         ${v ? `<div class="dm-card dm-verse dm-rv">${v.orig ? `<p class="dm-verse-orig" dir="auto">${esc(v.orig)}</p>` : ""}<blockquote>${v.orig ? esc(v.text) : esc(T.c.quote(v.text))}</blockquote>${v.ref ? `<cite>${esc(v.ref)}</cite>` : ""}</div>` : ""}`, "dm-portrait");
   add("date", "orangerie", M.say.date, `<div class="dm-card dm-datecard dm-rv">${head(M.dateEyebrow, M.dateTitle)}
           <div class="dm-pane"><div class="dm-date"><b>${when ? esc(when.day) : ""}</b><span>${when ? esc(`${when.month} ${when.year}`) : ""}</span><em>${when ? esc(when.full) : ""}</em></div><canvas aria-label="${M.fogHint}"></canvas><span class="dm-bars" aria-hidden="true"></span></div>
@@ -223,6 +232,12 @@ export function mountDomaine(root, data, OPTS = {}) {
   }
   const ro = "ResizeObserver" in window ? new ResizeObserver(rebuild) : null;
   if (ro) ro.observe(main);
+
+  // Photo du chevalet : recalée en perspective sur l'intérieur du cadre à chaque changement de taille
+  const fitFrame = (fr) => { const w = fr.offsetWidth, h = fr.offsetHeight, pic = fr.firstElementChild; if (!w || !h || !pic) return;
+    pic.style.transform = quadMatrix(w, h, FRAME.q.map(([x, y]) => [x * w / 100, y * h / 100])); };
+  const fro = "ResizeObserver" in window ? new ResizeObserver((es) => es.forEach((en) => fitFrame(en.target))) : null;
+  qa(".dm-frame").forEach((fr) => { fitFrame(fr); fro?.observe(fr); });
 
   /* ---------- Ouverture : la clé entre dans la serrure, tourne, le mur s'ouvre ---------- */
   let opening = false, drag = null, keyAnim = null;
@@ -386,7 +401,7 @@ export function mountDomaine(root, data, OPTS = {}) {
     replay() { showIntro(); },
     destroy() {
       alive = false; couple?.destroy(); timers.forEach(clearTimeout); clearInterval(countI); clearInterval(dcTimer); cancelAnimationFrame(frame); keyAnim?.cancel();
-      io && io.disconnect(); ro?.disconnect(); cancelAnimationFrame(tFrame); removeEventListener("scroll", onScroll); removeEventListener("resize", onResize);
+      io && io.disconnect(); ro?.disconnect(); fro?.disconnect(); cancelAnimationFrame(tFrame); removeEventListener("scroll", onScroll); removeEventListener("resize", onResize);
       document.body.classList.remove("dm-locked"); music.destroy(); try { actx && actx.close(); } catch (e) {} root.innerHTML = "";
     },
   };

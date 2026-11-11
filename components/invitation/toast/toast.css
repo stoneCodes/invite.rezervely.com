@@ -1,16 +1,16 @@
 /* « Le toast » : champagne sabré, préfixe tt-. */
-body[data-tpl="toast"]{background:#0a0f1f}
-.fx-toast{--fx-ink:#F6E7C1;--fx-muted:#c9bfa6;--fx-accent:#E3C67E;--fx-accent-ink:#1d1606;--fx-card:rgba(14,22,44,.8);--fx-line:rgba(255,240,200,.28);--fx-field:#fffaf0;--fx-title:"Cormorant Garamond",Georgia,serif;--p:0}
+body[data-tpl="toast"]{background:#1a130c}
+.fx-toast{--fx-ink:#F6E7C1;--fx-muted:#c9bfa6;--fx-accent:#E3C67E;--fx-accent-ink:#1d1606;--fx-card:rgba(40,30,20,.8);--fx-line:rgba(255,240,200,.28);--fx-field:#fffaf0;--fx-title:"Cormorant Garamond",Georgia,serif;--p:0}
 .fx-toast small{color:var(--fx-accent)}
 .tt-sky{position:fixed;inset:0;z-index:0;background:url(/img/toast-bulles.webp) center/cover}
-.tt-sky::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,14,34,.93),rgba(8,14,34,.86));opacity:calc(1 - var(--p) * .55)}
+.tt-sky::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(36,27,18,.9),rgba(36,27,18,.82));opacity:calc(1 - var(--p) * .55)}
 .tt-sky::after{content:"";position:absolute;inset:0;opacity:calc(var(--p) * .8);background:linear-gradient(180deg,rgba(28,20,8,.55),rgba(28,20,8,.78))}
 .tt-bubbles{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .fx-toast:not(.is-open) .tt-bubbles{opacity:0}
 
 /* ---------- ouverture : photo de la bouteille, scène calée sur la hauteur de l'écran ---------- */
-.tt-intro{position:fixed;inset:0;z-index:50;overflow:hidden;text-align:center;background:#06102a;transition:opacity .9s ease}
-.tt-intro::before{content:"";position:absolute;inset:-40px;background:url(/img/toast-bouteille.webp) center/cover;filter:blur(24px) brightness(.6)}
+.tt-intro{position:fixed;inset:0;z-index:50;overflow:hidden;text-align:center;background:#d9c3a5;transition:opacity .9s ease}
+.tt-intro::before{content:"";position:absolute;inset:-40px;background:url(/img/toast-bouteille.webp) center/cover;filter:blur(24px)}
 .tt-intro[hidden]{display:none}
 .tt-intro.is-out{opacity:0;pointer-events:none}
 .tt-stage{--k:0;position:absolute;top:0;left:50%;height:100%;aspect-ratio:941/1672;translate:-50% 0;container-type:size;touch-action:none;cursor:grab;outline:none;-webkit-user-select:none;user-select:none}
@@ -27,7 +27,7 @@ body[data-tpl="toast"]{background:#0a0f1f}
 .tt-stage.is-pop .tt-sabre-wrap{translate:0 -75%;rotate:-34deg;opacity:0;transition:translate .5s ease-out,rotate .5s ease-out,opacity .6s ease .3s}
 .tt-stage:not(.is-drag):not(.is-pop):not(.is-auto) .tt-sabre-wrap{animation:tt-nudge 2.6s ease-in-out 1s infinite}
 @keyframes tt-nudge{0%,55%,100%{translate:0 0}72%{translate:0 -10%}}
-.tt-hint{position:absolute;z-index:2;left:0;right:0;bottom:max(0px,calc(100% - 100svh));margin:0;max-width:none;padding:60px 16px max(28px,env(safe-area-inset-bottom));pointer-events:none;color:#efe2c2;font-size:1rem;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(transparent,rgba(4,8,22,.8) 60%)}
+.tt-hint{position:absolute;z-index:2;left:0;right:0;bottom:max(0px,calc(100% - 100svh));margin:0;max-width:none;padding:60px 16px max(28px,env(safe-area-inset-bottom));pointer-events:none;color:#3b2a0b;font-size:1rem;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(transparent,rgba(248,238,224,.9) 60%)}
 .tt-hint::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--fx-accent);animation:vy-ping 1.8s ease-out infinite;box-shadow:0 0 0 0 rgba(227,198,126,.7)}
 .tt-flash{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .8s ease;background:radial-gradient(circle at 50% 12%,#fffaf0,#f3dc92 38%,#c9a24a 78%)}
 .tt-intro.is-flash .tt-flash{opacity:1}

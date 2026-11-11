@@ -56,7 +56,9 @@ body[data-tpl="jardin-nuit"] .hero-text{top:12%}
 .names .amp{font-size:2.4rem;margin:.08em 0}
 body[data-tpl="cygnes"] .names{text-shadow:0 0 20px rgba(255,240,240,.95)}
 body[data-tpl="cygnes"] .names .amp{color:#B0606F}
-body[data-tpl="nuit-doree"] .names span{background:linear-gradient(110deg,#A9772A 15%,#FFF3C8 35%,#D8A64A 50%,#FFE7A3 65%,#A9772A 85%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 4s linear infinite;filter:drop-shadow(0 3px 14px rgba(0,0,0,.7))}
+body[data-tpl="nuit-doree"] .names span{background:linear-gradient(110deg,#A9772A 15%,#FFF3C8 35%,#D8A64A 50%,#FFE7A3 65%,#A9772A 85%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 4s linear infinite;filter:drop-shadow(0 3px 14px rgba(0,0,0,.7));padding:.3em .2em;margin:-.3em -.2em}
+body[data-tpl="nuit-doree"] .names .amp{margin:-.22em -.2em}
+body[data-tpl="nuit-doree"] .hero .eyebrow{margin-bottom:1.1rem}
 @keyframes shimmer{to{background-position:-260% 0}}
 body[data-tpl="jardin-nuit"] .names{text-shadow:0 0 14px rgba(255,253,245,.95),0 0 34px rgba(255,250,235,.85)}
 body[data-tpl="jardin-nuit"] .names .amp{color:var(--accent)}
