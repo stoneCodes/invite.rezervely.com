@@ -6,7 +6,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import { useRouter, useSearchParams } from "next/navigation";
 import { sampleFor } from "@/lib/sample";
-import { PLACES, TEMPLATES, displayNames, isBaby, isBirthday, isKids, PALETTES, BABY_PALETTES, BABY_SEXES, type BabySex, type InvitationData, type PlaceId, type TemplateId } from "@/lib/types";
+import { PLACES, TEMPLATES, displayNames, isBaby, isBirthday, isDot, isKids, PALETTES, BABY_PALETTES, BABY_SEXES, type BabySex, type InvitationData, type PlaceId, type TemplateId } from "@/lib/types";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { invitePath } from "@/lib/slug";
@@ -55,6 +55,13 @@ async function shrink(file: File): Promise<Blob> {
 }
 
 
+/** Fichiers choisis dans l'éditeur, envoyés seulement à l'enregistrement : photo des mariés, pagne(s) de « La dot ». */
+type FileKey = "photo" | "fabric" | "fabric2";
+const DOT_DEFAULT = { families: "", fabric: null, fabric2: null, scale: 100 };
+const fileUrl = (d: InvitationData, k: FileKey) => (k === "photo" ? d.photoUrl : d.dot?.[k] ?? null);
+const withFile = (d: InvitationData, k: FileKey, url: string | null): InvitationData =>
+  k === "photo" ? { ...d, photoUrl: url } : { ...d, dot: { ...DOT_DEFAULT, ...d.dot, [k]: url } };
+
 export default function Editor({ payPrice = null, order }: { payPrice?: string | null; order: TemplateId[] }) {
   const cycle = (id: TemplateId, step: number) => cycleTemplate(order, id, step);
   const router = useRouter();
@@ -89,9 +96,10 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
   const ready = useRef(false);
   // Photo choisie mais pas encore envoyée : elle reste dans le navigateur (aperçu par URL locale)
   // et ne part sur le serveur qu'au moment d'« Enregistrer » ou « Publier ».
-  const pendingPhoto = useRef<{ blob: Blob; url: string } | null>(null);
+  // Même principe pour les photos de pagne (« La dot ») : clés photo, fabric (pagne), fabric2 (pagne des femmes).
+  const pending = useRef<Partial<Record<FileKey, { blob: Blob; url: string }>>>({});
   useEffect(() => {
-    const warn = (e: BeforeUnloadEvent) => { if (pendingPhoto.current) { e.preventDefault(); e.returnValue = ""; } };
+    const warn = (e: BeforeUnloadEvent) => { if (Object.keys(pending.current).length) { e.preventDefault(); e.returnValue = ""; } };
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, []);
@@ -154,6 +162,9 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
   const setWl = (patch: Partial<NonNullable<InvitationData["wishlist"]>>) => set("wishlist", { ...wl, ...patch });
   const setBd = (patch: Partial<NonNullable<InvitationData["bday"]>>) => set("bday", { ...bd, ...patch });
   const bb = data.baby ?? { sex: "surprise" as const, due: "", guesses: true, palette: "ivoire" as const };
+  const dt = data.dot ?? DOT_DEFAULT;
+  const setDt = (patch: Partial<NonNullable<InvitationData["dot"]>>) => set("dot", { ...dt, ...patch });
+  const [split2, setSplit2] = useState(false);
   const setBb = (patch: Partial<NonNullable<InvitationData["baby"]>>) => set("baby", { ...bb, ...patch });
   /** Changement de modèle : un exemple encore intact est remplacé par celui du nouveau modèle (mariage, velours, anniversaire) ;
    *  sinon les textes sont gardés, et un anniversaire reçoit ses champs propres. */
@@ -162,6 +173,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
     if (!token && JSON.stringify(data) === JSON.stringify(sampleFor(template, lang))) setData(sampleFor(id, lang));
     else if (isBirthday(id) && !data.bday) setData((d) => ({ ...d, bday: sampleFor(id, lang).bday }));
     else if (isBaby(id) && !data.baby) setData((d) => ({ ...d, baby: sampleFor(id, lang).baby }));
+    else if (isDot(id) && !data.dot) setData((d) => ({ ...d, dot: sampleFor(id, lang).dot }));
     setTemplate(id);
   };
 
@@ -181,18 +193,21 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
       return j;
     };
     try {
-      const pending = pendingPhoto.current;
-      if (pending) {
-        // 1re fois : on crée d'abord l'invitation (sans la photo locale) pour obtenir le jeton, puis on envoie la photo.
-        if (!tk) { const j0 = await write(null, { ...d, photoUrl: null }); tk = j0.editToken as string; setToken(tk); setSlug(j0.slug); router.replace(`/creer?edit=${tk}`); }
-        const fd = new FormData();
-        fd.append("file", new File([pending.blob], "photo.jpg", { type: "image/jpeg" }));
-        const up = await fetch(`/api/upload?token=${tk}`, { method: "POST", body: fd });
-        const ju = await up.json().catch(() => ({}));
-        if (!up.ok) throw new Error(ju.error || e_.msgPhotoFail);
-        d = { ...d, photoUrl: ju.url };
-        pendingPhoto.current = null; URL.revokeObjectURL(pending.url);
-        setData((cur) => (cur.photoUrl === pending.url ? { ...cur, photoUrl: ju.url } : cur));
+      const keys = (Object.keys(pending.current) as FileKey[]).filter((k) => pending.current[k] && fileUrl(d, k) === pending.current[k]!.url);
+      if (keys.length) {
+        // 1re fois : on crée d'abord l'invitation (sans les fichiers locaux) pour obtenir le jeton, puis on envoie les fichiers.
+        if (!tk) { const j0 = await write(null, keys.reduce((x, k) => withFile(x, k, null), d)); tk = j0.editToken as string; setToken(tk); setSlug(j0.slug); router.replace(`/creer?edit=${tk}`); }
+        for (const k of keys) {
+          const p = pending.current[k]!;
+          const fd = new FormData();
+          fd.append("file", new File([p.blob], `${k}.jpg`, { type: "image/jpeg" }));
+          const up = await fetch(`/api/upload?token=${tk}`, { method: "POST", body: fd });
+          const ju = await up.json().catch(() => ({}));
+          if (!up.ok) throw new Error(ju.error || e_.msgPhotoFail);
+          d = withFile(d, k, ju.url);
+          delete pending.current[k]; URL.revokeObjectURL(p.url);
+          setData((cur) => (fileUrl(cur, k) === p.url ? withFile(cur, k, ju.url) : cur));
+        }
       }
       const j = await write(tk, d);
       setSlug(j.slug);
@@ -228,21 +243,23 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
 
   /** Photo choisie : réduite dans le navigateur et affichée tout de suite ; envoyée seulement à l'enregistrement. */
   /** Photo facultative : on peut toujours la retirer (enregistré au prochain « Enregistrer »). */
-  function removePhoto() {
-    if (pendingPhoto.current) { URL.revokeObjectURL(pendingPhoto.current.url); pendingPhoto.current = null; }
-    set("photoUrl", null);
+  function removePhoto(k: FileKey = "photo") {
+    const p = pending.current[k];
+    if (p) { URL.revokeObjectURL(p.url); delete pending.current[k]; }
+    setData((d) => withFile(d, k, null));
     setMsg(null);
   }
 
-  async function upload(file: File) {
+  async function upload(file: File, k: FileKey = "photo") {
     setMsg(null);
     try {
       const blob = await shrink(file);
-      if (pendingPhoto.current) URL.revokeObjectURL(pendingPhoto.current.url);
+      const old = pending.current[k];
+      if (old) URL.revokeObjectURL(old.url);
       const url = URL.createObjectURL(blob);
-      pendingPhoto.current = { blob, url };
-      set("photoUrl", url);
-      setMsg({ kind: "ok", text: e_.msgPhotoLocal });
+      pending.current[k] = { blob, url };
+      setData((d) => withFile(d, k, url));
+      setMsg({ kind: "ok", text: k === "photo" ? e_.msgPhotoLocal : e_.msgFabricLocal });
     } catch {
       setMsg({ kind: "err", text: e_.msgPhotoFail });
     }
@@ -316,7 +333,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
                 {data.photoUrl ? e_.changePhoto : e_.addPhoto}
                 <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => { if (e.target.files?.[0]) upload(e.target.files[0]); e.target.value = ""; }} />
               </label>
-              {data.photoUrl && <button type="button" className="btn-s ghost" onClick={removePhoto}>{e_.removePhoto}</button>}
+              {data.photoUrl && <button type="button" className="btn-s ghost" onClick={() => removePhoto()}>{e_.removePhoto}</button>}
             </div>
             <p className="ed-help">{bday && data.bday?.age ? e_.photoAge : e_.photoOptional}</p>
           </Sec>
@@ -344,6 +361,28 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
               <label>{kids ? e_.endTimeKid : e_.endTime}<input id="endtime" maxLength={12} placeholder={e_.endPh} value={bd.endTime} onChange={(e) => setBd({ endTime: e.target.value })} /></label>
               {kids && <label>{e_.parentPhone}<input id="pphone" type="tel" maxLength={30} placeholder={e_.parentPhonePh} value={bd.parentPhone} onChange={(e) => setBd({ parentPhone: e.target.value })} /></label>}
               <label>{e_.gifts}<textarea id="gifts" rows={2} maxLength={300} placeholder={e_.giftsPh} value={bd.gifts} onChange={(e) => setBd({ gifts: e.target.value })} /></label>
+            </Sec>
+          )}
+
+          {isDot(template) && (
+            <Sec title={e_.dotSec}>
+              <label>{e_.families}<input id="families" maxLength={120} placeholder={e_.familiesPh} value={dt.families} onChange={(e) => setDt({ families: e.target.value })} /></label>
+              <p className="ed-help">{e_.familiesHelp}</p>
+              <p className="ed-sub">{e_.fabric}</p>
+              {(["fabric", "fabric2"] as const).filter((k) => k === "fabric" || split2 || dt.fabric2).map((k) => (
+                <div key={k} className="ed-photo ed-fabric">
+                  <span className="ed-swatch" style={{ backgroundImage: `url("${dt[k] ?? (k === "fabric2" ? dt.fabric : null) ?? "/img/dot-pagne-demo.webp"}")` }} aria-hidden="true" />
+                  <span className="muted">{k === "fabric2" ? e_.fabricWomen : dt.fabric ? (split2 || dt.fabric2 ? e_.fabricMen : e_.fabricYours) : e_.fabricDemo}</span>
+                  <label className="btn-s ghost">
+                    {dt[k] ? e_.changeFabric : e_.addFabric}
+                    <input id={k} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => { if (e.target.files?.[0]) upload(e.target.files[0], k); e.target.value = ""; }} />
+                  </label>
+                  {dt[k] && <button type="button" className="btn-s ghost" onClick={() => removePhoto(k)}>{e_.removeFabric}</button>}
+                </div>
+              ))}
+              <p className="ed-help">{e_.fabricHelp}</p>
+              <label className="ed-check"><input type="checkbox" checked={split2 || !!dt.fabric2} onChange={(e) => { setSplit2(e.target.checked); if (!e.target.checked) removePhoto("fabric2"); }} /> {e_.fabricSplit}</label>
+              <label>{e_.fabricScale} · {dt.scale} %<input id="fscale" type="range" min={50} max={200} step={10} value={dt.scale} onChange={(e) => setDt({ scale: +e.target.value })} /></label>
             </Sec>
           )}
 

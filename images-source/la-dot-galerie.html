@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- Écran de galerie de « La dot » (public/img/phone-dot.webp), rendu par images-source/la-dot-galerie.py.
+     Fond fourni par Glad le 12 nov. 2026 (satin ivoire, plateaux et tresses de raphia, gerbe de raphia, palmes, pastille brune)
+     d'après son exemple images-source/la-dot/galerie-exemple.webp ; on y ajoute deux cœurs entrelacés et un trait doré.
+     Aucun texte : prénoms et consigne sont posés en vrai texte par PhoneTemplate (names.top 48, hint.top 71.8). -->
+<html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;width:360px;height:780px;overflow:hidden;background:#f6efe2}body{position:relative}
+  .bg{position:absolute;inset:0;background:url(la-dot/galerie-fond.webp) center/cover}
+  svg{position:absolute;left:50%;transform:translate(-50%,-50%);overflow:visible}
+  .hearts{top:39%;width:96px}
+  .swash{top:55%;width:186px}
+</style></head>
+<body>
+<div class="bg"></div>
+<svg class="hearts" viewBox="0 0 150 110">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7e3a6"/><stop offset=".35" stop-color="#c9973d"/><stop offset=".6" stop-color="#f2d27f"/><stop offset="1" stop-color="#8f6420"/></linearGradient>
+    <filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1.6" stdDeviation="1.4" flood-color="#5a3a10" flood-opacity=".35"/></filter>
+    <path id="h" d="M50 88 C20 66 4 48 4 30 C4 14 16 4 30 4 C40 4 47 10 50 18 C53 10 60 4 70 4 C84 4 96 14 96 30 C96 48 80 66 50 88 Z"/>
+  </defs>
+  <g filter="url(#s)" fill="none" stroke-linejoin="round">
+    <use href="#h" transform="translate(6 4)" stroke="url(#g)" stroke-width="5"/>
+    <use href="#h" transform="translate(52 22) scale(.86)" stroke="url(#g)" stroke-width="5.8"/>
+    <!-- le premier cœur repasse devant le second à droite : entrelacs -->
+    <path d="M90 22 C96 30 99 40 96 50" transform="translate(6 4)" stroke="url(#g)" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <g fill="none" stroke="#fff6d8" stroke-opacity=".7" stroke-width="1.1" stroke-linecap="round">
+    <path d="M14 28 C16 16 26 10 36 11" transform="translate(6 4)"/>
+    <path d="M60 30 C62 20 70 15 78 16"/>
+  </g>
+</svg>
+<svg class="swash" viewBox="0 0 300 40">
+  <defs><linearGradient id="w" x1="0" x2="1"><stop offset="0" stop-color="#c9973d" stop-opacity="0"/><stop offset=".25" stop-color="#d9ad52"/><stop offset=".6" stop-color="#f0cd78"/><stop offset="1" stop-color="#a9792c" stop-opacity=".15"/></linearGradient></defs>
+  <path d="M6 34 C70 6 170 4 294 16 C190 14 96 18 6 34 Z" fill="url(#w)" filter="url(#s)"/>
+</svg>
+</body></html>

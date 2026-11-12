@@ -1,0 +1,48 @@
+<!doctype html>
+<!-- Capture TEMPORAIRE du tableau de bord des mariés pour l'accueil (public/img/accueil-tableau.webp),
+     en attendant la vraie capture de Glad. Rendue par images-source/accueil/captures.py. Noms fictifs. -->
+<html lang="fr"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Jost:wght@300;400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}html,body{margin:0;width:760px;height:560px;overflow:hidden;background:#FBF8F2;font:300 14px/1.4 Jost,sans-serif;color:#2B2419}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid #EADFCC;background:#FFFDF9}
+  .top b{font:400 22px Italiana}.top span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#A8884F}
+  .wrap{padding:22px 28px}
+  h1{margin:0;font:400 30px Italiana}h1 i{font:400 34px "Pinyon Script";color:#A8884F;font-style:normal}
+  .sub{margin:2px 0 18px;color:#7a6a55;font-size:13px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+  .st{padding:14px 16px;border:1px solid #EADFCC;border-radius:14px;background:linear-gradient(145deg,#fff,#F4ECDF)}
+  .st b{display:block;font:400 34px Italiana}.st small{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8a7a62}
+  .st.y b{color:#3f7a4f}.st.n b{color:#9b3b2e}
+  .bar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .chip{padding:6px 14px;border-radius:99px;border:1px solid #E2D4BB;font-size:12.5px;color:#5a4a35;background:#fff}
+  .chip.on{background:#2B2419;color:#F6EEDF;border-color:#2B2419}
+  .btns{margin-left:auto;display:flex;gap:8px}
+  .btn{padding:7px 14px;border-radius:99px;font-size:12.5px;border:1px solid #C9AE7A;color:#6b5330;background:#FFFDF9}
+  .btn.g{background:linear-gradient(#D6BB82,#B8975B);color:#fff;border-color:#B8975B}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #EADFCC;border-radius:14px;overflow:hidden}
+  td{padding:10px 14px;border-top:1px solid #F1E8DA;font-size:13.5px}tr:first-child td{border-top:0}
+  td.n{font-weight:400}td.m{color:#7a6a55;font-style:italic}td.d{color:#9a8b74;text-align:right;font-size:12px}
+  .ok,.ko{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 10px;border-radius:99px}
+  .ok{background:#E6F0E4;color:#3f7a4f}.ko{background:#F5E3DE;color:#9b3b2e}
+</style></head><body>
+<div class="top"><b>Mon espace</b><span>Léa &amp; Samuel · 14 juin 2027</span></div>
+<div class="wrap">
+  <h1>Les réponses de vos <i>invités</i></h1>
+  <p class="sub">Mise à jour en direct · récapitulatif chaque soir par e-mail</p>
+  <div class="stats">
+    <div class="st"><b>64</b><small>Réponses</small></div>
+    <div class="st y"><b>112</b><small>Présents</small></div>
+    <div class="st n"><b>9</b><small>Absents</small></div>
+  </div>
+  <div class="bar"><span class="chip on">Tous</span><span class="chip">Présents</span><span class="chip">Absents</span>
+    <div class="btns"><span class="btn">Exporter (CSV)</span><span class="btn g">Liste PDF</span></div></div>
+  <table>
+    <tr><td class="n">Camille Martin</td><td><span class="ok">✓ Présente · 2</span></td><td class="m">Trop hâte d'y être !</td><td class="d">12 mars</td></tr>
+    <tr><td class="n">Yannick Mbala</td><td><span class="ok">✓ Présent · 4</span></td><td class="m">Toute la famille sera là</td><td class="d">11 mars</td></tr>
+    <tr><td class="n">Sophie Durand</td><td><span class="ko">✕ Absente</span></td><td class="m">Pensées pour vous ce jour-là</td><td class="d">10 mars</td></tr>
+    <tr><td class="n">Inès Benali</td><td><span class="ok">✓ Présente · 1</span></td><td class="m">—</td><td class="d">10 mars</td></tr>
+    <tr><td class="n">Thomas Leroy</td><td><span class="ok">✓ Présent · 2</span></td><td class="m">On apporte la bonne humeur</td><td class="d">9 mars</td></tr>
+  </table>
+</div>
+</body></html>

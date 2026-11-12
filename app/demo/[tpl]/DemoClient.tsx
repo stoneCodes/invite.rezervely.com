@@ -12,7 +12,8 @@ export default function DemoClient({ template, embedded = false }: { template: T
   const t = useT();
   const lang = useLang();
   useEffect(() => {
-    if (embedded) return;
+    // Démo intégrée (pop-up de l'accueil ou de l'éditeur) : pas de barre de défilement visible, comme sur un téléphone.
+    if (embedded) { document.documentElement.classList.add("is-embedded"); return () => document.documentElement.classList.remove("is-embedded"); }
     const on = () => setMini(window.scrollY > 60);
     on();
     window.addEventListener("scroll", on, { passive: true });

@@ -346,3 +346,62 @@ body:has(.gl){background:#F4EEE4}
 .gl-rev-who b{font-weight:500}
 .gl-rev-who small{color:var(--muted);font-size:.8rem}
 .gl-rev-note{max-width:44em;margin:22px auto 0;color:var(--muted);font-size:.8rem;line-height:1.5}
+
+/* Tableau de bord (12 nov. 2026, demandé par Glad) : texte à gauche, captures à droite sur ordinateur ; empilé sur téléphone. */
+.gl-dash{background:var(--gl-c);padding:calc(11vh + var(--wv)) 0 12vh}
+.gl-dash-in{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);grid-template-areas:"head visual" "side visual";column-gap:clamp(32px,5vw,72px);align-items:start}
+.gl-dash-head{grid-area:head;align-self:end}.gl-dash-side{grid-area:side}.gl-dash-visual{grid-area:visual;align-self:center}
+.gl-dash h2{margin:.3em 0 .5em;text-align:left}
+.gl-dash .gl-kicker{text-align:left}
+.gl-dash-text{margin:0 0 26px;max-width:46ch;color:#6f6252;line-height:1.7}
+.gl-dash-list{list-style:none;margin:0 0 30px;padding:0;display:grid;gap:12px}
+.gl-dash-list li{display:flex;align-items:center;gap:12px;line-height:1.45}
+.gl-dash-list svg,.gl-dash-chip svg{flex:none;width:30px;height:30px;padding:7px;border-radius:50%;background:#F1E7D5;border:1px solid rgba(168,136,79,.35);fill:none;stroke:#8a6a33;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;box-sizing:border-box}
+.gl-dash-cta{display:inline-flex;gap:8px}
+.gl-dash-visual{position:relative;padding:34px 7% 60px 0}
+.gl-dash-shot{margin:0;border-radius:16px;overflow:hidden;background:#fff;border:1px solid rgba(105,80,40,.16);box-shadow:0 40px 70px -30px rgba(62,45,26,.4),0 12px 24px -12px rgba(62,45,26,.18)}
+.gl-dash-bar{display:flex;gap:6px;padding:10px 14px;background:#F3ECE0;border-bottom:1px solid rgba(105,80,40,.12)}
+.gl-dash-bar i{width:9px;height:9px;border-radius:50%;background:#D9CDB8}
+.gl-dash-shot img,.gl-dash-pdf img{display:block;width:100%;height:auto}
+.gl-dash-pdf{position:absolute;right:0;bottom:0;width:36%;margin:0;transform:rotate(4deg);border-radius:4px;overflow:hidden;box-shadow:0 30px 50px -20px rgba(62,45,26,.5),0 2px 6px rgba(62,45,26,.15);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.gl-dash-visual:hover .gl-dash-pdf{transform:rotate(2deg) translateY(-6px)}
+.gl-dash-pdftag{position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:5px;background:#9b3b2e;color:#fff;font:500 .62rem/1 "Jost",sans-serif;letter-spacing:.1em}
+.gl-dash-chip{position:absolute;display:flex;align-items:center;gap:8px;padding:9px 16px 9px 10px;border-radius:14px;background:#FFFDF9;border:1px solid rgba(105,80,40,.12);box-shadow:0 18px 30px -14px rgba(62,45,26,.35);font-size:.82rem;color:#6f6252;white-space:nowrap}
+.gl-dash-chip b{font:400 1.5rem/1 Italiana,serif;color:#2B2419;margin-right:2px}
+.gl-dash-chip.is-yes{left:-4%;bottom:14%}
+.gl-dash-chip.is-no{right:3%;top:0}.gl-dash-chip.is-no svg{stroke:#9b3b2e}
+@media (max-width:900px){
+  .gl-dash-in{grid-template-columns:1fr;grid-template-areas:"head" "visual" "side";text-align:center}
+  .gl-dash h2,.gl-dash .gl-kicker{text-align:center}.gl-dash-text{margin-inline:auto}
+  .gl-dash-visual{padding:30px 5% 54px 0;margin:6px 0 26px}
+  .gl-dash-chip.is-yes{left:0}
+  .gl-dash-list{justify-items:start;max-width:420px;margin-inline:auto;text-align:left}
+}
+@media (max-width:600px){.gl-dash-pdf{width:42%}.gl-dash-chip{font-size:.74rem;padding:7px 12px 7px 8px}.gl-dash-chip b{font-size:1.25rem}.gl-dash-shot{border-radius:12px}}
+@media (prefers-reduced-motion:reduce){.gl-dash-pdf{transition:none}}
+
+/* Démo dans un téléphone, en pop-up (12 nov. 2026, demandé par Glad d'après reveliastudio.com).
+   L'invitation est rendue en 390 × 844 puis réduite (DemoPhone dans HomeClient.tsx) : même rendu que sur un vrai iPhone. */
+.gl-demo{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:12px;background:rgba(30,24,18,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:gl-demo-in .3s ease both}
+.gl-demo-panel{--ph:min(calc(100svh - 230px),640px,calc((100vw - 172px) * 844 / 390));position:relative;display:flex;flex-direction:column;align-items:center;max-width:100%;padding:22px 22px 20px;border-radius:24px;background:#FBF7F0;box-shadow:0 40px 80px -30px rgba(20,14,8,.6);animation:gl-demo-up .45s cubic-bezier(.2,.8,.2,1) both}
+.gl-demo-close{position:absolute;top:10px;right:12px;width:38px;height:38px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:transparent;color:#4a3c2c;font:300 1.9rem/1 "Jost",sans-serif;cursor:pointer}
+.gl-demo-close:hover{background:rgba(168,136,79,.12)}
+.gl-demo-title{margin:0 44px;font:400 1.6rem/1.2 Italiana,serif;color:#2B2419;text-align:center}
+.gl-demo-hint{margin:4px 0 14px;font-size:.8rem;color:#8a7a62;text-align:center}
+.gl-demo-row{display:flex;align-items:center;gap:10px}
+.gl-demo-arrow{flex:none;width:38px;height:38px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid rgba(176,144,79,.45);background:#fff;color:#5a4630;font:300 1.7rem/1 "Jost",sans-serif;cursor:pointer;box-shadow:0 6px 14px -8px rgba(60,45,25,.4)}
+.gl-demo-arrow span{margin-top:-3px}
+.gl-demo-phone{position:relative;flex:none;padding:7px;border-radius:calc(var(--ph) * .085);background:#16120e;box-shadow:inset 0 0 0 1.5px #3a332b,0 24px 40px -18px rgba(20,14,8,.55)}
+.gl-demo-screen{position:relative;width:calc(var(--ph) * 390 / 844);height:var(--ph);overflow:hidden;border-radius:calc(var(--ph) * .075);background:#f3ede3}
+.gl-demo-screen iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;display:block}
+.gl-demo-island{position:absolute;z-index:2;left:50%;top:calc(7px + var(--ph) * .018);width:calc(var(--ph) * .13);height:calc(var(--ph) * .036);translate:-50% 0;border-radius:99px;background:#000;pointer-events:none}
+.gl-demo-cta{margin-top:18px}
+@keyframes gl-demo-in{from{opacity:0}}
+@keyframes gl-demo-up{from{opacity:0;transform:translateY(24px) scale(.97)}}
+@media(max-width:600px){
+  .gl-demo{padding:10px}
+  .gl-demo-panel{--ph:min(calc(100svh - 210px),calc((100vw - 142px) * 844 / 390));padding:18px 12px 16px;border-radius:20px}
+  .gl-demo-row{gap:6px}.gl-demo-arrow{width:32px;height:32px;font-size:1.5rem}
+  .gl-demo-title{font-size:1.35rem}.gl-demo-cta{width:100%;justify-content:center;text-align:center}
+}
+@media (prefers-reduced-motion:reduce){.gl-demo,.gl-demo-panel{animation:none}}

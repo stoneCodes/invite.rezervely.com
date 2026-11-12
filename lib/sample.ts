@@ -37,6 +37,45 @@ export function veloursSampleData(lang: Lang = "fr"): InvitationData {
   };
 }
 
+/** Exemple « La dot » : mariage coutumier, deux familles, pagne de démonstration. */
+export function dotSampleData(lang: Lang = "fr"): InvitationData {
+  const en = lang === "en";
+  const data = sampleData(lang);
+  return {
+    ...data,
+    partner1: "Merveille",
+    partner2: "Christian",
+    intro: en ? "With the blessing of their elders, they invite you to share this day of joy." : "Avec la bénédiction de leurs aînés, ils vous invitent à partager ce jour de joie.",
+    programme: en ? [
+      { t: "2:00 pm", title: "Arrival of the families", note: "Welcome and introductions" },
+      { t: "3:00 pm", title: "Presentation of the dowry", note: "Gifts and words of the elders" },
+      { t: "5:00 pm", title: "Blessings", note: "The families give their consent" },
+      { t: "7:00 pm", title: "Dinner and dancing", note: "Sharing, music and joy" },
+    ] : [
+      { t: "14h00", title: "Arrivée des familles", note: "Accueil et présentations" },
+      { t: "15h00", title: "Remise de la dot", note: "Présents et paroles des aînés" },
+      { t: "17h00", title: "Bénédictions", note: "Les familles donnent leur accord" },
+      { t: "19h00", title: "Repas et danse", note: "Partage, musique et joie" },
+    ],
+    venue: en ? { name: "The family courtyard", address: "Brazzaville, Congo" } : { name: "La cour familiale", address: "Brazzaville, Congo" },
+    dressCode: {
+      ...data.dressCode,
+      title: "",
+      note: "",
+      men: { label: en ? "Gentlemen" : "Messieurs", text: en ? "Shirt in the family cloth, plain trousers" : "Chemise dans le pagne de la famille, pantalon uni" },
+      women: { label: en ? "Ladies" : "Mesdames", text: en ? "Dress or kaba in the family cloth, head wrap welcome" : "Robe ou kaba dans le pagne de la famille, foulard bienvenu" },
+      colors: [
+        { name: en ? "Ivory" : "Ivoire", hex: "#F3E7D3" },
+        { name: en ? "Gold" : "Or", hex: "#C9A24A" },
+      ],
+    },
+    verse: null,
+    story: [],
+    rsvpBy: en ? "Please reply before 1 May 2027" : "Merci de répondre avant le 1er mai 2027",
+    dot: { families: en ? "The Mabiala and Okemba families" : "Les familles Mabiala et Okemba", fabric: null, fabric2: null, scale: 100 },
+  };
+}
+
 function sampleFr(): InvitationData {
   return {
     lang: "fr",
@@ -124,6 +163,7 @@ function sampleEn(): InvitationData {
 /** Exemple de départ d'un modèle : mariage, mariage musulman (velours) ou anniversaire. */
 export function sampleFor(template: TemplateId, lang: Lang = "fr"): InvitationData {
   if (template === "velours") return veloursSampleData(lang);
+  if (template === "dot") return dotSampleData(lang);
   if (isBirthday(template)) return birthdaySample(template, lang);
   if (isBaby(template)) return babySample(lang);
   return sampleData(lang);

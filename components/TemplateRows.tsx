@@ -6,7 +6,7 @@ import { useT } from "@/components/I18n";
 import { CATEGORIES, TEMPLATES, type CategoryId, type TemplateId } from "@/lib/types";
 import type { Lang } from "@/lib/i18n";
 
-export default function TemplateRows({ names, lang, compact = false, noAll = false, selected, order, onPreview, onSelect, onCreate }: {
+export default function TemplateRows({ names, lang, compact = false, noAll = false, marquee = false, paused = false, selected, order, onPreview, onSelect, onCreate }: {
   names: [string, string];
   /** Ordre des modèles choisi dans l'admin (/admin/modeles) ; ordre du catalogue sinon. */
   order?: readonly TemplateId[];
@@ -14,6 +14,10 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
   compact?: boolean;
   /** Sans l'onglet « Tout » (éditeur) : on part de la catégorie du modèle choisi. */
   noAll?: boolean;
+  /** Accueil : chaque rangée défile en continu de droite à gauche (comme un bandeau), pause au survol ou au toucher. */
+  marquee?: boolean;
+  /** Arrête le défilement (pop-up de démo ouverte). */
+  paused?: boolean;
   selected?: TemplateId;
   onPreview: (id: TemplateId) => void;
   onSelect?: (id: TemplateId) => void;
@@ -29,24 +33,27 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
   const rank = (id: TemplateId) => { const i = order ? order.indexOf(id) : -1; return i < 0 ? 999 + TEMPLATES.findIndex((item) => item.id === id) : i; };
   const idsFor = (category: CategoryId) => ordered(TEMPLATES.filter((item) => (item.categories as readonly CategoryId[]).includes(category)).map((item) => item.id as TemplateId).sort((a, b) => rank(a) - rank(b)));
 
+  const card = (id: TemplateId, key: string, clone = false) => (
+    <article key={key} className={`ph-card${selected === id ? " is-selected" : ""}`} aria-hidden={clone || undefined}>
+      {selected === id && <span className="ph-selected">{t.editor.yourModel}</span>}
+      <button className="ph-preview" type="button" tabIndex={clone ? -1 : undefined} aria-label={t.common.demoOf(t.templates[id].name)} onClick={() => { onSelect?.(id); onPreview(id); }}>
+        <PhoneTemplate template={id} names={names} lang={lang} compact={compact} />
+        <span className="ph-model-name">{t.templates[id].name}</span>
+      </button>
+      {!compact && <div className="ph-actions">
+        <button type="button" className="btn-s ghost" tabIndex={clone ? -1 : undefined} onClick={() => onPreview(id)}>{t.home.demo}</button>
+        <a className="btn-s" tabIndex={clone ? -1 : undefined} href={`/creer?t=${id}`} onClick={(event) => onCreate?.(id, event)}>{t.home.createMine}</a>
+      </div>}
+    </article>
+  );
+  const soon = [0, 1].map((n) => <div className="ph-card ph-soon" key={n}><div className="ph-soon-screen"><span aria-hidden="true">✦</span><strong>{t.gallery.soon}</strong></div><span className="ph-model-name">{t.gallery.soon}</span></div>);
+
   const row = (title: string, ids: TemplateId[], key: string) => (
     <section className="ph-section" key={key} aria-label={title}>
       <div className="ph-row-title"><h3>{title}</h3><span>{t.gallery.modelCount(ids.length)}</span></div>
       <Rail count={ids.length} labels={{ prev: t.gallery.prev, next: t.gallery.next, position: t.gallery.position }}>
-        {ids.map((id) => <article key={id} className={`ph-card${selected === id ? " is-selected" : ""}`}>
-          {selected === id && <span className="ph-selected">{t.editor.yourModel}</span>}
-          <button className="ph-preview" type="button" aria-label={t.common.demoOf(t.templates[id].name)} onClick={() => { onSelect?.(id); onPreview(id); }}>
-            <PhoneTemplate template={id} names={names} lang={lang} compact={compact} />
-            <span className="ph-model-name">{t.templates[id].name}</span>
-          </button>
-          {!compact && <div className="ph-actions">
-            <button type="button" className="btn-s ghost" onClick={() => onPreview(id)}>{t.home.demo}</button>
-            <a className="btn-s" href={`/creer?t=${id}`} onClick={(event) => onCreate?.(id, event)}>{t.home.createMine}</a>
-          </div>}
-        </article>)}
-        {ids.length === 0 && <>
-          {[0, 1].map((n) => <div className="ph-card ph-soon" key={n}><div className="ph-soon-screen"><span aria-hidden="true">✦</span><strong>{t.gallery.soon}</strong></div><span className="ph-model-name">{t.gallery.soon}</span></div>)}
-        </>}
+        {ids.map((id) => card(id, id))}
+        {ids.length === 0 && soon}
       </Rail>
     </section>
   );
@@ -66,7 +73,18 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
         </button>;
       })}
     </div>
-    {shown.map((id) => row(t.gallery.rows[id], idsFor(id), id))}
+    {marquee
+      // Accueil : une seule bande, qui ne fait défiler que la catégorie choisie (tous les modèles dans « Tout »).
+      ? (() => {
+        const ids = filter === "all" ? [...new Set(CATEGORIES.flatMap(({ id }) => idsFor(id)))] : idsFor(filter);
+        const title = filter === "all" ? t.gallery.filters.all : t.gallery.rows[filter];
+        return <section className="ph-section" aria-label={title}>
+          {ids.length > 0
+            ? <Marquee key={filter} paused={paused} ids={ids} render={card} labels={{ prev: t.gallery.prev, next: t.gallery.next }} />
+            : <Rail count={0} labels={{ prev: t.gallery.prev, next: t.gallery.next, position: t.gallery.position }}>{soon}</Rail>}
+        </section>;
+      })()
+      : shown.map((id) => row(t.gallery.rows[id], idsFor(id), id))}
   </div>;
 }
 
@@ -103,5 +121,108 @@ function Rail({ count, labels, children }: { count: number; labels: { prev: stri
       <button type="button" className="ph-arrow next" aria-label={labels.next} disabled={index >= count - 1} onClick={() => go(1)}><span aria-hidden="true">›</span></button>
       <p className="ph-count" aria-live="polite">{labels.position(Math.min(index, count - 1) + 1, count)}</p>
     </>}
+  </div>;
+}
+
+/** Bandeau qui défile en continu (36 px/s, comme le site de référence), de droite à gauche.
+ *  La liste est répétée pour remplir l'écran puis doublée : quand on a parcouru une moitié, on revient au début sans que ça se voie.
+ *  On peut aussi le faire glisser au doigt ou à la molette, ou avancer d'un modèle avec les flèches ‹ › ; il s'arrête au survol,
+ *  au toucher (reprend 2,5 s après), au clavier, hors de l'écran, onglet caché, pop-up ouverte, et ne bouge pas tout seul
+ *  si l'utilisateur réduit les animations. */
+const SPEED = 36;
+type MarqueeState = { pos: number; hold: number; nudge: { from: number; d: number; t0: number } | null };
+function Marquee({ ids, render, paused, labels }: { ids: TemplateId[]; render: (id: TemplateId, key: string, clone?: boolean) => React.ReactNode; paused: boolean; labels: { prev: string; next: string } }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
+  const S = useRef<MarqueeState>({ pos: 0, hold: 0, nudge: null });
+  const reps = Math.max(1, Math.ceil(8 / ids.length));
+  const set = Array.from({ length: reps }, (_, r) => ids.map((id) => ({ id, r }))).flat();
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const s = S.current;
+    s.pos = el.scrollLeft; s.hold = 0; s.nudge = null;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const half = () => {
+      const a = el.children[0] as HTMLElement | undefined, b = el.children[set.length] as HTMLElement | undefined;
+      return a && b ? b.offsetLeft - a.offsetLeft : el.scrollWidth / 2;
+    };
+    let last = 0, hover = false, focus = false, seen = true, raf = 0, ours = false;
+    const wrap = () => {
+      const L = half();
+      if (L <= 0) return;
+      const shift = s.pos >= L ? -L : s.pos < 0 ? L : 0;
+      if (!shift) return;
+      s.pos += shift;
+      if (s.nudge) s.nudge.from += shift;
+    };
+    const ease = (k: number) => 1 - Math.pow(1 - k, 3);
+    const tick = (now: number) => {
+      const dt = last ? Math.min(64, now - last) : 0;
+      last = now;
+      let moved = false;
+      if (s.nudge) {
+        const k = Math.min(1, (now - s.nudge.t0) / 450);
+        s.pos = s.nudge.from + s.nudge.d * ease(k);
+        if (k >= 1) s.nudge = null;
+        moved = true;
+      } else if (!reduce && !pausedRef.current && !hover && !focus && seen && !document.hidden && now > s.hold) {
+        s.pos += (SPEED * dt) / 1000;
+        moved = true;
+      }
+      if (moved) { wrap(); ours = true; el.scrollLeft = s.pos; }
+      raf = requestAnimationFrame(tick);
+    };
+    // Défilement de l'utilisateur (doigt, molette) : on reprend sa position et on attend un peu avant de repartir.
+    const onScroll = () => {
+      if (ours) { ours = false; return; }
+      if (s.nudge) return;
+      s.pos = el.scrollLeft;
+      const L = half();
+      if (L > 0 && (s.pos >= L || s.pos <= 0)) { s.pos = s.pos <= 0 ? s.pos + L : s.pos - L; ours = true; el.scrollLeft = s.pos; }
+      s.hold = Math.max(s.hold, performance.now() + 1500);
+    };
+    const touch = () => { s.hold = performance.now() + 2500; s.nudge = null; };
+    const enter = (e: PointerEvent) => { if (e.pointerType === "mouse") hover = true; };
+    const leave = (e: PointerEvent) => { if (e.pointerType === "mouse") hover = false; };
+    const fin = () => { focus = el.matches(":focus-within"); };
+    const fout = () => setTimeout(fin, 0);
+    const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting; });
+    io.observe(el);
+    el.addEventListener("scroll", onScroll, { passive: true });
+    el.addEventListener("pointerdown", touch, { passive: true });
+    el.addEventListener("wheel", touch, { passive: true });
+    el.addEventListener("pointerenter", enter);
+    el.addEventListener("pointerleave", leave);
+    el.addEventListener("focusin", fin);
+    el.addEventListener("focusout", fout);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf); io.disconnect();
+      el.removeEventListener("scroll", onScroll); el.removeEventListener("pointerdown", touch); el.removeEventListener("wheel", touch);
+      el.removeEventListener("pointerenter", enter); el.removeEventListener("pointerleave", leave);
+      el.removeEventListener("focusin", fin); el.removeEventListener("focusout", fout);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ids.join(",")]);
+  // Flèches : avance ou recule d'un modèle (on peut cliquer plusieurs fois de suite), puis le défilement reprend 2,5 s plus tard.
+  const go = (dir: number) => {
+    const el = ref.current, s = S.current;
+    if (!el) return;
+    const a = el.children[0] as HTMLElement | undefined, b = el.children[1] as HTMLElement | undefined;
+    const step = a && b ? b.offsetLeft - a.offsetLeft : 240;
+    const now = performance.now();
+    const target = (s.nudge ? s.nudge.from + s.nudge.d : s.pos) + dir * step;
+    s.nudge = { from: s.pos, d: target - s.pos, t0: now };
+    s.hold = now + 2500;
+  };
+  return <div className="ph-marquee-wrap">
+    <div className="ph-marquee" ref={ref}>
+      {set.map(({ id, r }) => render(id, `a${r}-${id}`, r > 0))}
+      {set.map(({ id, r }) => render(id, `b${r}-${id}`, true))}
+    </div>
+    <button type="button" className="ph-marquee-arrow prev" aria-label={labels.prev} onClick={() => go(-1)}><span aria-hidden="true">‹</span></button>
+    <button type="button" className="ph-marquee-arrow next" aria-label={labels.next} onClick={() => go(1)}><span aria-hidden="true">›</span></button>
   </div>;
 }

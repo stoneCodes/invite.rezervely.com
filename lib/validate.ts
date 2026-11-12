@@ -1,4 +1,4 @@
-import { BABY_PALETTES, BABY_SEXES, PALETTES, PLACES, TEMPLATE_IDS, isBaby, isBirthday, type BabyPaletteId, type BabySex, type InvitationData, type PaletteId, type PlaceId, type TemplateId } from "./types";
+import { BABY_PALETTES, BABY_SEXES, PALETTES, PLACES, TEMPLATE_IDS, isBaby, isBirthday, isDot, type BabyPaletteId, type BabySex, type InvitationData, type PaletteId, type PlaceId, type TemplateId } from "./types";
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const hex = (v: unknown) => (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v) ? v : undefined);
@@ -26,7 +26,12 @@ export function sanitizeData(input: any, template?: string): InvitationData {
   const date = new Date(d.dateISO);
   const dc = d.dressCode ?? {};
   const v = d.verse;
-  const photo = typeof d.photoUrl === "string" && d.photoUrl.startsWith(process.env.SUPABASE_URL ?? "https://") ? d.photoUrl.slice(0, 500) : null;
+  // Photos (mariés, pagne) : seulement celles rangées dans notre bucket Supabase.
+  const ours = (u: unknown) => (typeof u === "string" && u.startsWith(process.env.SUPABASE_URL ?? "https://") ? u.slice(0, 500) : null);
+  const photo = ours(d.photoUrl);
+  const dotTpl = isDot(template);
+  const dt = d.dot ?? {};
+  const scale = parseInt(dt.scale, 10);
   return {
     lang: d.lang === "en" ? "en" : "fr",
     partner1: str(d.partner1, 40) || "Prénom",
@@ -66,6 +71,12 @@ export function sanitizeData(input: any, template?: string): InvitationData {
       endTime: str(b.endTime, 12),
       parentPhone: str(b.parentPhone, 30).replace(/[^\d+ ().-]/g, ""),
       palette: (PALETTES as readonly string[]).includes(b.palette) ? (b.palette as PaletteId) : "rose",
+    } } : {}),
+    ...(dotTpl ? { dot: {
+      families: str(dt.families, 120),
+      fabric: ours(dt.fabric),
+      fabric2: ours(dt.fabric2),
+      scale: scale >= 50 && scale <= 200 ? scale : 100,
     } } : {}),
     ...(babyTpl ? { baby: {
       sex: (BABY_SEXES as readonly string[]).includes(bb.sex) ? (bb.sex as BabySex) : "surprise",

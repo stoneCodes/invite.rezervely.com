@@ -70,6 +70,40 @@ export function HomeFeatures() {
 }
 
 /** Questions fréquentes (prix selon le réglage de l'admin : null = gratuit pour le moment). */
+/** Bloc « Tableau de bord » (12 nov. 2026, demandé par Glad d'après reveliastudio.com) : capture de l'espace des mariés
+ *  dans une fenêtre, page du PDF posée devant, deux pastilles de chiffres, liste des atouts. Captures dans
+ *  public/img/accueil-tableau.webp et accueil-pdf.webp (provisoires : images-source/accueil/captures.py). */
+export function HomeDashboard() {
+  const h = useT().home;
+  return (
+    <section className="gl-dash gl-wave" aria-labelledby="gl-dash-t"><div className="wrap-site gl-dash-in">
+      <div className="gl-dash-head">
+        <div className="gl-kicker">{h.dashKicker}</div>
+        <h2 id="gl-dash-t">{h.dashTitle} <span className="gold-text">{h.dashGold}</span></h2>
+        <p className="gl-dash-text">{h.dashText}</p>
+      </div>
+      <div className="gl-dash-visual gl-rv">
+        <figure className="gl-dash-shot">
+          <span className="gl-dash-bar" aria-hidden="true"><i /><i /><i /></span>
+          <img src="/img/accueil-tableau.webp" width={1520} height={1120} alt={h.dashShotAlt} loading="lazy" decoding="async" />
+        </figure>
+        <figure className="gl-dash-pdf">
+          <img src="/img/accueil-pdf.webp" width={1000} height={1414} alt={h.dashPdfAlt} loading="lazy" decoding="async" />
+          <span className="gl-dash-pdftag" aria-hidden="true">PDF</span>
+        </figure>
+        <span className="gl-dash-chip is-yes" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9" /></svg><b>112</b>{h.dashYes}</span>
+        <span className="gl-dash-chip is-no" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7 7 17" /></svg><b>9</b>{h.dashNo}</span>
+      </div>
+      <div className="gl-dash-side">
+        <ul className="gl-dash-list">
+          {h.dashPoints.map((p) => <li key={p}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12.5 4 4 8-9" /></svg>{p}</li>)}
+        </ul>
+        <a className="btn-s gl-dash-cta" href="/creer">{h.create} <span aria-hidden="true">→</span></a>
+      </div>
+    </div></section>
+  );
+}
+
 export function HomeFaq({ price }: { price: string | null }) {
   const h = useT().home;
   return (

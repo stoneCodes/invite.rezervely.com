@@ -10,7 +10,7 @@ import { cycleTemplate } from "@/lib/templateOrder";
 import TemplateRows from "@/components/TemplateRows";
 import HeroReel from "@/components/HeroReel";
 import HomeReveal from "@/components/HomeReveal";
-import { HomeFaq, HomeFeatures, HomeReviews, type HomeReview } from "@/components/HomeExtras";
+import { HomeDashboard, HomeFaq, HomeFeatures, HomeReviews, type HomeReview } from "@/components/HomeExtras";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { getLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
@@ -107,7 +107,7 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
     setTimeout(() => router.push(href), reduce ? 0 : 550);
   };
 
-  /* Démo en pop-up plein écran, sans quitter l'accueil (plus de nouvel onglet). */
+  /* Démo en pop-up dans un téléphone, sans quitter l'accueil (plus de nouvel onglet). */
   const [demo, setDemo] = useState<TemplateId | null>(null);
   const cycle = (id: TemplateId, step: number) => cycleTemplate(order, id, step);
   useEffect(() => {
@@ -160,10 +160,11 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
 
       <section id="gl-hz" className="gl-hz gl-wave is-b">
         <div className="gl-hz-head"><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
-        <TemplateRows names={["Léa", "Samuel"]} lang={lang} order={order} onPreview={setDemo} onCreate={(id, event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return; celebrate(`/creer?t=${id}`)(event); }} />
+        <TemplateRows marquee paused={demo !== null} names={["Léa", "Samuel"]} lang={lang} order={order} onPreview={setDemo} onCreate={(id, event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return; celebrate(`/creer?t=${id}`)(event); }} />
       </section>
 
       <HomeFeatures />
+      <HomeDashboard />
 
       <section className="gl-steps-band gl-wave is-b"><div className="wrap-site gl-steps">
         {h.steps.map(([n, st, p]) => (
@@ -182,23 +183,46 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
       <footer className="gl-wave">{h.footer} · <a href="/espace">{t.find.title}</a><LegalLinks className="gl-legal" /></footer>
 
       {demo && shown && (
-        <div className="ed-full" role="dialog" aria-modal="true" aria-label={t.common.demoOf(shown.name)}>
-          <div className="ed-full-bar">
-            <button type="button" className="ed-full-back" onClick={() => setDemo(null)}><span aria-hidden="true">←</span> <span>{t.common.backHome}</span></button>
-            <div className="ed-full-nav">
-              <button type="button" aria-label={t.common.prevTpl} onClick={() => setDemo(cycle(demo, -1))}>‹</button>
-              <div className="ed-full-name">
-                <strong>{shown.name}</strong>
-                <small>{t.common.tplOf(order.indexOf(demo) + 1, order.length)} · {h.demoSub}</small>
-              </div>
-              <button type="button" aria-label={t.common.nextTpl} onClick={() => setDemo(cycle(demo, 1))}>›</button>
+        /* Démo dans un téléphone, en pop-up par-dessus l'accueil (comme reveliastudio.com) : on la ferme et on reste où on était. */
+        <div className="gl-demo" role="dialog" aria-modal="true" aria-label={t.common.demoOf(shown.name)} onClick={(e) => { if (e.target === e.currentTarget) setDemo(null); }}>
+          <div className="gl-demo-panel">
+            <button type="button" className="gl-demo-close" aria-label={h.demoClose} onClick={() => setDemo(null)}><span aria-hidden="true">×</span></button>
+            <h2 className="gl-demo-title">{shown.name}</h2>
+            <p className="gl-demo-hint">{h.demoHint}</p>
+            <div className="gl-demo-row">
+              <button type="button" className="gl-demo-arrow" aria-label={t.common.prevTpl} onClick={() => setDemo(cycle(demo, -1))}><span aria-hidden="true">‹</span></button>
+              <DemoPhone id={demo} title={t.common.demoOf(shown.name)} />
+              <button type="button" className="gl-demo-arrow" aria-label={t.common.nextTpl} onClick={() => setDemo(cycle(demo, 1))}><span aria-hidden="true">›</span></button>
             </div>
-            <a className="btn-s" href={`/creer?t=${demo}`} onClick={celebrate(`/creer?t=${demo}`)}><span className="lbl-lg">{h.createWith}</span><span className="lbl-sm">{h.create}</span></a>
+            <a className="btn-s gl-demo-cta" href={`/creer?t=${demo}`} onClick={celebrate(`/creer?t=${demo}`)}>{h.createWith}</a>
           </div>
-          {/* key : chaque modèle recharge la démo, qui rejoue son ouverture. */}
-          <iframe key={demo} src={`/demo/${demo}?integre=1`} title={t.common.demoOf(shown.name)} allow="accelerometer; gyroscope" />
         </div>
       )}
     </main>
   );
+}
+
+/** Écran du téléphone de la démo : l'invitation est affichée en vrai format iPhone (390 × 844) puis réduite à la taille
+ *  du cadre, comme sur reveliastudio.com. Sinon elle se croit sur un tout petit écran court et ses éléments se décalent. */
+const PHONE_W = 390, PHONE_H = 844;
+function DemoPhone({ id, title }: { id: TemplateId; title: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const fit = () => setScale(el.clientWidth / PHONE_W);
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return <div className="gl-demo-phone">
+    <span className="gl-demo-island" aria-hidden="true" />
+    <div className="gl-demo-screen" ref={ref}>
+      {/* key : chaque modèle recharge la démo, qui rejoue son ouverture. */}
+      {scale > 0 && <iframe key={id} src={`/demo/${id}?integre=1`} title={title} allow="accelerometer; gyroscope; autoplay"
+        style={{ width: PHONE_W, height: PHONE_H, transform: `scale(${scale})` }} />}
+    </div>
+  </div>;
 }

@@ -248,3 +248,26 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
   .sp-filter{display:flex;width:100%}
   .sp-chip{flex:1;justify-content:center;padding:9px 6px;letter-spacing:.04em;font-size:.66rem}
 }
+/* Accueil : rangées en bandeau qui défile en continu (TemplateRows marquee). Aucune barre de défilement ; fondu sur les bords. */
+.site .ph-marquee{display:flex;align-items:start;gap:clamp(22px,2.8vw,44px);overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:10px 0 26px;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.site .ph-marquee::-webkit-scrollbar{display:none}
+.site .ph-marquee .ph-card{flex:0 0 clamp(190px,18vw,236px);width:auto;margin:0}
+.site .ph-marquee .ph-device{width:100%}
+.site .ph-gallery:has(.ph-marquee) .ph-section{max-width:none}
+.site .ph-gallery:has(.ph-marquee) .ph-row-title{max-width:1280px;margin-inline:auto}
+@media(max-width:760px){
+  .site .ph-marquee{gap:20px;padding:8px 0 18px;-webkit-mask-image:none;mask-image:none}
+  .site .ph-marquee .ph-card{flex:0 0 min(52vw,220px);scroll-snap-align:none}
+  .site .ph-marquee .ph-actions .btn-s{padding:10px 11px;font-size:.62rem}
+}
+/* Une seule bande sur l'accueil, avec des flèches pour avancer d'un modèle */
+.site .ph-marquee-wrap{position:relative}
+.site .ph-marquee-arrow{position:absolute;z-index:4;top:calc(10px + clamp(190px,18vw,236px) * 19.5 / 18);translate:0 -50%;width:46px;height:46px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid rgba(176,144,79,.45);background:rgba(255,252,246,.94);color:#5a4630;font:300 2rem/1 var(--f-ui);box-shadow:0 8px 20px -8px rgba(60,45,25,.45);cursor:pointer;transition:transform .2s}
+.site .ph-marquee-arrow span{margin-top:-4px}
+.site .ph-marquee-arrow:hover{transform:scale(1.06)}
+.site .ph-marquee-arrow.prev{left:clamp(8px,2vw,28px)}.site .ph-marquee-arrow.next{right:clamp(8px,2vw,28px)}
+@media(max-width:760px){.site .ph-marquee-arrow{top:calc(8px + min(52vw,220px));width:40px;height:40px;font-size:1.7rem}}
+
+/* Démo intégrée dans une pop-up : barre de défilement masquée (on défile toujours au doigt, à la molette) */
+html.is-embedded{scrollbar-width:none}html.is-embedded::-webkit-scrollbar{display:none}

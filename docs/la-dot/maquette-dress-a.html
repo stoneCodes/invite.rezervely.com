@@ -1,0 +1,139 @@
+<!doctype html>
+<!-- Maquette A retravaillée du dress code de « La dot » (12 nov. 2026) : carnet du tailleur,
+     dessins techniques (chemise seule pour les hommes, robe sirène pour les femmes) remplis du pagne en aquarelle. -->
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;width:430px;height:900px;overflow:hidden;font-family:Jost,sans-serif;color:#2B2419}
+  body{padding:20px;background:url(../../public/img/dot-fond.webp) center/cover}
+  .ph{width:390px;height:860px;position:relative;border-radius:30px;overflow:hidden;box-shadow:0 20px 50px rgba(40,25,10,.35)}
+  .ph::before{content:"";position:absolute;inset:0;background:url(../../public/img/dot-fond.webp) center/cover}
+  .card{position:absolute;inset:18px 14px 14px;border-radius:18px;background:rgba(255,251,244,.72);backdrop-filter:blur(3px);box-shadow:inset 0 0 0 1px rgba(168,136,79,.5),inset 0 0 0 5px rgba(255,251,244,.4),inset 0 0 0 6px rgba(168,136,79,.3);padding:22px 16px;text-align:center}
+  small{display:block;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#A8884F}
+  h2{font:500 30px/1.1 "Cormorant Garamond",serif;margin:6px 0 4px}
+  .help{font-size:13px;font-weight:300;color:#6b5a45;margin:0 8px 16px}
+  .cons{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;font-size:12.5px;font-weight:300;color:#5a4a38;margin-top:20px}
+  .cons b{display:block;font-weight:400;color:#2B2419;font-size:13.5px;margin-bottom:2px}
+  .cons div{border-left:2px solid #C9A86A;padding-left:9px}
+
+  /* carnet : papier épais à pointillés, reliure, élastique, piles de pages */
+  .book{position:relative;margin:0 -2px;height:520px;transform:rotate(-1.4deg)}
+  .page{position:absolute;inset:0;border-radius:3px 10px 10px 3px;overflow:hidden;
+    background:radial-gradient(circle,rgba(110,90,60,.22) .8px,transparent 1.2px) 0 0/16px 16px,linear-gradient(100deg,#F6EEDD,#FBF6EA 30%,#F8F1E3);
+    box-shadow:1px 1px 0 #e6dcc6,2px 2px 0 #f5eedf,3px 3px 0 #ddd0b5,4px 4px 0 #f3ebda,5px 5px 0 #d6c8ab,0 18px 30px rgba(60,40,15,.32)}
+  .page::before{content:"";position:absolute;left:0;top:0;bottom:0;width:20px;background:linear-gradient(90deg,rgba(80,55,25,.18),transparent)}
+  .page::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 70% 15%,transparent 50%,rgba(150,115,60,.14));pointer-events:none}
+  .band{position:absolute;right:7px;top:-6px;bottom:-6px;width:9px;border-radius:3px;background:linear-gradient(90deg,#5a2d16,#8a4a26 45%,#4a2412);box-shadow:2px 0 4px rgba(0,0,0,.25);z-index:5}
+  .head{position:absolute;left:24px;top:14px;text-align:left;font:600 21px/1 Caveat,cursive;color:#2B2419}
+  .head i{display:block;font:500 15px Caveat;color:#8a7458;font-style:normal;margin-top:2px}
+  .note{position:absolute;font:500 15px/1 Caveat,cursive;color:#3a3226;white-space:nowrap}
+  svg.ink{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+
+  /* échantillon épinglé */
+  .swatch{position:absolute;left:30px;top:362px;width:104px;height:84px;transform:rotate(-6deg);z-index:3;
+    background:var(--pagne) 0 0/58px;
+    clip-path:polygon(0 0,5% 3%,10% 0,15% 3%,20% 0,25% 3%,30% 0,35% 3%,40% 0,45% 3%,50% 0,55% 3%,60% 0,65% 3%,70% 0,75% 3%,80% 0,85% 3%,90% 0,95% 3%,100% 0,97% 6%,100% 12%,97% 18%,100% 24%,97% 30%,100% 36%,97% 42%,100% 48%,97% 54%,100% 60%,97% 66%,100% 72%,97% 78%,100% 84%,97% 90%,100% 100%,95% 97%,90% 100%,85% 97%,80% 100%,75% 97%,70% 100%,65% 97%,60% 100%,55% 97%,50% 100%,45% 97%,40% 100%,35% 97%,30% 100%,25% 97%,20% 100%,15% 97%,10% 100%,5% 97%,0 100%,3% 94%,0 88%,3% 82%,0 76%,3% 70%,0 64%,3% 58%,0 52%,3% 46%,0 40%,3% 34%,0 28%,3% 22%,0 16%,3% 10%);
+  }
+  .swatch-sh{position:absolute;left:33px;top:367px;width:104px;height:84px;transform:rotate(-6deg);background:rgba(50,30,10,.28);filter:blur(4px);z-index:2}
+  .swatch::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.18),transparent 40%,rgba(0,0,0,.14))}
+  .pin{position:absolute;left:70px;top:358px;z-index:4;width:44px;height:14px;transform:rotate(-28deg)}
+  .pin::before{content:"";position:absolute;left:10px;top:6px;width:34px;height:1.6px;background:linear-gradient(90deg,#9a9a9a,#e8e8e8 30%,#8d8d8d)}
+  .pin::after{content:"";position:absolute;left:0;top:0;width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3cf,#d4ae5e 45%,#7d5f2c);box-shadow:1px 2px 3px rgba(0,0,0,.35)}
+
+  /* mètre ruban enroulé + craie */
+  .tape{position:absolute;left:150px;top:470px;width:220px;height:20px;z-index:4;transform:rotate(-3deg);border-radius:2px;
+    background:repeating-linear-gradient(90deg,#3a3226 0 1px,transparent 1px 6px) 0 0/auto 5px repeat-x,repeating-linear-gradient(90deg,#3a3226 0 1.3px,transparent 1.3px 30px) 0 0/auto 10px repeat-x,linear-gradient(#f4d98a,#e8c565);
+    box-shadow:0 3px 5px rgba(60,40,10,.3)}
+  .roll{position:absolute;left:338px;top:452px;z-index:5;width:54px;height:54px;border-radius:50%;
+    background:radial-gradient(circle,#9b7a3e 0 6px,#d9b765 7px,#f1d27f 12px,#e2bf6b 14px,#f1d27f 16px,#dcb862 18px,#f1d27f 21px,#d8b35d 24px,#c79f4c 26px,#a88645 27px);box-shadow:0 5px 8px rgba(50,30,5,.4)}
+  .chalk{position:absolute;left:250px;top:430px;width:40px;height:26px;z-index:3;transform:rotate(14deg);background:linear-gradient(135deg,#f3efe7,#d6cebf);clip-path:polygon(0 35%,50% 0,100% 35%,100% 100%,0 100%);filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+  .chalk-mark{position:absolute;left:196px;top:448px;width:60px;height:3px;background:rgba(255,255,255,.7);transform:rotate(-8deg);filter:blur(.5px);border-radius:2px}
+</style></head>
+<body>
+<div class="ph"><div class="card">
+  <small>Dress code</small><h2>En pagne de la famille</h2>
+  <p class="help">Chez le tailleur, on coud les tenues dans le pagne choisi par les familles.</p>
+
+  <div class="book"><div class="page">
+    <div class="head">Atelier · tenues de la dot<i>le pagne des familles</i></div>
+
+    <svg class="ink" viewBox="0 0 356 520">
+      <defs>
+        <pattern id="pg" patternUnits="userSpaceOnUse" width="30" height="30"><image href="../../public/img/dot-pagne-demo.webp" width="30" height="30"/></pattern>
+        <!-- aquarelle : la couleur déborde un peu et ne suit pas exactement le trait -->
+        <filter id="aq" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="7" result="t"/>
+          <feDisplacementMap in="SourceGraphic" in2="t" scale="5" result="d"/>
+          <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="2" result="g"/>
+          <feColorMatrix in="g" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -.35 1.08" result="gm"/>
+          <feComposite in="d" in2="gm" operator="in"/>
+        </filter>
+        <filter id="ink"><feTurbulence baseFrequency=".05" numOctaves="2" seed="11"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+        <linearGradient id="lavS" x1="0" x2="1"><stop offset="0" stop-color="#1c0f04" stop-opacity=".34"/><stop offset=".22" stop-color="#1c0f04" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".14"/><stop offset=".78" stop-color="#1c0f04" stop-opacity="0"/><stop offset="1" stop-color="#1c0f04" stop-opacity=".34"/></linearGradient>
+        <linearGradient id="lavV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".7" stop-color="#1c0f04" stop-opacity="0"/><stop offset="1" stop-color="#1c0f04" stop-opacity=".22"/></linearGradient>
+      </defs>
+
+      <!-- ===== Chemise (dessin technique, vue de face) ===== -->
+      <g transform="translate(22 78) scale(1.02)">
+        <g filter="url(#aq)">
+          <path id="sh" d="M64 12 L50 18 L22 28 Q14 32 12 44 L4 150 L22 152 L30 62 L34 64 L34 186 Q80 192 126 186 L126 64 L130 62 L138 152 L156 150 L148 44 Q146 32 138 28 L110 18 L96 12 Q80 18 64 12 Z" fill="url(#pg)"/>
+          <path d="M64 12 Q80 18 96 12 L96 3 Q80 8 64 3 Z" fill="url(#pg)"/>
+        </g>
+        <path d="M64 12 L50 18 L22 28 Q14 32 12 44 L4 150 L22 152 L30 62 L34 64 L34 186 Q80 192 126 186 L126 64 L130 62 L138 152 L156 150 L148 44 Q146 32 138 28 L110 18 L96 12 Q80 18 64 12 Z" fill="url(#lavS)"/>
+        <path d="M34 64 L34 186 Q80 192 126 186 L126 64 Z" fill="url(#lavV)"/>
+        <g fill="none" stroke="#2B2419" stroke-linecap="round" stroke-linejoin="round" filter="url(#ink)">
+          <path stroke-width="1.3" d="M64 12 L50 18 L22 28 Q14 32 12 44 L4 150 L22 152 L30 62 L34 64 L34 186 Q80 192 126 186 L126 64 L130 62 L138 152 L156 150 L148 44 Q146 32 138 28 L110 18 L96 12"/>
+          <path stroke-width="1.3" d="M64 12 Q80 18 96 12 L96 3 Q80 8 64 3 Z M80 8 V17"/>
+          <path stroke-width=".9" d="M50 18 Q38 40 34 64 M110 18 Q122 40 126 64 M5 136 L23 138 M137 138 L155 136 M34 170 l3 0 M126 170 l-3 0"/>
+          <path stroke-width=".7" stroke-dasharray="2.4 2" d="M75 18 V98 Q80 101 85 98 V18 M36 182 Q80 188 124 182 M6 140 L22 142 M138 142 L154 140"/>
+          <path stroke-width=".7" d="M34 186 V170 M126 186 V170" stroke-dasharray="1.4 1.4"/>
+          <path stroke-width=".55" opacity=".7" d="M16 70 q4 30 1 60 M144 70 q-4 30 -1 60 M46 120 q8 30 2 60 M114 120 q-8 30 -2 60"/>
+        </g>
+        <!-- cote de longueur -->
+        <g stroke="#8a7458" stroke-width=".7" fill="none"><path d="M-12 12 V188 M-16 12 h8 M-16 188 h8"/></g>
+      </g>
+
+      <!-- ===== Robe sirène (dessin technique, vue de face) ===== -->
+      <g transform="translate(190 96) scale(.9)">
+        <g filter="url(#aq)">
+          <path d="M62 14 Q80 26 98 14 L110 18 L108 50 Q110 70 106 92 L54 92 Q50 70 52 50 L50 18 Z" fill="url(#pg)"/>
+          <path d="M50 18 Q26 10 20 30 Q16 46 30 52 L48 50 Z M110 18 Q134 10 140 30 Q144 46 130 52 L112 50 Z" fill="url(#pg)"/>
+          <path d="M54 92 H106 V102 H54 Z" fill="url(#pg)"/>
+          <path d="M54 102 Q48 140 56 180 Q60 205 62 215 Q36 270 14 312 Q80 322 146 312 Q124 270 98 215 Q100 205 104 180 Q112 140 106 102 Z" fill="url(#pg)"/>
+        </g>
+        <path d="M54 102 Q48 140 56 180 Q60 205 62 215 Q36 270 14 312 Q80 322 146 312 Q124 270 98 215 Q100 205 104 180 Q112 140 106 102 Z" fill="url(#lavS)"/>
+        <path d="M62 14 Q80 26 98 14 L110 18 L108 50 Q110 70 106 92 L54 92 Q50 70 52 50 L50 18 Z" fill="url(#lavS)"/>
+        <g fill="none" stroke="#2B2419" stroke-linecap="round" stroke-linejoin="round" filter="url(#ink)">
+          <path stroke-width="1.3" d="M62 14 Q80 26 98 14 L110 18 L108 50 Q110 70 106 92 L54 92 Q50 70 52 50 L50 18 Z"/>
+          <path stroke-width="1.3" d="M50 18 Q26 10 20 30 Q16 46 30 52 L48 50 M110 18 Q134 10 140 30 Q144 46 130 52 L112 50"/>
+          <path stroke-width=".8" d="M30 52 q-2 -4 3 -6 M130 52 q2 -4 -3 -6 M26 24 q4 8 2 18 M34 16 q2 10 0 22 M134 24 q-4 8 -2 18 M126 16 q-2 10 0 22"/>
+          <path stroke-width="1.3" d="M54 92 H106 V102 H54 Z"/>
+          <path stroke-width="1.3" d="M54 102 Q48 140 56 180 Q60 205 62 215 Q36 270 14 312 Q80 322 146 312 Q124 270 98 215 Q100 205 104 180 Q112 140 106 102"/>
+          <path stroke-width=".8" d="M68 26 Q64 60 66 92 M92 26 Q96 60 94 92 M66 102 Q60 160 68 215 M94 102 Q100 160 92 215 M62 215 Q80 220 98 215"/>
+          <path stroke-width=".7" stroke-dasharray="2.4 2" d="M64 17 Q80 29 96 17 M56 95 H104 M56 99 H104 M18 307 Q80 317 142 307"/>
+          <path stroke-width=".6" opacity=".7" d="M68 218 Q52 270 40 314 M80 220 V318 M92 218 Q108 270 120 314 M74 219 Q66 270 60 316 M86 219 Q94 270 100 316"/>
+        </g>
+      </g>
+    </svg>
+
+    <span class="note" style="left:124px;top:72px;transform:rotate(-3deg);color:#8a7458;font-size:14px">← col officier</span>
+    <span class="note" style="left:44px;top:282px;transform:rotate(-2deg);color:#8a7458;font-size:14px">patte cachée · fentes sur les côtés</span>
+    <span class="note" style="left:236px;top:64px;transform:rotate(3deg)">Mesdames</span>
+    <span class="note" style="left:30px;top:58px;transform:rotate(-3deg)">Messieurs</span>
+    <span class="note" style="left:196px;top:396px;transform:rotate(-2deg);color:#8a7458;font-size:14px">sirène · ceinture cousue</span>
+    
+    <span class="note" style="left:-4px;top:170px;transform:rotate(-90deg);font-size:13px;color:#8a7458">78 cm</span>
+    <span class="note" style="left:40px;top:452px;transform:rotate(-6deg);font-size:14px;color:#8a7458;z-index:4">échantillon ✓</span>
+
+    <span class="swatch-sh"></span><span class="swatch"></span><span class="pin"></span>
+    <span class="chalk-mark"></span><span class="chalk"></span>
+    <span class="tape"></span><span class="roll"></span>
+  </div><span class="band"></span></div>
+
+  <div class="cons"><div><b>Messieurs</b>Chemise dans le pagne de la famille, pantalon uni</div><div><b>Mesdames</b>Robe ou kaba dans le pagne, foulard bienvenu</div></div>
+</div></div>
+<script>
+  document.body.style.setProperty("--pagne", `url("${new URL("../../public/img/dot-pagne-demo.webp", location).href}")`);
+</script>
+</body></html>

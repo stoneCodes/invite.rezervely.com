@@ -1,0 +1,173 @@
+<!doctype html>
+<!-- Maquette du dress code de « La dot » (12 nov. 2026) : A = carnet du tailleur, B = coupon de pagne.
+     Dessins faits en code pour la maquette ; la version finale utiliserait des images générées. -->
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400&family=Pinyon+Script&family=Caveat:wght@500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;width:840px;height:900px;overflow:hidden;font-family:Jost,sans-serif;color:#2B2419}
+  body{display:flex;gap:20px;padding:20px;background:url(../../public/img/dot-fond.webp) center/cover}
+  .ph{width:390px;height:860px;position:relative;border-radius:30px;overflow:hidden;box-shadow:0 20px 50px rgba(40,25,10,.35)}
+  .ph::before{content:"";position:absolute;inset:0;background:url(../../public/img/dot-fond.webp) center/cover}
+  .lab{position:absolute;z-index:9;top:12px;left:12px;background:#2B2419;color:#F3EBDC;font:600 13px Jost;letter-spacing:.16em;padding:6px 12px;border-radius:99px}
+  .card{position:absolute;inset:44px 14px 14px;border-radius:18px;background:rgba(255,251,244,.72);backdrop-filter:blur(3px);box-shadow:inset 0 0 0 1px rgba(168,136,79,.5),inset 0 0 0 5px rgba(255,251,244,.4),inset 0 0 0 6px rgba(168,136,79,.3);padding:22px 18px;text-align:center}
+  small{display:block;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#A8884F}
+  h2{font:500 30px/1.1 "Cormorant Garamond",serif;margin:6px 0 4px}
+  .help{font-size:13px;font-weight:300;color:#6b5a45;margin:0 0 14px}
+  .cons{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;font-size:12.5px;font-weight:300;color:#5a4a38}
+  .cons b{display:block;font-weight:400;color:#2B2419;font-size:13.5px;margin-bottom:2px}
+  .cons div{border-left:2px solid #C9A86A;padding-left:9px}
+
+  /* ---------- A : carnet du tailleur ---------- */
+  .note{position:relative;margin:4px -4px 14px;height:470px;border-radius:4px;transform:rotate(-1.2deg);
+    background:
+      repeating-linear-gradient(transparent 0 23px,rgba(120,150,190,.18) 23px 24px),
+      linear-gradient(90deg,transparent 30px,rgba(200,90,80,.25) 30px 31px,transparent 31px),
+      #FBF6EA;
+    box-shadow:0 1px 0 #e9dfcb,0 3px 0 #f4ecdc,0 4px 0 #e2d6bf,0 14px 26px rgba(60,40,15,.28)}
+  .note::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,transparent 40%,rgba(160,130,80,.12));pointer-events:none}
+  .note svg.fig{position:absolute;bottom:26px}
+  .hand{position:absolute;font:500 17px Caveat,cursive;color:#3a3226;line-height:1}
+  .coupon{position:absolute;right:-6px;top:10px;width:96px;height:78px;transform:rotate(7deg);background:var(--pagne) 0 0/70px;
+    clip-path:polygon(0 0,6% 4%,12% 0,18% 4%,24% 0,30% 4%,36% 0,42% 4%,48% 0,54% 4%,60% 0,66% 4%,72% 0,78% 4%,84% 0,90% 4%,96% 0,100% 0,100% 100%,94% 96%,88% 100%,82% 96%,76% 100%,70% 96%,64% 100%,58% 96%,52% 100%,46% 96%,40% 100%,34% 96%,28% 100%,22% 96%,16% 100%,10% 96%,4% 100%,0 100%);
+    filter:drop-shadow(0 4px 4px rgba(40,25,10,.35))}
+  .pin{position:absolute;right:56px;top:4px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f6d58a,#a8884f 60%,#6d5530);box-shadow:0 2px 3px rgba(0,0,0,.35);z-index:3}
+  .pin::after{content:"";position:absolute;left:5px;top:10px;width:2px;height:26px;background:linear-gradient(#d8d8d8,#8a8a8a);transform:rotate(-24deg);transform-origin:top}
+  .tape{position:absolute;left:-20px;bottom:6px;width:430px;height:22px;transform:rotate(-4deg);background:
+      repeating-linear-gradient(90deg,#3a3226 0 1px,transparent 1px 7.5px),
+      repeating-linear-gradient(90deg,#3a3226 0 1.4px,transparent 1.4px 37.5px),#F2D27A;
+    background-size:auto 6px,auto 11px,auto;background-repeat:repeat-x;background-position:0 0,0 0,0 0;
+    box-shadow:0 3px 6px rgba(60,40,10,.3);border-radius:2px}
+  .chalk{position:absolute;left:150px;top:410px;width:46px;height:30px;background:linear-gradient(135deg,#e9e4da,#cfc7b8);clip-path:polygon(0 30%,50% 0,100% 30%,100% 100%,0 100%);transform:rotate(-18deg);filter:drop-shadow(0 3px 3px rgba(0,0,0,.25))}
+
+  /* ---------- B : coupon plié ---------- */
+  .stage{position:relative;height:330px;margin:0 -6px 12px;border-radius:12px;overflow:hidden;
+    background:url(../../public/img/dot-plateau.webp) center 60%/118% no-repeat,radial-gradient(#e9dcc4,#cdb894)}
+  .stage svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-48%)}
+  .picto{display:flex;justify-content:center;gap:34px;margin:6px 0 12px}
+  .picto span{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7a6650}
+  .picto i{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:var(--pagne) center/48px;box-shadow:0 0 0 2px #FFFBF4,0 0 0 3.5px #C9A86A}
+  .picto svg{width:34px;height:34px;background:rgba(255,251,244,.92);border-radius:50%;padding:5px}
+</style></head>
+<body>
+
+<!-- ======================= A ======================= -->
+<div class="ph"><span class="lab">A · CARNET DU TAILLEUR</span>
+<div class="card">
+  <small>Dress code</small><h2>En pagne de la famille</h2>
+  <p class="help">Chez le tailleur, on coud les tenues dans le pagne choisi par les familles.</p>
+  <div class="note">
+    <span class="chalk"></span>
+    <span class="pin"></span><span class="coupon"></span>
+    <span class="hand" style="right:6px;top:92px;transform:rotate(6deg)">le pagne ✓</span>
+
+    <!-- Croquis homme -->
+    <svg class="fig" style="left:14px" width="160" height="350" viewBox="0 0 160 350">
+      <defs>
+        <pattern id="pA" patternUnits="userSpaceOnUse" width="44" height="44"><image href="../../public/img/dot-pagne-demo.webp" width="44" height="44"/></pattern>
+        <linearGradient id="lav" x1="0" x2="1"><stop offset="0" stop-color="#2b1a0a" stop-opacity=".35"/><stop offset=".35" stop-color="#fff" stop-opacity=".12"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#2b1a0a" stop-opacity=".3"/></linearGradient>
+        <filter id="wob"><feTurbulence baseFrequency=".04" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter>
+        <filter id="wash"><feTurbulence baseFrequency=".9" numOctaves="1" seed="5" result="n"/><feColorMatrix in="n" type="saturate" values="0" result="g"/><feComposite in="SourceGraphic" in2="g" operator="arithmetic" k1="0" k2="1" k3="-.08" k4="0"/></filter>
+      </defs>
+      <g fill="none" stroke="#2B2419" stroke-width="1.1" stroke-linecap="round" filter="url(#wob)">
+        <ellipse cx="80" cy="26" rx="10.5" ry="13.5"/><path d="M75 39 L74 50 M85 39 L86 50"/>
+        <path d="M44 162 q-4 8 -1 14 q4 2 6 -4 M116 162 q4 8 1 14 q-4 2 -6 -4"/>
+        <path d="M60 322 q-8 4 -10 9 h20 l-1 -9 M100 322 q8 4 10 9 h-20 l1 -9"/>
+      </g>
+      <g filter="url(#wash)">
+        <path id="tun" d="M70 50 L90 50 L108 57 Q117 62 118 82 L124 158 L113 161 L108 96 L109 174 L51 174 L52 96 L47 161 L36 158 L42 82 Q43 62 52 57 Z" fill="url(#pA)"/>
+        <path d="M57 172 L103 172 L101 322 L86 322 L81 204 L79 204 L74 322 L59 322 Z" fill="url(#pA)"/>
+        <path d="M70 50 L90 50 L108 57 Q117 62 118 82 L124 158 L113 161 L108 96 L109 174 L51 174 L52 96 L47 161 L36 158 L42 82 Q43 62 52 57 Z" fill="url(#lav)"/>
+        <path d="M57 172 L103 172 L101 322 L86 322 L81 204 L79 204 L74 322 L59 322 Z" fill="url(#lav)"/>
+      </g>
+      <g fill="none" stroke="#2B2419" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" filter="url(#wob)">
+        <path d="M70 50 L90 50 L108 57 Q117 62 118 82 L124 158 L113 161 L108 96 L109 174 L51 174 L52 96 L47 161 L36 158 L42 82 Q43 62 52 57 Z"/>
+        <path d="M70 50 q10 -4 20 0 l-1 5 q-9 -3 -18 0 Z M80 55 V112 M52 150 l3 24 M108 150 l-3 24 M42 150 l6 2 M118 150 l-6 2"/>
+        <path d="M57 172 L103 172 L101 322 L86 322 L81 204 L79 204 L74 322 L59 322 Z"/>
+        <path d="M66 220 l1 98 M94 220 l-1 98" stroke-width=".6" opacity=".6"/>
+      </g>
+    </svg>
+    <span class="hand" style="left:22px;top:20px;transform:rotate(-4deg)">Messieurs</span>
+    <span class="hand" style="left:124px;top:150px;font-size:14px;transform:rotate(-6deg)">← col officier</span>
+
+    <!-- Croquis femme -->
+    <svg class="fig" style="right:6px" width="160" height="350" viewBox="0 0 160 350">
+      <g fill="none" stroke="#2B2419" stroke-width="1.1" stroke-linecap="round" filter="url(#wob)">
+        <ellipse cx="80" cy="24" rx="10" ry="13"/><path d="M76 37 L75 48 M84 37 L85 48"/>
+        <path d="M44 72 q-6 40 -4 74 q1 8 5 8 M116 72 q6 40 4 74 q-1 8 -5 8"/>
+      </g>
+      <g filter="url(#wash)">
+        <path d="M68 48 Q80 55 92 48 L104 58 L102 100 Q111 130 106 170 Q100 210 98 232 Q118 282 142 328 Q80 340 18 328 Q42 282 62 232 Q60 210 54 170 Q49 130 58 100 L56 58 Z" fill="url(#pA)"/>
+        <ellipse cx="50" cy="62" rx="14" ry="12" fill="url(#pA)"/><ellipse cx="110" cy="62" rx="14" ry="12" fill="url(#pA)"/>
+        <path d="M68 48 Q80 55 92 48 L104 58 L102 100 Q111 130 106 170 Q100 210 98 232 Q118 282 142 328 Q80 340 18 328 Q42 282 62 232 Q60 210 54 170 Q49 130 58 100 L56 58 Z" fill="url(#lav)"/>
+      </g>
+      <g fill="none" stroke="#2B2419" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" filter="url(#wob)">
+        <path d="M68 48 Q80 55 92 48 L104 58 L102 100 Q111 130 106 170 Q100 210 98 232 Q118 282 142 328 Q80 340 18 328 Q42 282 62 232 Q60 210 54 170 Q49 130 58 100 L56 58 Z"/>
+        <ellipse cx="50" cy="62" rx="14" ry="12"/><ellipse cx="110" cy="62" rx="14" ry="12"/>
+        <path d="M44 70 q6 3 12 0 M104 70 q6 3 12 0 M58 99 Q80 104 102 99 M58 106 Q80 111 103 106"/>
+        <path d="M62 232 Q80 238 98 232 M70 236 Q60 290 48 332 M90 236 Q100 290 112 332 M80 238 V336" stroke-width=".6" opacity=".55"/>
+      </g>
+    </svg>
+    <span class="hand" style="right:20px;top:20px;transform:rotate(3deg)">Mesdames</span>
+    <span class="hand" style="right:2px;top:150px;font-size:14px;transform:rotate(5deg)">manches bouffantes</span>
+    <span class="tape"></span>
+  </div>
+  <div class="cons"><div><b>Messieurs</b>Chemise dans le pagne de la famille, pantalon uni</div><div><b>Mesdames</b>Robe ou kaba dans le pagne, foulard bienvenu</div></div>
+</div></div>
+
+<!-- ======================= B ======================= -->
+<div class="ph"><span class="lab">B · COUPON DE PAGNE</span>
+<div class="card">
+  <small>Dress code</small><h2>En pagne de la famille</h2>
+  <p class="help">Voici le pagne choisi par les familles : faites-y coudre vos tenues.</p>
+  <div class="stage">
+    <svg width="330" height="300" viewBox="0 0 330 300">
+      <defs>
+        <pattern id="pB" patternUnits="userSpaceOnUse" width="62" height="62" patternTransform="skewX(-28) scale(1 .62)"><image href="../../public/img/dot-pagne-demo.webp" width="62" height="62"/></pattern>
+        <pattern id="pS" patternUnits="userSpaceOnUse" width="62" height="62"><image href="../../public/img/dot-pagne-demo.webp" width="62" height="62"/></pattern>
+        <linearGradient id="top" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#1a0d03" stop-opacity=".25"/></linearGradient>
+        <linearGradient id="side" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0d03" stop-opacity=".25"/><stop offset="1" stop-color="#1a0d03" stop-opacity=".5"/></linearGradient>
+        <filter id="sh"><feGaussianBlur stdDeviation="9"/></filter>
+      </defs>
+      <!-- ombre au sol -->
+      <ellipse cx="165" cy="238" rx="135" ry="26" fill="#2a1806" opacity=".45" filter="url(#sh)"/>
+      <!-- tranche avant : couches de tissu plié -->
+      <g>
+        <path d="M44 150 L248 150 L248 222 L44 222 Z" fill="url(#pS)"/>
+        <path d="M44 150 L248 150 L248 222 L44 222 Z" fill="url(#side)"/>
+        <g stroke="#1a0d03" stroke-opacity=".38" fill="none" stroke-width="1.6">
+          <path d="M44 164 Q146 168 248 163 M44 179 Q146 184 248 178 M44 194 Q146 198 248 193 M44 208 Q146 212 248 207"/>
+        </g>
+        <g stroke="#fff" stroke-opacity=".22" fill="none" stroke-width="1">
+          <path d="M44 166 Q146 170 248 165 M44 181 Q146 186 248 180 M44 196 Q146 200 248 195 M44 210 Q146 214 248 209"/>
+        </g>
+        <!-- tranche droite -->
+        <path d="M248 150 L296 104 L296 176 L248 222 Z" fill="url(#pS)"/>
+        <path d="M248 150 L296 104 L296 176 L248 222 Z" fill="#1a0d03" opacity=".42"/>
+        <g stroke="#1a0d03" stroke-opacity=".35" stroke-width="1.4"><path d="M248 164 L296 118 M248 179 L296 133 M248 194 L296 148 M248 208 L296 162"/></g>
+      </g>
+      <!-- dessus -->
+      <path d="M44 150 L92 104 L296 104 L248 150 Z" fill="url(#pB)"/>
+      <path d="M44 150 L92 104 L296 104 L248 150 Z" fill="url(#top)"/>
+      <path d="M44 150 Q60 136 92 104" stroke="#fff" stroke-opacity=".5" stroke-width="1.5" fill="none"/>
+      <!-- lien de raphia noué -->
+      <g stroke-linecap="round" fill="none">
+        <path d="M150 104 L126 150 L126 222" stroke="#c9a86a" stroke-width="7"/>
+        <path d="M150 104 L126 150 L126 222" stroke="#8d6a36" stroke-width="7" stroke-dasharray="2 3" opacity=".6"/>
+        <path d="M126 140 q-26 -26 -40 -6 q12 14 40 6 q22 -30 40 -12 q-12 18 -40 12" stroke="#d7b877" stroke-width="5"/>
+        <path d="M126 140 q-10 30 -30 46 M126 140 q4 32 22 52" stroke="#c9a86a" stroke-width="4"/>
+      </g>
+    </svg>
+  </div>
+  <div class="picto">
+    <span><i><svg viewBox="0 0 24 24" fill="none" stroke="#A8884F" stroke-width="1.4" stroke-linejoin="round"><path d="M9 3h6l5 3 -2 5 -2 -1v11H8V10l-2 1 -2 -5z M12 4v8"/></svg></i>Messieurs</span>
+    <span><i><svg viewBox="0 0 24 24" fill="none" stroke="#A8884F" stroke-width="1.4" stroke-linejoin="round"><path d="M9 3h6l2 4 -2 2v4q0 3 2 4l3 4H4l3 -4q2 -1 2 -4V9L7 7z"/></svg></i>Mesdames</span>
+  </div>
+  <div class="cons"><div><b>Messieurs</b>Chemise dans le pagne de la famille, pantalon uni</div><div><b>Mesdames</b>Robe ou kaba dans le pagne, foulard bienvenu</div></div>
+</div></div>
+
+<script>
+  const u = new URL("../../public/img/dot-pagne-demo.webp", location).href;
+  document.body.style.setProperty("--pagne", `url("${u}")`);
+</script>
+</body></html>

@@ -28,6 +28,8 @@ export const TEMPLATES = [
   { id: "boule-neige", name: "Le domaine", tagline: "Une clé ancienne ouvre le portail, puis une promenade en plein jour dans un domaine de charme", cover: "/img/domaine-portail.webp", categories: ["mariage"], featured: true, phone: { screen: "/img/phone-boule-neige.webp", names: { top: 82, size: 12 }, hint: { top: 89 }, seal: null, ink: "#5a4630", font: "script" } },
   { id: "origami", name: "Origami", tagline: "Une enveloppe de papier scellée de cire dorée s'ouvre dans la lumière, chaque section est un pliage, la réponse part en avion", cover: "/img/origami-grues.webp", categories: ["mariage"], featured: false, phone: { screen: "/img/phone-origami.webp", names: { top: 66, size: 12 }, hint: { top: 74 }, seal: null, ink: "#5a3d26", font: "script" } },
   { id: "velours", name: "Éclat de velours", tagline: "Un sceau s'illumine, l'enveloppe s'ouvre et la soirée se dévoile", cover: "/img/velours-enveloppe.webp", categories: ["mariage"], featured: false, phone: { screen: "/img/phone-velours.webp", names: { top: 82, size: 12 }, hint: { top: 89 }, seal: null, ink: "#f3dcb4", font: "script" } },
+  // Mariage coutumier d'Afrique centrale (docs/la-dot.md) : pagne des mariés dans data.dot.
+  { id: "dot", name: "La dot", tagline: "On écarte un rideau de raphia, et le pagne de la famille habille toute l'invitation", cover: "/img/dot-coin.webp", categories: ["mariage"], featured: true, phone: { screen: "/img/phone-dot.webp", names: { top: 47.5, size: 16 }, hint: { top: 71.8, ink: "#F6E7C4" }, seal: null, ink: "#3E2210", font: "script" } },
   // Anniversaires (docs/anniversaires.md) : un seul prénom + âge, données propres dans data.bday.
   { id: "vinyle", name: "Face A", tagline: "On pose le diamant sur le disque : l'invitation est un album, chaque section une piste", cover: "/img/phone-vinyle.webp", categories: ["anniversaire"], featured: true, kids: false, phone: { screen: "/img/phone-vinyle.webp", names: { top: 12, size: 13 }, hint: { top: 91.5 }, seal: null, ink: "#F3E6CC", font: "serif" } },
   { id: "toast", name: "Le toast", tagline: "On sabre le champagne, la mousse jaillit et chaque section arrive dans une bulle", cover: "/img/phone-toast.webp", categories: ["anniversaire"], featured: true, kids: false, phone: { screen: "/img/phone-toast.webp", names: { top: 69.5, size: 12 }, hint: { top: 90, ink: "#3b2a0b" }, seal: null, ink: "#3b2a0b", font: "serif" } },
@@ -46,6 +48,8 @@ export const isBirthday = (id: string | null | undefined) => TEMPLATES.some((t) 
 export const isKids = (id: string | null | undefined) => TEMPLATES.some((t) => t.id === id && "kids" in t && t.kids);
 /** Baby shower (un ou deux parents, data.baby, pas de verset ni d'histoire). */
 export const isBaby = (id: string | null | undefined) => TEMPLATES.some((t) => t.id === id && (t.categories as readonly string[]).includes("baby-shower"));
+/** « La dot » : pagne des mariés, phrase des familles. */
+export const isDot = (id: string | null | undefined) => id === "dot";
 /** Prénoms affichés : « Léa & Samuel », ou un seul prénom pour un anniversaire. */
 export const displayNames = (d: { partner1?: string; partner2?: string }) => [d.partner1, d.partner2].map((x) => (x ?? "").trim()).filter(Boolean).join(" & ");
 
@@ -85,6 +89,18 @@ export type BabyData = {
   palette: BabyPaletteId;
 };
 
+/** Données propres à « La dot » (mariage coutumier). */
+export type DotData = {
+  /** « Les familles Mabiala et Okemba » (facultatif) */
+  families: string;
+  /** Photo du pagne des mariés (bucket photos) ; null = pagne de démonstration */
+  fabric: string | null;
+  /** Pagne différent pour les femmes ; null = le même */
+  fabric2: string | null;
+  /** Taille du motif en % (50 à 200) */
+  scale: number;
+};
+
 /** Types de lieu d'une étape du programme (parcours du modèle « Le domaine »). */
 export const PLACES = ["mairie", "eglise", "mosquee", "temple", "ceremonie", "cocktail", "reception", "soiree"] as const;
 export type PlaceId = (typeof PLACES)[number];
@@ -120,6 +136,8 @@ export type InvitationData = {
   bday?: BirthdayData;
   /** Baby shower seulement (partner2 facultatif). */
   baby?: BabyData;
+  /** « La dot » seulement. */
+  dot?: DotData;
   /** Liste de souhaits facultative (tous les modèles) : articles nom + lien, et lien de cagnotte. */
   wishlist?: Wishlist;
   /** Musique de fond : id d'un morceau de la bibliothèque (/api/musiques), "none" = sans musique, absent = musique par défaut de la catégorie. */
