@@ -140,6 +140,8 @@ export type InvitationData = {
   dot?: DotData;
   /** Liste de souhaits facultative (tous les modèles) : articles nom + lien, et lien de cagnotte. */
   wishlist?: Wishlist;
+  /** Choix du repas et des boissons proposé aux invités présents (tous les modèles, lib/meal.ts). */
+  meal?: import("./meal").Meal;
   /** Musique de fond : id d'un morceau de la bibliothèque (/api/musiques), "none" = sans musique, absent = musique par défaut de la catégorie. */
   music?: string;
 };

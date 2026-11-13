@@ -5,6 +5,7 @@
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { createMusic, fxLevel } from "../music";
+import { mountMeal } from "../meal";
 
 export { esc };
 
@@ -33,7 +34,7 @@ export function prep(D, OPTS, tpl) {
   const dc = D.dressCode || {};
   const colors = (dc.colors || []).slice(0, 4);
   return {
-    T, F, kids, REDUCE, bd, age, when, start, venueQ,
+    D, T, F, kids, REDUCE, bd, age, when, start, venueQ,
     nameRaw, name: esc(nameRaw), initial: esc(([...nameRaw][0] || "").toUpperCase()),
     sub: age ? (kids ? F.turnsKid(age) : F.turns(age)) : F.birthday,
     intro: esc(D.intro || ""),
@@ -219,18 +220,23 @@ export function bindRsvp(root, P, OPTS, L, onSent) {
     const g = e.target.closest("[data-g]");
     if (g) { guests = clamp(guests + +g.dataset.g, 1, 20); form.querySelector("output").textContent = guests; }
   });
+  // Choix du repas (meal.js) : sous le nombre de personnes, visible seulement si « présent ».
+  const mealEl = document.createElement("div"); form.querySelector(".fx-guests").after(mealEl);
+  const MEAL = mountMeal(mealEl, P.D), mealSync = () => MEAL.update(guests, attending);
+  L.on(form, "click", mealSync); mealSync();
   L.on(form, "submit", async (e) => {
     e.preventDefault();
     const inp = form.querySelector('input[name="name"]'), name = inp.value.trim();
     if (!name) { inp.focus(); inp.placeholder = T.c.nameMissing; return; }
+    const meal = MEAL.collect(); if (!meal.ok) return;
     const allergy = attending ? (form.querySelector('input[name="allergy"]')?.value.trim() || "") : "";
-    const note = form.querySelector("textarea").value.trim();
+    const note = form.querySelector("textarea:not(.ml-remarks)").value.trim();
     const message = [allergy ? F.allergyPrefix + allergy : "", note].filter(Boolean).join("\n");
     const btn = form.querySelector(".fx-submit"), err = form.querySelector(".fx-err");
     err.hidden = true;
     if (OPTS.onRsvp) {
       btn.disabled = true; btn.textContent = T.c.sending;
-      try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message }); }
+      try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message, choices: meal.choices, remarks: meal.remarks }); }
       catch (x) { btn.disabled = false; btn.textContent = F.send; err.hidden = false; return; }
     }
     const first = esc(name.split(" ")[0]);

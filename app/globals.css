@@ -217,6 +217,17 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 .sp-yes{color:var(--ok)}.sp-no{color:var(--err)}
 .sp-num{font-variant-numeric:tabular-nums}
 .sp-msg{min-width:180px}
+/* Repas et boissons (13 nov. 2026) */
+.sp-meal{padding:20px;display:grid;gap:14px}
+.sp-meal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px 22px}
+.sp-meal-qt{margin:0 0 8px;font-family:var(--f-title,inherit);font-size:1.05rem}
+.sp-meal-q ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.sp-meal-q li{position:relative;display:flex;justify-content:space-between;gap:10px;padding:7px 10px;border-radius:8px;background:rgba(176,144,79,.08);overflow:hidden}
+.sp-meal-q li::before{content:"";position:absolute;inset:0 auto 0 0;width:var(--w);background:linear-gradient(90deg,rgba(201,170,112,.32),rgba(201,170,112,.16));border-radius:8px}
+.sp-meal-q li>*{position:relative}
+.sp-meal-q b{font-weight:500;font-variant-numeric:tabular-nums}
+.sp-choice{display:block;margin-bottom:3px;font-style:normal;font-size:.86em;color:#6b5636}
+.sp-choice.is-warn{color:#a2462e}
 .sp-date{white-space:nowrap}
 @media (max-width:600px){
   .sp-wrap{padding-block:24px 48px;gap:16px}

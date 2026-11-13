@@ -6,6 +6,7 @@ import "./velours/velours.css";
 import "./domaine/domaine.css";
 import "./dresscode/couple.css";
 import "./wishlist.css";
+import "./meal.css";
 import "./fete/fete.css";
 import "./vinyle/vinyle.css";
 import "./toast/toast.css";

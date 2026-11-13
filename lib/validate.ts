@@ -1,3 +1,4 @@
+import { MEAL_MAX } from "./meal";
 import { BABY_PALETTES, BABY_SEXES, PALETTES, PLACES, TEMPLATE_IDS, isBaby, isBirthday, isDot, type BabyPaletteId, type BabySex, type InvitationData, type PaletteId, type PlaceId, type TemplateId } from "./types";
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
@@ -63,6 +64,17 @@ export function sanitizeData(input: any, template?: string): InvitationData {
       note: str(d.wishlist?.note, 240),
       items: arr(d.wishlist?.items, 20, (x) => ({ name: str(x?.name, 80), url: link(x?.url) })).filter((x) => x.name || x.url),
       fund: link(d.wishlist?.fund),
+    },
+    meal: {
+      enabled: d.meal?.enabled === true,
+      note: str(d.meal?.note, MEAL_MAX.note),
+      remarks: d.meal?.remarks === true,
+      questions: arr(d.meal?.questions, MEAL_MAX.questions, (q) => ({
+        title: str(q?.title, MEAL_MAX.title),
+        options: [...new Set(arr(q?.options, MEAL_MAX.options, (o) => str(o, MEAL_MAX.option)).filter(Boolean))],
+        multi: q?.multi === true,
+        required: q?.required === true,
+      })).filter((q) => q.title || q.options.length),
     },
     ...(bdayTpl ? { bday: {
       age: age >= 1 && age <= 120 ? age : null,

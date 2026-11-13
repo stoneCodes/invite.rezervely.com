@@ -5,6 +5,7 @@ import { inviteDict } from "../../lib/i18n/invite";
 import { LOCALE } from "../../lib/i18n";
 import { mountCouple } from "./dresscode/couple";
 import { wishHtml } from "./wishlist";
+import { mountMeal } from "./meal";
 import { createMusic, fxLevel } from "./music";
 const CAP=s=>s.charAt(0).toUpperCase()+s.slice(1);
 export const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -336,9 +337,11 @@ function setTemplate(name){
   if(name==="jardin-nuit")ambientButterflies();
   buildStage();
 }
-$("rsvp").onsubmit=async e=>{e.preventDefault();const name=$("gName").value.trim();if(!name){$("gName").focus();$("gName").placeholder=T.c.nameMissing;return;}
+// Choix du repas (meal.js) : visible si « présent », une série de questions par personne.
+const MEAL=mountMeal($("gMeal"),INPUT);const mealSync=()=>MEAL.update($("gCount").value,$("attYes").checked);["attYes","attNo","gCount"].forEach(i=>$(i).addEventListener("change",mealSync));mealSync();
+$("rsvp").onsubmit=async e=>{e.preventDefault();const name=$("gName").value.trim();if(!name){$("gName").focus();$("gName").placeholder=T.c.nameMissing;return;}const meal=MEAL.collect();if(!meal.ok)return;
   const yes=$("attYes").checked,btn=$("rsvp").querySelector("button");$("rsvpErr").hidden=true;
-  if(OPTS.onRsvp){btn.disabled=true;btn.textContent=T.c.sending;try{await OPTS.onRsvp({name,attending:yes,guests:yes?+$("gCount").value:0,message:$("gMsg").value.trim()});}
+  if(OPTS.onRsvp){btn.disabled=true;btn.textContent=T.c.sending;try{await OPTS.onRsvp({name,attending:yes,guests:yes?+$("gCount").value:0,message:$("gMsg").value.trim(),choices:meal.choices,remarks:meal.remarks});}
     catch(err){btn.disabled=false;btn.textContent=T.classic.send;$("rsvpErr").hidden=false;return;}}
   $("rsvp").hidden=true;$("thanks").hidden=false;
   $("thanks").innerHTML=`<p style="font-family:var(--f-script);font-size:2.2rem;margin:0">${esc(T.c.thanks(name.split(" ")[0]))}</p><p class="small">${esc(yes?T.c.noted($("gCount").value):T.c.missYou)}</p>${OPTS.onRsvp?"":`<p class="small" style="font-family:var(--f-label);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase">${esc(T.c.previewOnly)}</p>`}`;chime();const tr=$("thanks").getBoundingClientRect();fx.heart(tr.left+tr.width/2,tr.top+tr.height/2);};

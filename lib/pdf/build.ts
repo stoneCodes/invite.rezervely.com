@@ -5,10 +5,11 @@ import { dateParts } from "@/components/invitation/engine";
 import { inviteDict } from "@/lib/i18n/invite";
 import { PDF_THEMES } from "./themes";
 import type { TemplateId } from "@/lib/types";
+import { activeMeal, choicesText, mealTotals, type Meal, type MealChoice } from "@/lib/meal";
 
-type Reply = { name: string; attending: boolean; guests: number; message: string | null; created_at: string };
+type Reply = { name: string; attending: boolean; guests: number; message: string | null; created_at: string; choices?: MealChoice[] | null; remarks?: string | null };
 export type PdfInput = {
-  invitation: { template: TemplateId; data: { partner1: string; partner2: string; lang: "fr" | "en"; dateISO: string; venue: { name: string; address: string } } };
+  invitation: { template: TemplateId; data: { partner1: string; partner2: string; lang: "fr" | "en"; dateISO: string; venue: { name: string; address: string }; meal?: Meal | null } };
   replies: Reply[];
   generatedAt: string;
 };
@@ -99,7 +100,7 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
   const scriptBytes = await asset(theme.scriptFont);
   const ornamentSvg = new TextDecoder().decode(await asset(theme.ornament));
   const fontResources = [fontkit.create(titleBytes), fontkit.create(bodyBytes), fontkit.create(scriptBytes)] as FontShape[];
-  const visibleText = [data.partner1, data.partner2, data.dateISO, data.venue.name, data.venue.address, ...replies.flatMap((reply) => [reply.name, reply.message || ""])].join("\n");
+  const visibleText = [data.partner1, data.partner2, data.dateISO, data.venue.name, data.venue.address, ...replies.flatMap((reply) => [reply.name, reply.message || "", choicesText(reply.choices), reply.remarks || ""]), ...(data.meal?.questions ?? []).flatMap((q) => [q.title, ...q.options]), t.mealTitle, t.mealCol, t.remarks].join("\n");
   const hasArabic = ARABIC.test(visibleText);
   const nonArabic = Array.from(visibleText).filter((character) => !ARABIC.test(character) && !/\s/u.test(character)).join(""); // sans les retours à la ligne, absents de toutes les polices
   const needsWideFallback = !fontHasText(fontResources[0], nonArabic) && !fontHasText(fontResources[1], nonArabic);
@@ -274,6 +275,32 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
   }
   y -= 68;
 
+  // Repas et boissons : une colonne par question, chaque choix avec son total (une personne = une voix).
+  const totals = mealTotals(activeMeal({ meal: data.meal ?? undefined }), replies);
+  const withMeal = totals.length > 0;
+  if (withMeal) {
+    drawSection(t.mealTitle);
+    const cols = Math.min(3, totals.length);
+    const colGap = 14;
+    const colW = (RIGHT - LEFT - colGap * (cols - 1)) / cols;
+    for (let start = 0; start < totals.length; start += cols) {
+      const group = totals.slice(start, start + cols);
+      const height = 18 + Math.max(...group.map((q) => q.rows.length)) * 15 + 8;
+      if (y - height < BOTTOM) { addPage(); drawSection(t.mealTitle); }
+      group.forEach((q, index) => {
+        const x = LEFT + index * (colW + colGap);
+        drawTextLines(page, q.q, x, y, colW, titleFont, 11, accent, 13, "left", 1);
+        q.rows.forEach((row, k) => {
+          const top = y - 18 - k * 15;
+          page.drawLine({ start: { x, y: top - 12 }, end: { x: x + colW, y: top - 12 }, color: rule, thickness: 0.4 });
+          drawTextLines(page, row.label, x, top, colW - 34, bodyFont, 9, ink, 11, "left", 1);
+          drawTextLines(page, String(row.n), x + colW - 34, top, 34, titleFont, 10, ink, 11, "right", 1);
+        });
+      });
+      y -= height + 6;
+    }
+  }
+
   if (replies.length === 0) {
     drawTextLines(page, t.noReplies, LEFT, y, RIGHT - LEFT, bodyFont, 11, muted, 15);
     y -= 30;
@@ -282,21 +309,23 @@ export async function buildGuestListPdf(input: PdfInput): Promise<Uint8Array> {
       { text: "", x: LEFT + 4, width: 20 },
       { text: t.name, x: LEFT + 32, width: 180 },
       { text: t.guests, x: LEFT + 220, width: 62, align: "center" as const },
-      { text: t.message, x: LEFT + 292, width: 218 },
+      { text: withMeal ? t.mealCol : t.message, x: LEFT + 292, width: 218 },
     ];
     drawSection(t.attending);
     drawColumnHeader(presentColumns);
     for (const reply of present) {
-      const note = reply.message?.trim() ? truncate(reply.message.trim(), 150) : "—";
+      const parts = [choicesText(reply.choices), reply.remarks?.trim() ? `${t.remarks} : ${truncate(reply.remarks.trim(), 120)}` : "", reply.message?.trim() ? truncate(reply.message.trim(), 150) : ""].filter(Boolean);
+      const note = parts.length ? parts.join(" · ") : "—";
+      const maxLines = withMeal ? 6 : 3;
       const nameLines = Math.min(3, wrapped(reply.name, widthOf(bodyFont, 9), 180).length);
-      const messageLines = Math.min(3, wrapped(note, widthOf(bodyFont, 8.5), 218).length);
+      const messageLines = Math.min(maxLines, wrapped(note, widthOf(bodyFont, 8.5), 218).length);
       const rowHeight = Math.max(29, nameLines * 12 + 10, messageLines * 11 + 10);
       if (y - rowHeight < BOTTOM) { addPage(); drawSection(t.attending); drawColumnHeader(presentColumns); }
       page.drawLine({ start: { x: LEFT, y: y - rowHeight + 1 }, end: { x: RIGHT, y: y - rowHeight + 1 }, color: rule, thickness: 0.45 });
       page.drawRectangle({ x: LEFT + 6, y: y - 17, width: 9, height: 9, borderColor: accent, borderWidth: 0.8 });
       drawTableRowText(reply.name, LEFT + 32, 180, y - 5, 9, 3);
       drawTextLines(page, String(Math.max(0, Number(reply.guests) || 0)), LEFT + 220, y - 5, 62, bodyFont, 9, ink, 12, "center", 2);
-      drawTableRowText(note, LEFT + 292, 218, y - 5, 8.5, 3);
+      drawTableRowText(note, LEFT + 292, 218, y - 5, 8.5, maxLines);
       y -= rowHeight;
     }
     const absentColumns = [

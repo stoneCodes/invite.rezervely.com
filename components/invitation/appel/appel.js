@@ -6,6 +6,7 @@ import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 import { wishHtml } from "../wishlist";
+import { mountMeal } from "../meal";
 import { createMusic, fxLevel } from "../music";
 
 const IMG = { call: "/img/appel-fond-defaut.webp", end: "/img/appel-fin.webp" };
@@ -225,15 +226,20 @@ export function mountAppel(root, INPUT, OPTS = {}) {
   const form = q(".ap-form"), quick = q(".ap-quick"); let attending = true, guests = 1;
   quick.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; attending = b.dataset.a === "yes";
     qa(".ap-quick button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-    form.hidden = false; form.classList.add("is-in"); q(".ap-guests").hidden = !attending; form.querySelector("input").focus({ preventScroll: true });
+    form.hidden = false; form.classList.add("is-in"); q(".ap-guests").hidden = !attending; form.querySelector("input:not([data-p])").focus({ preventScroll: true });
     form.scrollIntoView({ block: "center", behavior: REDUCE ? "auto" : "smooth" }); });
   form.addEventListener("click", (e) => { const b = e.target.closest("[data-g]"); if (!b) return; guests = Math.min(20, Math.max(1, guests + +b.dataset.g)); form.querySelector("output").textContent = guests; });
+  // Choix du repas (meal.js) : sous le nombre de personnes, visible seulement si « présent ».
+  const mealEl = document.createElement("div"); q(".ap-guests").after(mealEl);
+  const MEAL = mountMeal(mealEl, INPUT), mealSync = () => MEAL.update(guests, attending);
+  form.addEventListener("click", mealSync); quick.addEventListener("click", mealSync); mealSync();
   form.addEventListener("submit", async (e) => {
-    e.preventDefault(); const inp = form.querySelector("input"), name = inp.value.trim();
+    e.preventDefault(); const inp = form.querySelector("input:not([data-p])"), name = inp.value.trim();
     if (!name) { inp.focus(); inp.placeholder = A.nameMissing; return; }
-    const msg = form.querySelector("textarea").value.trim(), btn = form.querySelector(".ap-send"), err = form.querySelector(".ap-err");
+    const meal = MEAL.collect(); if (!meal.ok) return;
+    const msg = form.querySelector("textarea:not(.ml-remarks)").value.trim(), btn = form.querySelector(".ap-send"), err = form.querySelector(".ap-err");
     err.hidden = true;
-    if (OPTS.onRsvp) { btn.disabled = true; btn.querySelector("span").textContent = T.c.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg }); } catch (x) { btn.disabled = false; btn.querySelector("span").textContent = A.send; err.hidden = false; return; } }
+    if (OPTS.onRsvp) { btn.disabled = true; btn.querySelector("span").textContent = T.c.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg, choices: meal.choices, remarks: meal.remarks }); } catch (x) { btn.disabled = false; btn.querySelector("span").textContent = A.send; err.hidden = false; return; } }
     const first = esc(name.split(" ")[0]);
     form.outerHTML = `<div class="ap-m me is-in ap-mine"><div class="ap-b">${attending ? A.sentYes(guests) : A.sentNo}${msg ? `<br>${esc(msg)}` : ""}<span class="ap-time">${A.sent}</span></div></div>`;
     quick.remove();

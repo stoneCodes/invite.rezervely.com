@@ -1,5 +1,6 @@
 import { isBaby, isBirthday, isKids, type InvitationData, type TemplateId, type Wishlist } from "./types";
 import type { Lang } from "./i18n";
+import type { Meal } from "./meal";
 
 /** Données d'exemple : démo publique et point de départ de l'éditeur, dans la langue demandée. */
 export function sampleData(lang: Lang = "fr"): InvitationData {
@@ -278,5 +279,25 @@ export function demoWishlist(template: TemplateId, lang: Lang = "fr"): Wishlist 
     note: en ? "Your presence is the best gift. If you would like to spoil us, here are a few ideas." : "Votre présence est notre plus beau cadeau. Si vous souhaitez nous gâter, voici quelques idées.",
     items: names.map((name, i) => ({ name, url: `https://example.com/${en ? "gift" : "cadeau"}-${i + 1}` })),
     fund: "https://example.com/cagnotte",
+  };
+}
+
+/** Exemple de choix du repas, affiché seulement dans les démos (jamais pré-rempli dans l'éditeur). */
+export function demoMeal(template: TemplateId, lang: Lang = "fr"): Meal {
+  const en = lang === "en";
+  const kids = isKids(template);
+  return {
+    enabled: true,
+    note: "",
+    remarks: true,
+    questions: kids
+      ? [{ title: en ? "Dishes" : "Plats", options: en ? ["Pizza", "Pasta", "Nuggets"] : ["Pizza", "Pâtes", "Nuggets"], multi: false, required: true },
+          { title: en ? "Drinks" : "Boissons", options: en ? ["Juice", "Water", "Soda"] : ["Jus", "Eau", "Soda"], multi: false, required: false },
+          { title: en ? "Desserts" : "Desserts", options: en ? ["Cake", "Ice cream"] : ["Gâteau", "Glace"], multi: false, required: false }]
+      : [
+          { title: en ? "Dishes" : "Plats", options: en ? ["Chicken yassa", "Grilled fish", "Vegetarian"] : ["Poulet yassa", "Poisson braisé", "Végétarien"], multi: false, required: true },
+          { title: en ? "Drinks" : "Boissons", options: en ? ["Wine", "Champagne", "Juice", "Water"] : ["Vin", "Champagne", "Jus", "Eau"], multi: true, required: false },
+          { title: en ? "Desserts" : "Desserts", options: en ? ["Wedding cake", "Fruit salad", "Ice cream"] : ["Pièce montée", "Salade de fruits", "Glace"], multi: false, required: false },
+        ],
   };
 }

@@ -160,6 +160,10 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
   const bd = data.bday ?? { age: null, surprise: false, gifts: "", endTime: "", parentPhone: "", palette: "rose" as const };
   const wl = data.wishlist ?? { note: "", items: [], fund: "" };
   const setWl = (patch: Partial<NonNullable<InvitationData["wishlist"]>>) => set("wishlist", { ...wl, ...patch });
+  // Choix du repas (lib/meal.ts) : questions et choix bruts, nettoyés par le serveur et par activeMeal().
+  const meal = data.meal ?? { enabled: false, note: "", questions: [], remarks: false };
+  const setMeal = (patch: Partial<NonNullable<InvitationData["meal"]>>) => set("meal", { ...meal, ...patch });
+  const newQ = () => ({ title: "", options: ["", ""], multi: false, required: true });
   const setBd = (patch: Partial<NonNullable<InvitationData["bday"]>>) => set("bday", { ...bd, ...patch });
   const bb = data.baby ?? { sex: "surprise" as const, due: "", guesses: true, palette: "ivoire" as const };
   const dt = data.dot ?? DOT_DEFAULT;
@@ -514,6 +518,39 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
             {wl.items.length < 20 && <button type="button" className="ed-add" onClick={() => setWl({ items: [...wl.items, { name: "", url: "" }] })}>{e_.addWish}</button>}
             <label>{e_.fund}<input id="wfund" type="url" inputMode="url" maxLength={500} placeholder={e_.fundPh} value={wl.fund} aria-invalid={!okLink(wl.fund) || undefined} className={okLink(wl.fund) ? undefined : "ed-invalid"} onChange={(e) => setWl({ fund: e.target.value })} onBlur={() => setWl({ fund: fixLink(wl.fund) })} /></label>
             {okLink(wl.fund) ? <p className="ed-help">{e_.fundHelp}</p> : <p className="ed-help ed-bad">{e_.badLink}</p>}
+          </Sec>
+
+          <Sec title={e_.meal}>
+            <p className="ed-help">{e_.mealHelp}</p>
+            <label className="ed-check"><input type="checkbox" checked={meal.enabled} onChange={(e) => setMeal({ enabled: e.target.checked, questions: e.target.checked && !meal.questions.length ? [newQ()] : meal.questions })} /> {e_.mealOn}</label>
+            {meal.enabled && <>
+              <label>{e_.mealNote}<textarea rows={2} maxLength={200} placeholder={e_.mealNotePh} value={meal.note} onChange={(e) => setMeal({ note: e.target.value })} /></label>
+              {meal.questions.map((q, i) => {
+                const upd = (patch: Partial<typeof q>) => setMeal({ questions: meal.questions.map((x, j) => (j === i ? { ...x, ...patch } : x)) });
+                return (
+                  <div className="ed-meal-q" key={i}>
+                    <div className="ed-meal-row">
+                      <input aria-label={e_.mealQ} className="ed-meal-title" value={q.title} maxLength={60} placeholder={e_.mealQPh} onChange={(e) => upd({ title: e.target.value })} />
+                      <button type="button" className="ed-x" aria-label={e_.removeMealQ} onClick={() => setMeal({ questions: meal.questions.filter((_, j) => j !== i) })}>×</button>
+                    </div>
+                    {q.options.map((o, k) => (
+                      <div className="ed-meal-row ed-meal-opt" key={k}>
+                        <span aria-hidden="true" className="ed-meal-dot" />
+                        <input aria-label={e_.mealOpt(k + 1)} value={o} maxLength={60} placeholder={k === 0 ? e_.mealOptPh : e_.mealOpt(k + 1)} onChange={(e) => upd({ options: q.options.map((x, m) => (m === k ? e.target.value : x)) })} />
+                        {q.options.length > 1 && <button type="button" className="ed-x" aria-label={e_.removeMealOpt} onClick={() => upd({ options: q.options.filter((_, m) => m !== k) })}>×</button>}
+                      </div>
+                    ))}
+                    {q.options.length < 12 && <button type="button" className="ed-add" onClick={() => upd({ options: [...q.options, ""] })}>{e_.addMealOpt}</button>}
+                    <div className="ed-meal-flags">
+                      <label className="ed-check"><input type="checkbox" checked={q.required} onChange={(e) => upd({ required: e.target.checked })} /> {e_.mealRequired}</label>
+                      <label className="ed-check"><input type="checkbox" checked={q.multi} onChange={(e) => upd({ multi: e.target.checked })} /> {e_.mealMulti}</label>
+                    </div>
+                  </div>
+                );
+              })}
+              {meal.questions.length < 8 && <button type="button" className="ed-add" onClick={() => setMeal({ questions: [...meal.questions, newQ()] })}>{e_.addMealQ}</button>}
+              <label className="ed-check"><input type="checkbox" checked={meal.remarks} onChange={(e) => setMeal({ remarks: e.target.checked })} /> {e_.mealRemarks}</label>
+            </>}
           </Sec>
 
           <Sec title={e_.replies}>

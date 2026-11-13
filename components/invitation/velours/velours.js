@@ -5,6 +5,7 @@
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { wishHtml } from "../wishlist";
+import { mountMeal } from "../meal";
 import { createMusic, fxLevel } from "../music";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 
@@ -217,12 +218,17 @@ export function mountVelours(root, data, OPTS = {}) {
     const a = e.target.closest("[data-a]"); if (a) { attending = a.dataset.a === "yes"; form.querySelectorAll("[data-a]").forEach((b) => b.setAttribute("aria-pressed", String(b === a))); q(".ve-guests").hidden = !attending; return; }
     const g = e.target.closest("[data-g]"); if (g) { guests = clamp(guests + +g.dataset.g, 1, 20); form.querySelector("output").textContent = guests; }
   });
+  // Choix du repas (meal.js) : sous le nombre de personnes, visible seulement si « présent ».
+  const mealEl = document.createElement("div"); q(".ve-guests").after(mealEl);
+  const MEAL = mountMeal(mealEl, data), mealSync = () => MEAL.update(guests, attending);
+  form.addEventListener("click", mealSync); mealSync();
   form.addEventListener("submit", async (e) => {
-    e.preventDefault(); const inp = form.querySelector("input"), name = inp.value.trim();
+    e.preventDefault(); const inp = form.querySelector("input:not([data-p])"), name = inp.value.trim();
     if (!name) { inp.focus(); inp.placeholder = T.c.nameMissing; return; }
-    const msg = form.querySelector("textarea").value.trim(), btn = form.querySelector(".ve-submit"), err = form.querySelector(".ve-err");
+    const meal = MEAL.collect(); if (!meal.ok) return;
+    const msg = form.querySelector("textarea:not(.ml-remarks)").value.trim(), btn = form.querySelector(".ve-submit"), err = form.querySelector(".ve-err");
     err.hidden = true;
-    if (OPTS.onRsvp) { btn.disabled = true; btn.textContent = T.c.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg }); } catch (x) { btn.disabled = false; btn.textContent = V.send; err.hidden = false; return; } }
+    if (OPTS.onRsvp) { btn.disabled = true; btn.textContent = T.c.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg, choices: meal.choices, remarks: meal.remarks }); } catch (x) { btn.disabled = false; btn.textContent = V.send; err.hidden = false; return; } }
     const first = esc(name.split(" ")[0]);
     form.outerHTML = `<div class="ve-thanks"><small>${esc(T.c.thanks(first))}</small><h3>${attending ? V.yesTitle : V.noTitle}</h3><p>${esc(attending ? T.c.noted(String(guests)) : T.c.missYou)}</p>${OPTS.onRsvp ? "" : `<p class="ve-rsvp-by">${esc(T.c.previewOnly)}</p>`}<a class="ve-link" href="${calUrl}" target="_blank" rel="noopener noreferrer">${esc(T.c.addCal)}</a></div>`;
     card.classList.add("is-sent"); chime();

@@ -16,7 +16,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
     return Response.json({ error: dictionary.pdf.reserved }, { status: 403, headers: noStore });
   }
   const { data: replies, error } = await db().from("rsvps")
-    .select("name,attending,guests,message,created_at")
+    .select("*")
     .eq("invitation_id", invitation.id)
     .order("created_at", { ascending: true })
     .limit(5000);
@@ -33,9 +33,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
         lang: invitation.data.lang || "fr",
         dateISO: invitation.data.dateISO,
         venue: invitation.data.venue,
+        meal: invitation.data.meal ?? null,
       },
     },
-    replies: replies || [],
+    replies: (replies || []).map((r) => ({ name: r.name, attending: r.attending, guests: r.guests, message: r.message, created_at: r.created_at, choices: r.choices ?? null, remarks: r.remarks ?? null })),
     generatedAt: new Date().toISOString(),
   }, { headers: noStore });
 }

@@ -87,6 +87,7 @@ export const markup = (T: InviteDict) => String.raw`<div class="backdrop fixed-f
         <div><label for="gName">${T.classic.yourName}</label><input type="text" id="gName" placeholder="${T.c.namePh}"></div>
         <div class="choice"><label><input type="radio" name="att" id="attYes" checked> ${T.classic.yes}</label><label><input type="radio" name="att" id="attNo"> ${T.classic.no}</label></div>
         <div><label for="gCount">${T.classic.guests}</label><select id="gCount"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+        <div id="gMeal"></div>
         <div><label for="gMsg">${T.classic.word}</label><textarea id="gMsg" rows="3"></textarea></div>
         <button class="btn" type="submit">${T.classic.send}</button>
       </form>

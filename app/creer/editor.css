@@ -136,3 +136,12 @@
   .ed-chosen-info p{font-size:.82rem}
   .ed-chosen-info .ed-btns .btn-s{padding:10px 12px;font-size:.62rem}
 }
+
+/* Repas et boissons (13 nov. 2026) : une carte par question, ses choix en dessous */
+.ed-meal-q{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--field)}
+.ed-meal-row{display:flex;gap:8px;align-items:center;min-width:0}
+.ed-meal-row input{flex:1;min-width:0}
+.ed-meal-title{font-weight:500}
+.ed-meal-opt{padding-left:6px}
+.ed-meal-dot{flex:none;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--accent)}
+.ed-meal-flags{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.9rem}

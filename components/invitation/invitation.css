@@ -481,3 +481,11 @@ body[data-tpl]{overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:10
   .env3d{scale:.68}
   #stage .tap .who{font-size:1.7rem}
 }
+
+/* Choix du repas (meal.js) dans le formulaire des modèles classiques */
+#gMeal{color:var(--ink);--ml-accent:var(--btn-bg);--ml-on:var(--btn-ink)}
+#gMeal .ml-k,#gMeal .ml-who{font-family:var(--f-label);color:var(--muted)}
+#gMeal .ml-opt{font-family:inherit;font-size:1rem;color:var(--ink)}
+#gMeal .ml-opt span{background:var(--card)}
+#gMeal .ml-opt input:checked+span{background:var(--ml-accent)}
+#gMeal .ml-qt{font-size:1rem}

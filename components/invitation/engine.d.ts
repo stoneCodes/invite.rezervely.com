@@ -1,5 +1,5 @@
 import type { InvitationData, TemplateId } from "@/lib/types";
-export type RsvpPayload = { name: string; attending: boolean; guests: number; message: string };
+export type RsvpPayload = { name: string; attending: boolean; guests: number; message: string; choices?: import("@/lib/meal").MealChoice[] | null; remarks?: string };
 export type MountOptions = { onRsvp?: (r: RsvpPayload) => Promise<void>; skipIntro?: boolean; noGate?: boolean; music?: import("./music").TrackRef | null };
 export function mountInvitation(data: InvitationData, template: TemplateId, opts?: MountOptions): { replay(): void; destroy(): void };
 export function dateParts(iso: string, lang?: "fr" | "en", tz?: string): { day: string; month: string; year: string; label: string; full: string } | null;

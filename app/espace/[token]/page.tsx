@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { activeMeal, choicesText, mealTotals, type MealChoice } from "@/lib/meal";
 import LegalLinks from "@/components/LegalLinks";
 import Link from "next/link";
 import Logo from "@/components/Logo";
@@ -22,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: siteDict(await getLang()).meta.space, robots: { index: false } };
 }
 
-type Rsvp = { id: string; name: string; attending: boolean; guests: number; message: string | null; created_at: string };
+type Rsvp = { id: string; name: string; attending: boolean; guests: number; message: string | null; created_at: string; choices?: MealChoice[] | null; remarks?: string | null };
 
 export default async function Espace({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<{ paiement?: string; enregistre?: string }> }) {
   const { token } = await params;
@@ -40,6 +41,9 @@ export default async function Espace({ params, searchParams }: { params: Promise
   const rsvps = (data ?? []) as Rsvp[];
   const yes = rsvps.filter((r) => r.attending);
   const guests = yes.reduce((n, r) => n + r.guests, 0);
+  // Choix du repas : totaux par question (une personne = une voix), affichés si la question est posée ou s'il y a des choix.
+  const meal = activeMeal(inv.data);
+  const totals = mealTotals(meal, rsvps);
   const link = `${siteUrl()}${invitePath(inv.slug)}`;
   // Après l'événement : invitation à laisser un avis (tant qu'il n'y en a pas).
   const ev = new Date(inv.data.dateISO).getTime();
@@ -95,6 +99,29 @@ export default async function Espace({ params, searchParams }: { params: Promise
           ))}
         </section>
 
+        {totals.length > 0 && (
+          <section className="card-s sp-meal">
+            <div><strong>{s.mealTitle}</strong><p className="muted" style={{ margin: "2px 0 0", fontSize: ".85rem" }}>{s.mealHint}</p></div>
+            <div className="sp-meal-grid">
+              {totals.map((q) => {
+                const max = Math.max(1, ...q.rows.map((r) => r.n));
+                return (
+                  <div key={q.q} className="sp-meal-q">
+                    <p className="sp-meal-qt">{q.q}</p>
+                    <ul>
+                      {q.rows.map((r) => (
+                        <li key={r.label} style={{ "--w": `${(r.n / max) * 100}%` } as React.CSSProperties}>
+                          <span className="sp-meal-l">{r.label}</span><b>{r.n}</b>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         <section className="card-s sp-replies">
           <div className="sp-replies-head">
             <strong>{s.repliesTitle}</strong>
@@ -121,7 +148,11 @@ export default async function Espace({ params, searchParams }: { params: Promise
                       <td className="sp-name" data-label={s.cols[0]}>{r.name}</td>
                       <td className={r.attending ? "sp-yes" : "sp-no"} data-label={s.cols[1]}>{r.attending ? s.present : s.absent}</td>
                       <td className="sp-num" data-label={s.cols[2]}>{r.guests}</td>
-                      <td className={`sp-msg${r.message ? "" : " is-empty"}`} data-label={s.cols[3]}>{r.message}</td>
+                      <td className={`sp-msg${r.message || choicesText(r.choices) || r.remarks ? "" : " is-empty"}`} data-label={s.cols[3]}>
+                        {choicesText(r.choices) && <span className="sp-choice">{choicesText(r.choices)}</span>}
+                        {r.remarks && <span className="sp-choice is-warn">{s.remarks} : {r.remarks}</span>}
+                        {r.message}
+                      </td>
                       <td className="sp-date" data-label={s.cols[4]}>{fmt.format(new Date(r.created_at))}</td>
                     </tr>
                   ))}

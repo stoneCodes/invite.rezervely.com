@@ -519,6 +519,15 @@ const fr = {
     newTab: "s'ouvre dans un nouvel onglet",
     say: "Une idée de cadeau ? Voici la liste de souhaits.",
   },
+  meal: {
+    kicker: "Le repas",
+    person: (i: number) => `Personne ${i}`,
+    several: "plusieurs choix possibles",
+    required: "obligatoire",
+    missing: "Merci de faire votre choix.",
+    remarks: "Allergies ou remarques",
+    remarksPh: "Ex. : sans gluten, allergie aux arachides…",
+  },
   pdf: {
     title: "Liste des invités",
     venue: "Lieu",
@@ -537,6 +546,9 @@ const fr = {
     page: (n: number, total: number) => `${n} / ${total}`,
     stoppedAt: (date: string) => `Liste arrêtée le ${date}`,
     createdWith: "Créé avec E-carte Studio",
+    mealTitle: "Repas et boissons",
+    mealCol: "Repas et message",
+    remarks: "Allergies",
     reserved: "Disponible avec une publication payée ou offerte.",
   },
   /** Image d'aperçu (WhatsApp, réseaux) */
@@ -1062,6 +1074,15 @@ const en: InviteDict = {
     newTab: "opens in a new tab",
     say: "Looking for a gift idea? Here is the wish list.",
   },
+  meal: {
+    kicker: "The meal",
+    person: (i: number) => `Guest ${i}`,
+    several: "several choices allowed",
+    required: "required",
+    missing: "Please make your choice.",
+    remarks: "Allergies or notes",
+    remarksPh: "E.g. gluten-free, peanut allergy…",
+  },
   pdf: {
     title: "Guest list",
     venue: "Venue",
@@ -1080,6 +1101,9 @@ const en: InviteDict = {
     page: (n: number, total: number) => `${n} / ${total}`,
     stoppedAt: (date: string) => `List generated on ${date}`,
     createdWith: "Created with E-carte Studio",
+    mealTitle: "Food and drinks",
+    mealCol: "Meal and message",
+    remarks: "Allergies",
     reserved: "Available with a paid or complimentary publication.",
   },
   og: {

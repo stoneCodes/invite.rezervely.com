@@ -6,6 +6,7 @@
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { wishHtml } from "../wishlist";
+import { mountMeal } from "../meal";
 import { createMusic, fxLevel } from "../music";
 import { coupleHtml, mountCouple } from "../dresscode/couple";
 
@@ -264,12 +265,17 @@ export function mountOrigami(root, INPUT, OPTS = {}) {
     const a = e.target.closest("[data-a]"); if (a) { attending = a.dataset.a === "yes"; form.querySelectorAll("[data-a]").forEach((b) => b.setAttribute("aria-pressed", String(b === a))); q(".or-guests").hidden = !attending; return; }
     const g = e.target.closest("[data-g]"); if (g) { guests = Math.min(20, Math.max(1, guests + +g.dataset.g)); form.querySelector("output").textContent = guests; }
   });
+  // Choix du repas (meal.js) : sous le nombre de personnes, visible seulement si « présent ».
+  const mealEl = document.createElement("div"); q(".or-guests").after(mealEl);
+  const MEAL = mountMeal(mealEl, INPUT), mealSync = () => MEAL.update(guests, attending);
+  form.addEventListener("click", mealSync); mealSync();
   form.addEventListener("submit", async (e) => {
-    e.preventDefault(); const inp = form.querySelector("input"), name = inp.value.trim();
+    e.preventDefault(); const inp = form.querySelector("input:not([data-p])"), name = inp.value.trim();
     if (!name) { inp.focus(); inp.placeholder = O.nameMissing; return; }
-    const msg = form.querySelector("textarea").value.trim(), btn = form.querySelector(".or-send"), err = form.querySelector(".or-err");
+    const meal = MEAL.collect(); if (!meal.ok) return;
+    const msg = form.querySelector("textarea:not(.ml-remarks)").value.trim(), btn = form.querySelector(".or-send"), err = form.querySelector(".or-err");
     err.hidden = true;
-    if (OPTS.onRsvp) { btn.disabled = true; btn.textContent = T.c.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg }); } catch (x) { btn.disabled = false; btn.textContent = O.send; err.hidden = false; return; } }
+    if (OPTS.onRsvp) { btn.disabled = true; btn.textContent = T.c.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg, choices: meal.choices, remarks: meal.remarks }); } catch (x) { btn.disabled = false; btn.textContent = O.send; err.hidden = false; return; } }
     audio(); paper(0.3, 0.6);
     const r = card.getBoundingClientRect();
     card.classList.add("is-folding");

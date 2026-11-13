@@ -10,6 +10,7 @@
 import { esc, dateParts } from "../engine";
 import { inviteDict } from "../../../lib/i18n/invite";
 import { wishHtml } from "../wishlist";
+import { mountMeal } from "../meal";
 import { createMusic, fxLevel } from "../music";
 
 const IMG = "/img/livre-";
@@ -500,20 +501,25 @@ export function mountLivre(root, data, OPTS = {}) {
     const a = e.target.closest("[data-a]"); if (a) { attending = a.dataset.a === "yes"; form.querySelectorAll("[data-a]").forEach((b) => b.setAttribute("aria-pressed", String(b === a))); q(".lv-guests").hidden = !attending; return; }
     const g = e.target.closest("[data-g]"); if (g) { guests = clamp(guests + +g.dataset.g, 1, 20); form.querySelector("output").textContent = guests; }
   });
+  // Choix du repas (meal.js) : sous le nombre de personnes, visible seulement si « présent ».
+  const mealEl = document.createElement("div"); q(".lv-guests").after(mealEl);
+  const MEAL = mountMeal(mealEl, data), mealSync = () => MEAL.update(guests, attending);
+  form.addEventListener("click", mealSync); mealSync();
   form.addEventListener("submit", async (e) => {
     e.preventDefault(); const inp = form.querySelector("input[name=name]"), name = inp.value.trim();
     if (!name) { inp.focus(); inp.placeholder = C.nameMissing; return; }
+    const meal = MEAL.collect(); if (!meal.ok) return;
     // Pronostics (facultatifs) en tête du message, comme les allergies des anniversaires : pas de nouvelle colonne.
     const gv = (n) => { const el = q(`.lv-guess [name=${n}]`); return el ? el.value.trim() : ""; };
     let gdate = gv("gdate");
     if (gdate) { try { gdate = new Intl.DateTimeFormat(LANG_LOCALE[lang], { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${gdate}T12:00:00Z`)); } catch (x) {} }
     const sep = lang === "fr" ? " : " : ": ";
     const guess = [gv("gname") && V.gName + sep + gv("gname"), gdate && V.gDate + sep + gdate, gv("gweight") && V.gWeight + sep + gv("gweight")].filter(Boolean);
-    const note = form.querySelector("textarea").value.trim();
+    const note = form.querySelector("textarea:not(.ml-remarks)").value.trim();
     const msg = [guess.length ? V.guessPrefix + guess.join(" · ") : "", note].filter(Boolean).join("\n").slice(0, 1000);
     const btn = form.querySelector(".lv-send"), err = form.querySelector(".lv-err");
     err.hidden = true;
-    if (OPTS.onRsvp) { btn.disabled = true; btn.textContent = C.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg }); } catch (x) { btn.disabled = false; btn.textContent = V.send; err.hidden = false; return; } }
+    if (OPTS.onRsvp) { btn.disabled = true; btn.textContent = C.sending; try { await OPTS.onRsvp({ name, attending, guests: attending ? guests : 0, message: msg, choices: meal.choices, remarks: meal.remarks }); } catch (x) { btn.disabled = false; btn.textContent = V.send; err.hidden = false; return; } }
     const first = esc(name.split(" ")[0]);
     form.outerHTML = `<div class="lv-thanks"><small>${esc(C.thanks(first))}</small><h3>${attending ? V.yesTitle : V.noTitle}</h3><p>${esc(attending ? C.noted(String(guests)) : C.missYou)}</p>${OPTS.onRsvp ? "" : `<p class="lv-sub">${esc(C.previewOnly)}</p>`}<a class="lv-btn ghost" href="${calUrl}" target="_blank" rel="noopener noreferrer">${ICON.cal}${esc(C.addCal)}</a></div>`;
     rsvpBox.classList.add("is-sent"); chime();
