@@ -1,0 +1,42 @@
+<!doctype html>
+<!-- Comparaison de 3 tailles du loader « Trait d'or » (13 nov. 2026), pour que Glad choisisse avant le changement.
+     Utilise le vrai components/loader.css ; chaque écran est un téléphone de 375 × 740. -->
+<html lang="fr"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../components/loader.css">
+<style>
+  body{margin:0;padding:28px 24px 34px;background:#E7E1D6;font:300 15px/1.4 Jost,sans-serif;color:#2B2419}
+  h1{margin:0 0 22px;text-align:center;font:400 30px Italiana}
+  .row{display:flex;gap:30px;justify-content:center}
+  .opt{text-align:center}
+  .opt b{display:block;margin-top:14px;font:400 24px Italiana}
+  .opt small{color:#7a6a55}
+  .ph{position:relative;width:375px;height:740px;border-radius:44px;overflow:hidden;border:10px solid #16120e;box-shadow:0 20px 40px -18px rgba(0,0,0,.5)}
+  .ph .je-loader{position:absolute;animation:none}
+  .A .je-l-in{width:150px;height:150px}.A .je-l-mark{width:104px}
+  .B .je-l-in{width:200px;height:200px}.B .je-l-mark{width:144px}
+  .C .je-l-in{width:250px;height:250px}.C .je-l-mark{width:184px}
+  /* image fixe : tracé complet, reflet visible */
+  .still .je-l-mark path{animation:none!important;stroke-dashoffset:0}
+  .still .je-l-halo{animation:none;opacity:1}
+  .still .je-l-glint{display:none}
+</style></head>
+<body class="still">
+<h1>Taille du loader : trois choix</h1>
+<div class="row">
+  <div class="opt"><div class="ph A">LOADER</div><b>A · Actuelle</b><small>monogramme 104 px</small></div>
+  <div class="opt"><div class="ph B">LOADER</div><b>B · +40 %</b><small>monogramme 144 px</small></div>
+  <div class="opt"><div class="ph C">LOADER</div><b>C · +75 %</b><small>monogramme 184 px</small></div>
+</div>
+<script>
+  const M = `<div class="je-loader"><div class="je-l-in"><div class="je-l-halo"></div>
+    <svg class="je-l-mark" viewBox="18 22 64 54">
+      <path class="je-l-bar b1" d="M24 30h22" pathLength="1" stroke="#2B2419"/>
+      <path class="je-l-bar b2" d="M24 50h16" pathLength="1" stroke="#2B2419"/>
+      <path class="je-l-s" d="M76 33c-3-4-8-5-12-5-7 0-11 4-11 9 0 12 24 8 24 22 0 7-6 11-14 11H24" pathLength="1" stroke="#A8884F"/>
+      <path class="je-l-glint" d="M76 33c-3-4-8-5-12-5-7 0-11 4-11 9 0 12 24 8 24 22 0 7-6 11-14 11H24" pathLength="1"/>
+    </svg></div></div>`;
+  document.querySelectorAll(".ph").forEach((p) => p.innerHTML = M);
+  if (location.hash === "#anime") document.body.classList.remove("still");
+</script>
+</body></html>
