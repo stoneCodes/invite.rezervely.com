@@ -1,4 +1,4 @@
-// Modèle « La dot » / « The Customary Wedding » : mariage coutumier d'Afrique centrale.
+// Modèle « Le coutumier » / « Traditional Wedding » (id `dot`, nom changé le 13 nov. 2026 ; avant « La dot ») : mariage coutumier d'Afrique centrale.
 // Ouverture : satin ivoire et vannerie (fond de Glad), frange de raphia en haut (vrais brins détourés, qui bougent au doigt),
 // cœurs dorés + prénoms + pastille brune ; on écarte le raphia (glisser) ou on touche pour entrer.
 // Le pagne des mariés (data.dot.fabric, sinon un pagne original de démonstration) habille toute l'invitation :

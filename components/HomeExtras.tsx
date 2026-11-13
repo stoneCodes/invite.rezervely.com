@@ -51,9 +51,10 @@ export function HomeFeatures() {
       <div className="gl-kicker">{h.featKicker}</div>
       <h2 id="gl-feat-t">{h.featTitle} <span className="gold-text">{h.featGold}</span></h2>
       <ul className="gl-feat-grid">
-        {h.features.map(([id, title, text]) => (
-          <li key={id} className={`gl-feat-card gl-rv${id === "music" ? " is-music" : ""}`}>
-            <svg viewBox="0 0 24 24" aria-hidden="true">{ICONS[id]}</svg>
+        {h.features.map(([id, title, text], i) => (
+          <li key={id} className={`gl-feat-card gl-rv gl-tilt${id === "music" ? " is-music" : ""}`} style={{ "--i": i } as React.CSSProperties}>
+            <span className="gl-shine" aria-hidden="true" />
+            <span className="gl-feat-ico" aria-hidden="true"><svg viewBox="0 0 24 24">{ICONS[id]}</svg></span>
             <h3>{title}</h3>
             <p>{text}</p>
             {id === "music" && (

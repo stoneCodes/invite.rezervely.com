@@ -60,16 +60,15 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
 
   // « Tout » : une rangée par catégorie (plus de « coups de cœur », qui répétaient les modèles). Sinon la seule catégorie choisie.
   const shown = filter === "all" ? CATEGORIES.map(({ id }) => id) : [filter];
-  const total = TEMPLATES.length;
   return <div className={`ph-gallery${compact ? " is-compact" : ""}`}>
     <div className="ph-filters" role="group" aria-label={t.gallery.filtersLabel}>
-      {!noAll && <button type="button" aria-pressed={filter === "all"} onClick={() => setFilter("all")}>
-        <span className="ph-ico" aria-hidden="true">{ICONS.all}</span><span className="ph-lbl">{t.gallery.filters.all}</span><span className="ph-n">{total}</span>
+      {!noAll && <button type="button" className="is-all" aria-pressed={filter === "all"} onClick={() => setFilter("all")}>
+        <span className="ph-ico" aria-hidden="true">{ICONS.all}</span><span className="ph-lbl">{t.gallery.filters.all}</span>
       </button>}
       {CATEGORIES.map(({ id }) => {
         const n = idsFor(id).length;
         return <button key={id} type="button" aria-pressed={filter === id} onClick={() => setFilter(id)}>
-          <span className="ph-ico" aria-hidden="true">{ICONS[id]}</span><span className="ph-lbl">{t.gallery.filters[id]}</span><span className={`ph-n${n ? "" : " is-soon"}`}>{n || t.gallery.soon}</span>
+          <span className="ph-ico" aria-hidden="true">{ICONS[id]}</span><span className="ph-lbl"><span className="ph-long">{t.gallery.filters[id]}</span><span className="ph-short">{t.gallery.filtersShort[id]}</span></span>{!n && <span className="ph-n is-soon">{t.gallery.soon}</span>}
         </button>;
       })}
     </div>

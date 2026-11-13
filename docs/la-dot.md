@@ -1,6 +1,6 @@
-# « La dot » / « The Customary Wedding » : modèle mariage traditionnel (Afrique centrale)
+# « Le coutumier » / « Traditional Wedding » (avant « La dot ») : modèle mariage traditionnel (Afrique centrale)
 
-Décidé avec Glad le 12 nov. 2026 : nom « La dot », pas de variante toghu, ouverture par rideau de raphia. Maquette : `docs/la-dot/maquette.png` (et `.html`), test d'habillage : `docs/la-dot/test-habillage.png`.
+Nom changé le 13 nov. 2026 en « Le coutumier » / « Traditional Wedding » (id `dot` conservé). Décidé avec Glad le 12 nov. 2026 : nom « La dot », pas de variante toghu, ouverture par rideau de raphia. Maquette : `docs/la-dot/maquette.png` (et `.html`), test d'habillage : `docs/la-dot/test-habillage.png`.
 
 ## Idée
 - Le **pagne des mariés** donne la couleur de toute l'invitation : bandes entre les sections, nœud de la date, tenues du dress code. Les mariés envoient la photo de leur pagne (facultatif ; sinon un pagne original de démonstration, jamais un motif de marque).

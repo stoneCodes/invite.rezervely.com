@@ -88,19 +88,32 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 
 /* Shared phone gallery: the bezel is CSS, the screen art stays text-free. */
 .site .ph-gallery{width:100%;min-width:0;color:var(--ink)}
-/* Catégories : barre segmentée en verre ivoire, pictogramme + libellé + nombre ; tuiles sur mobile */
-.site .ph-filters{display:flex;width:max-content;max-width:calc(100% - 40px);margin:6px auto 44px;padding:6px;gap:4px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(250,244,232,.62));border:1px solid rgba(190,160,105,.32);box-shadow:0 18px 40px -26px rgba(80,58,28,.45),inset 0 1px 0 #fff;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+/* Catégories (refait le 13 nov. 2026, demandé par Glad : plus étroit, plus lisible) : pastilles pictogramme + libellé côte à côte, sans nombre ; 2 × 2 sur mobile */
+.site .ph-filters{display:flex;flex-wrap:wrap;justify-content:center;width:max-content;max-width:calc(100% - 32px);margin:6px auto 40px;padding:5px;gap:4px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(250,244,232,.7));border:1px solid rgba(190,160,105,.3);box-shadow:0 14px 34px -24px rgba(80,58,28,.5),inset 0 1px 0 #fff;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .site .ph-rail::-webkit-scrollbar{display:none}
-.site .ph-filters button{position:relative;display:flex;align-items:center;gap:9px;border:0;border-radius:999px;background:transparent;color:#6f6250;font:400 .82rem/1.2 var(--f-ui);letter-spacing:.02em;padding:11px 18px 11px 14px;cursor:pointer;transition:background .3s,color .3s,box-shadow .3s}
-.site .ph-filters button:hover{color:#33291c;background:rgba(255,255,255,.7)}
-.site .ph-filters button[aria-pressed=true]{color:#2f2517;background:linear-gradient(135deg,#f7ecd4,#e3cc9c 55%,#d4b57a);box-shadow:0 8px 18px -10px rgba(120,86,30,.7),inset 0 1px 0 rgba(255,255,255,.75)}
-.site .ph-ico{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(201,170,112,.14);color:#a8843f;transition:background .3s,color .3s}
-.site .ph-ico svg{width:19px;height:19px}
-.site .ph-filters button[aria-pressed=true] .ph-ico{background:rgba(255,255,255,.6);color:#7d5b1f}
-.site .ph-n{min-width:22px;padding:3px 7px;border-radius:99px;background:rgba(120,95,55,.1);font-size:.68rem;font-weight:500;text-align:center;color:inherit}
-.site .ph-n.is-soon{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
-.site .ph-filters button[aria-pressed=true] .ph-n{background:rgba(255,255,255,.55)}
+.site .ph-filters button{position:relative;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;background:transparent;color:#5c4f3d;font:400 .98rem/1.2 var(--f-ui);letter-spacing:.01em;white-space:nowrap;padding:9px 18px 9px 12px;cursor:pointer;transition:background .3s,color .3s,box-shadow .3s}
+.site .ph-filters button:hover{color:#2B2419;background:rgba(255,255,255,.8)}
+.site .ph-filters button[aria-pressed=true]{color:#FBF5EA;background:linear-gradient(135deg,#3a2f22,#2B2419);box-shadow:0 10px 20px -10px rgba(43,36,25,.7),inset 0 1px 0 rgba(255,255,255,.12)}
+.site .ph-ico{display:grid;place-items:center;flex:none;width:22px;height:22px;color:#a8843f;transition:color .3s}
+.site .ph-ico svg{width:20px;height:20px}
+.site .ph-filters button[aria-pressed=true] .ph-ico{color:#D2B67F}
+.site .ph-n{padding:2px 7px;border-radius:99px;background:rgba(120,95,55,.1);color:inherit}
+.site .ph-n.is-soon{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.site .ph-filters button[aria-pressed=true] .ph-n{background:rgba(255,255,255,.15)}
 .site .ph-filters button:focus-visible{outline:2px solid #b8955a;outline-offset:2px}
+.site .ph-short{display:none}
+/* Écrans étroits : toujours une seule ligne, libellés courts (« Mariage »), tailles qui suivent la largeur */
+@media(max-width:640px){
+  .site .ph-filters{flex-wrap:nowrap;width:auto;max-width:none;margin:4px 10px 30px;padding:3px;gap:0}
+  .site .ph-filters button{flex:1 1 auto;justify-content:center;min-width:0;gap:clamp(3px,1vw,7px);padding:clamp(7px,2.4vw,10px) clamp(4px,1.7vw,14px);font-size:clamp(.68rem,3.3vw,.95rem)}
+  .site .ph-ico{width:clamp(14px,4.4vw,20px);height:clamp(14px,4.4vw,20px)}
+  .site .ph-ico svg{width:100%;height:100%}
+  .site .ph-long{display:none}.site .ph-short{display:inline}
+}
+/* Très petits écrans (320 px) : « Tout » sans pictogramme pour garder la ligne */
+@media(max-width:350px){
+  .site .ph-filters .is-all .ph-ico{display:none}
+}
 .site .ph-section{margin:0 auto 48px;min-width:0;max-width:1280px}
 .site .ph-row-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 clamp(20px,5vw,64px) 22px}
 .site .ph-row-title h3{margin:0;font:400 clamp(1.35rem,3vw,2rem)/1.15 var(--f-display)}
@@ -145,11 +158,6 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
   .site .ph-gallery.is-compact .ph-card{flex:0 0 100%}
   .site .ph-gallery.is-compact .ph-device{width:min(56vw,230px)}
   .site .ph-soon-screen{width:min(64vw,270px);margin-inline:auto;aspect-ratio:9/18}
-  .site .ph-filters{display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);width:auto;max-width:none;margin:4px 16px 34px;padding:6px;gap:4px;border-radius:24px}
-  .site .ph-filters button{flex-direction:column;justify-content:flex-start;gap:6px;padding:10px 4px 9px;border-radius:18px;font-size:.68rem;line-height:1.15;text-align:center}
-  .site .ph-ico{width:36px;height:36px}.site .ph-ico svg{width:21px;height:21px}
-  .site .ph-lbl{min-height:2.3em;display:flex;align-items:center}
-  .site .ph-n{padding:2px 6px;font-size:.6rem}.site .ph-n.is-soon{font-size:.5rem;letter-spacing:.06em}
   .site .ph-arrow{display:grid;place-items:center;position:absolute;z-index:4;top:calc(8px + min(64vw,270px) * 1);translate:0 -50%;width:44px;height:44px;padding:0;border-radius:50%;border:1px solid rgba(176,144,79,.45);background:rgba(255,252,246,.92);color:#5a4630;font:300 2rem/1 var(--f-ui);box-shadow:0 8px 20px -8px rgba(60,45,25,.45);cursor:pointer;transition:opacity .25s}
   .site .ph-gallery.is-compact .ph-arrow{top:calc(8px + min(56vw,230px) * 1)}
   .site .ph-arrow span{margin-top:-4px}
@@ -263,9 +271,9 @@ body:has(.demo-exit) .bn-kicker,body:has(.demo-exit) .or-kicker{margin-top:44px}
 }
 /* Une seule bande sur l'accueil, avec des flèches pour avancer d'un modèle */
 .site .ph-marquee-wrap{position:relative}
-.site .ph-marquee-arrow{position:absolute;z-index:4;top:calc(10px + clamp(190px,18vw,236px) * 19.5 / 18);translate:0 -50%;width:46px;height:46px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid rgba(176,144,79,.45);background:rgba(255,252,246,.94);color:#5a4630;font:300 2rem/1 var(--f-ui);box-shadow:0 8px 20px -8px rgba(60,45,25,.45);cursor:pointer;transition:transform .2s}
+.site .ph-marquee-arrow{position:absolute;z-index:4;top:calc(10px + clamp(190px,18vw,236px) * 19.5 / 18);translate:0 -50%;width:46px;height:46px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(255,252,246,.38);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:rgba(60,46,30,.8);font:300 2rem/1 var(--f-ui);box-shadow:0 6px 16px -10px rgba(60,45,25,.35);cursor:pointer;transition:transform .2s}
 .site .ph-marquee-arrow span{margin-top:-4px}
-.site .ph-marquee-arrow:hover{transform:scale(1.06)}
+.site .ph-marquee-arrow:hover{transform:scale(1.06);background:rgba(255,252,246,.75);color:#3a2d1e}
 .site .ph-marquee-arrow.prev{left:clamp(8px,2vw,28px)}.site .ph-marquee-arrow.next{right:clamp(8px,2vw,28px)}
 @media(max-width:760px){.site .ph-marquee-arrow{top:calc(8px + min(52vw,220px));width:40px;height:40px;font-size:1.7rem}}
 

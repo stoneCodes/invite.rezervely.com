@@ -16,6 +16,14 @@ import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { getLastInvite, spaceHref, type LastInvite } from "@/lib/lastInvite";
 
 /** Page d'accueil « Nuit de gala » : poussière d'or, enveloppe qui s'ouvre au défilement, modèles en défilement horizontal. */
+/* Pictogrammes au trait des 4 étapes : modèle, crayon, envoi, réponses. */
+const STEP_ICONS: React.ReactNode[] = [
+  <><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" /><path d="M10 5.5h4M9.5 12.5l2 2 3.5-4" /></>,
+  <><path d="M4 20l4.2-1 10.6-10.6a2.1 2.1 0 0 0-3-3L5.2 16 4 20z" /><path d="M14.5 6.5l3 3" /></>,
+  <><path d="M21 3 10.5 13.5M21 3l-6.5 18-4-7.5L3 9.5 21 3z" /></>,
+  <><path d="M4 5h16v11H9l-5 4z" /><path d="m8.5 10.5 2.2 2.2 4.8-4.7" /></>,
+];
+
 export default function HomeClient({publicPromo,order,price,reviews,reviewStats}:{publicPromo?:{code:string;label:string};order:TemplateId[];price:string|null;reviews:HomeReview[];reviewStats:{count:number;avg:number}}) {
   const router = useRouter();
   const t = useT();
@@ -87,11 +95,48 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
     addEventListener("resize", onResize);
     onScroll();
 
-    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("is-on")), { threshold: 0.3 });
+    // Titres des sections : apparition (sur-titre qui se resserre, titre qui monte du flou).
+    document.querySelectorAll(".gl-wave :is(.gl-kicker, h2)").forEach((e) => { if (!e.closest(".gl-rv")) e.classList.add("gl-rv", "gl-rv-h"); });
+    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("is-on")), { threshold: 0.2, rootMargin: "0px 0px -6% 0px" });
     document.querySelectorAll(".gl-rv").forEach((e) => io.observe(e));
+
+    // Fil doré des étapes : se remplit au fil du défilement.
+    const steps = document.getElementById("gl-steps");
+    let stepsTick = false;
+    const fill = () => {
+      stepsTick = false;
+      if (!steps) return;
+      const r = steps.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (innerHeight * 0.62 - r.top) / Math.max(1, r.height)));
+      steps.style.setProperty("--p", p.toFixed(3));
+    };
+    const onFill = () => { if (!stepsTick) { stepsTick = true; requestAnimationFrame(fill); } };
+    addEventListener("scroll", onFill, { passive: true });
+    fill();
+
+    // Cartes en relief : s'inclinent vers la souris, reflet qui suit le pointeur (souris seulement, pas si animations réduites).
+    const fine = matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const tiltMove = (e: PointerEvent) => {
+      const el = (e.target as Element | null)?.closest?.(".gl-tilt") as HTMLElement | null;
+      if (!el) return;
+      const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      el.style.setProperty("--rx", `${((0.5 - y) * 9).toFixed(2)}deg`);
+      el.style.setProperty("--ry", `${((x - 0.5) * 11).toFixed(2)}deg`);
+      el.style.setProperty("--mx", `${(x * 100).toFixed(1)}%`);
+      el.style.setProperty("--my", `${(y * 100).toFixed(1)}%`);
+      el.classList.add("is-tilt");
+    };
+    const tiltOut = (e: PointerEvent) => {
+      const el = (e.target as Element | null)?.closest?.(".gl-tilt") as HTMLElement | null;
+      if (!el || (e.relatedTarget instanceof Node && el.contains(e.relatedTarget))) return;
+      el.classList.remove("is-tilt"); el.style.removeProperty("--rx"); el.style.removeProperty("--ry");
+    };
+    if (fine) { document.addEventListener("pointermove", tiltMove, { passive: true }); document.addEventListener("pointerout", tiltOut); }
 
     return () => {
       alive = false; cancelAnimationFrame(raf); io.disconnect();
+      removeEventListener("scroll", onFill);
+      document.removeEventListener("pointermove", tiltMove); document.removeEventListener("pointerout", tiltOut);
       removeEventListener("scroll", sched); removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVis);
     };
@@ -166,10 +211,29 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
       <HomeFeatures />
       <HomeDashboard />
 
-      <section className="gl-steps-band gl-wave is-b"><div className="wrap-site gl-steps">
-        {h.steps.map(([n, st, p]) => (
-          <div key={n} className="gl-step gl-rv"><div className="gl-n gold-text">{n}</div><div><h3>{st}</h3><p>{p}</p></div></div>
-        ))}
+      {/* « Comment ça marche » (refait le 13 nov. 2026, demandé par Glad) : en-tête, 4 étapes sur un fil doré qui se remplit
+          au défilement, médaillons numérotés, cartes en relief qui arrivent de côté et s'inclinent sous la souris. */}
+      <section className="gl-steps-band gl-wave is-b" aria-labelledby="gl-steps-t"><div className="wrap-site">
+        <header className="gl-sec-head gl-rv">
+          <div className="gl-kicker">{h.stepsKicker}</div>
+          <h2 id="gl-steps-t">{h.stepsTitle} <span className="gold-text">{h.stepsGold}</span></h2>
+          <p>{h.stepsSub}</p>
+        </header>
+        <ol className="gl-steps" id="gl-steps">
+          <li className="gl-steps-line" aria-hidden="true"><i /></li>
+          {h.steps.map(([n, st, p], i) => (
+            <li key={n} className="gl-step gl-rv" style={{ "--i": i } as React.CSSProperties}>
+              <div className="gl-step-n" aria-hidden="true"><span>{n}</span></div>
+              <div className="gl-step-card gl-tilt">
+                <span className="gl-step-ghost" aria-hidden="true">{n}</span>
+                <span className="gl-step-ico" aria-hidden="true"><svg viewBox="0 0 24 24">{STEP_ICONS[i]}</svg></span>
+                <h3>{st}</h3>
+                <p>{p}</p>
+                <span className="gl-shine" aria-hidden="true" />
+              </div>
+            </li>
+          ))}
+        </ol>
       </div></section>
 
       <HomeReviews reviews={reviews} stats={reviewStats} />
