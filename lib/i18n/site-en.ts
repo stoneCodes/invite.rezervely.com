@@ -118,6 +118,8 @@ export const en: SiteDict = {
     demoSub: "demo",
     demoHint: "Tap the invitation to open it, then scroll through it.",
     demoClose: "Close the demo",
+    demoFull: "Full screen",
+    demoExitFull: "Exit full screen",
     createWith: "Create with this design",
     navFaq: "FAQ",
     dashKicker: "Track your RSVPs",

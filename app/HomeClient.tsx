@@ -154,12 +154,27 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
 
   /* Démo en pop-up dans un téléphone, sans quitter l'accueil (plus de nouvel onglet). */
   const [demo, setDemo] = useState<TemplateId | null>(null);
+  /* Plein écran au choix (bouton discret sous le téléphone) : la démo occupe toute la fenêtre, et tout l'écran quand le navigateur le permet. */
+  const [full, setFull] = useState(false);
+  const fullRef = useRef<HTMLDivElement>(null);
+  const fullOn = useRef(false);
+  fullOn.current = full;
+  useEffect(() => { if (!demo) setFull(false); }, [demo]);
+  useEffect(() => {
+    if (!full) { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); return; }
+    const el = fullRef.current;
+    if (el?.requestFullscreen) el.requestFullscreen().catch(() => {});
+    // Sortie par Échap ou par le navigateur : on revient au téléphone.
+    const change = () => { if (!document.fullscreenElement) setFull(false); };
+    document.addEventListener("fullscreenchange", change);
+    return () => document.removeEventListener("fullscreenchange", change);
+  }, [full]);
   const cycle = (id: TemplateId, step: number) => cycleTemplate(order, id, step);
   useEffect(() => {
     if (!demo) return;
     const unlock = lockScroll();
     const key = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setDemo(null);
+      if (e.key === "Escape") { if (fullOn.current) setFull(false); else setDemo(null); }
       else if (e.key === "ArrowRight" || e.key === "ArrowLeft") setDemo((d) => (d ? cycle(d, e.key === "ArrowRight" ? 1 : -1) : d));
     };
     window.addEventListener("keydown", key);
@@ -246,7 +261,15 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
       </section>
       <footer className="gl-wave">{h.footer} · <a href="/espace">{t.find.title}</a><LegalLinks className="gl-legal" /></footer>
 
-      {demo && shown && (
+      {demo && shown && full && (
+        <div className="gl-demofull" ref={fullRef} role="dialog" aria-modal="true" aria-label={t.common.demoOf(shown.name)}>
+          <iframe key={demo} src={`/demo/${demo}?integre=1`} title={t.common.demoOf(shown.name)} allow="accelerometer; gyroscope; autoplay; fullscreen" />
+          <button type="button" className="gl-demofull-exit" onClick={() => setFull(false)}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /></svg>{h.demoExitFull}
+          </button>
+        </div>
+      )}
+      {demo && shown && !full && (
         /* Démo dans un téléphone, en pop-up par-dessus l'accueil (comme reveliastudio.com) : on la ferme et on reste où on était. */
         <div className="gl-demo" role="dialog" aria-modal="true" aria-label={t.common.demoOf(shown.name)} onClick={(e) => { if (e.target === e.currentTarget) setDemo(null); }}>
           <div className="gl-demo-panel">
@@ -258,6 +281,9 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
               <DemoPhone id={demo} title={t.common.demoOf(shown.name)} />
               <button type="button" className="gl-demo-arrow" aria-label={t.common.nextTpl} onClick={() => setDemo(cycle(demo, 1))}><span aria-hidden="true">›</span></button>
             </div>
+            <button type="button" className="gl-demo-full" onClick={() => setFull(true)}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>{h.demoFull}
+            </button>
             <a className="btn-s gl-demo-cta" href={`/creer?t=${demo}`} onClick={celebrate(`/creer?t=${demo}`)}>{h.createWith}</a>
           </div>
         </div>

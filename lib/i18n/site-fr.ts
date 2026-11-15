@@ -117,6 +117,8 @@ export const fr = {
     demoSub: "démo",
     demoHint: "Touchez l'invitation pour l'ouvrir, puis faites-la défiler.",
     demoClose: "Fermer la démo",
+    demoFull: "Plein écran",
+    demoExitFull: "Réduire",
     createWith: "Créer avec ce modèle",
     navFaq: "FAQ",
     dashKicker: "Suivi des réponses",
