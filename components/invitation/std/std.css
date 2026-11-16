@@ -1,0 +1,150 @@
+/* Save the date (std.js), préfixe sd-. Deux identités : .sd-nuit (Nuit dorée) et .sd-domaine (Le domaine). */
+body.sd-locked{overflow:hidden}
+body[data-tpl^="std-"]{margin:0;overflow-x:clip}
+.sd{--ink:#F3E6D3;--muted:rgba(243,230,211,.72);--gold:#D9B46A;--gold2:#FFE7A3;--card:rgba(20,10,6,.72);--line:rgba(217,180,106,.55);
+  position:relative;min-height:100svh;color:var(--ink);font-family:"Jost","Avenir Next",system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased}
+.sd-domaine{--ink:#3E3122;--muted:#7A6A55;--gold:#A8884F;--gold2:#D2B67F;--card:rgba(251,248,242,.86);--line:rgba(168,136,79,.45)}
+.sd-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.sd-bg i{position:absolute;inset:-4%;background-position:center;background-size:cover;transition:opacity 1.6s ease,filter 1.6s ease}
+.sd-dust{position:absolute;inset:0;width:100%;height:100%}
+
+/* ---------- La scène d'ouverture ---------- */
+.sd-stage{position:relative;z-index:1;min-height:100svh;display:grid;place-items:center;align-content:center;padding:24px 16px calc(84px + env(safe-area-inset-bottom,0px));box-sizing:border-box;perspective:1400px}
+.sd-hint,.sd-cue{position:absolute;left:0;right:0;width:100%;max-width:none;box-sizing:border-box;justify-self:stretch;bottom:max(0px,calc(100% - 100svh));margin:0;padding:0 16px calc(28px + env(safe-area-inset-bottom,0px));text-align:center;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;transition:opacity .6s}
+.sd-hint{animation:sd-pulse 2.4s ease-in-out infinite}
+.sd-cue{opacity:0;pointer-events:none;display:grid;justify-items:center;gap:8px}
+.sd-cue i{width:1px;height:28px;background:linear-gradient(currentColor,transparent);animation:sd-drop 1.8s ease-in-out infinite}
+.sd.is-flipped .sd-hint{opacity:0;animation:none}
+.sd.is-done .sd-cue{opacity:.85}
+@keyframes sd-pulse{50%{opacity:.45}}
+@keyframes sd-drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* La carte : un bouton qui contient deux faces */
+.sd-card{position:relative;display:block;padding:0;border:0;background:none;cursor:pointer;font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+.sd-card:focus-visible{outline:2px solid var(--gold);outline-offset:8px;border-radius:14px}
+.sd-flip{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1.25s cubic-bezier(.3,.05,.25,1)}
+.sd-face{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:10px;box-sizing:border-box;backface-visibility:hidden;-webkit-backface-visibility:hidden;text-align:center}
+.sd-front{transform:rotateY(180deg)}
+.sd.is-flipped .sd-flip{transform:rotateY(180deg)}
+.sd.is-instant .sd-flip,.sd-still .sd-flip{transition:none}
+.sd-mono{font:400 2.6rem/1 "Pinyon Script",cursive;letter-spacing:.02em}
+.sd-mono i{font-style:normal;margin:0 .12em;font-size:.7em}
+.sd-k{display:block;font-size:.7rem;font-weight:500;letter-spacing:.34em;text-transform:uppercase;color:var(--gold)}
+.sd-names{margin:0;font:400 clamp(2.2rem,10vw,3rem)/1.05 "Pinyon Script",cursive}
+.sd-names i{display:block;font-style:normal;font-size:.6em;margin:.08em 0}
+.sd-engrave{display:grid;justify-items:center;gap:2px;margin-top:6px}
+.sd-engrave b{font:400 clamp(4.4rem,22vw,5.6rem)/.95 "Italiana","Cormorant Garamond",serif;letter-spacing:.02em}
+.sd-engrave span{font:400 1.05rem/1.25 "Italiana",serif;letter-spacing:.32em;text-transform:uppercase}
+.sd-time{margin:2px 0 0;font-size:.82rem;letter-spacing:.2em;color:var(--muted)}
+
+/* ---------- Nuit dorée : vraie carte noir et or (photos de Glad, 16 nov. 2026) posée sur la table de fête ---------- */
+.sd-nuit .sd-bg1{background-image:url(/img/std-nuit-table.webp);filter:blur(1.5px) brightness(.62) saturate(1.05);transform:scale(1.04)}
+.sd-nuit .sd-bg2{background:radial-gradient(ellipse 58% 46% at 50% 46%,rgba(255,196,110,.12),transparent 70%),linear-gradient(rgba(10,6,3,.2),rgba(10,6,3,.5));inset:0}
+@media (min-aspect-ratio:3/4){.sd-nuit .sd-bg1{filter:blur(3px) brightness(.55)}}
+.sd-nuit .sd-card{width:min(76vw,350px,calc((100svh - 190px) * .747));aspect-ratio:1084/1451;animation:sd-float 6s ease-in-out infinite}
+.sd-nuit.is-flipped .sd-card{animation:sd-lift 1.4s cubic-bezier(.3,.05,.25,1) both}
+@keyframes sd-float{50%{translate:0 -6px}}
+@keyframes sd-lift{0%{translate:0 0;scale:1}40%{translate:0 -26px;scale:1.06}100%{translate:0 0;scale:1}}
+.sd-nuit .sd-face{border-radius:4px;background:center/100% 100% no-repeat;box-shadow:0 34px 60px -20px rgba(0,0,0,.9),0 0 0 1px rgba(0,0,0,.6)}
+.sd-nuit .sd-back{background-image:url(/img/std-nuit-carte-dos.webp);color:#FFE7A3}
+.sd-nuit .sd-front{background-image:url(/img/std-nuit-carte-face.webp)}
+/* reflet qui glisse sur la carte au repos */
+.sd-nuit .sd-back::after{content:"";position:absolute;inset:0;border-radius:4px;background:linear-gradient(115deg,transparent 35%,rgba(255,236,190,.16) 48%,transparent 60%) 0 0/260% 100%;animation:sd-gloss 5.5s ease-in-out infinite;pointer-events:none}
+@keyframes sd-gloss{0%,30%{background-position:120% 0}70%,100%{background-position:-60% 0}}
+/* anneau de la photo : centre (49 %, 46,9 %), diamètre 73 % de la largeur */
+.sd-nuit .sd-back .sd-in{position:absolute;left:49%;top:46.9%;width:73%;aspect-ratio:1;translate:-50% -50%;display:grid;place-items:center;align-content:center;gap:6px}
+.sd-nuit .sd-back .sd-mono{font-size:clamp(3rem,15vw,4.2rem)}
+.sd-nuit .sd-back small{font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;padding-left:.4em;color:#E9CC8A}
+.sd-nuit .sd-front .sd-in{position:absolute;inset:6% 7%;display:grid;place-items:center;align-content:center;gap:10px}
+.sd-nuit .sd-back .sd-mono,.sd-nuit .sd-names,.sd-nuit .sd-engrave b,.sd-nuit .sd-engrave span{background:linear-gradient(110deg,#A9772A 15%,#FFF3C8 35%,#D8A64A 50%,#FFE7A3 65%,#A9772A 85%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+/* La date se grave : les prénoms apparaissent, puis la date se découvre de gauche à droite avec un reflet d'or */
+.sd-nuit .sd-front .sd-in>*{opacity:0;transition:opacity .8s ease}
+.sd-nuit.is-flipped .sd-front .sd-in>*{opacity:1}
+.sd-nuit.is-flipped .sd-front .sd-k{transition-delay:.7s}
+.sd-nuit.is-flipped .sd-front .sd-names{transition-delay:.9s}
+.sd-nuit.is-flipped .sd-front .sd-time{transition-delay:2.2s}
+.sd-nuit .sd-engrave{clip-path:inset(0 100% 0 0)}
+.sd-nuit.is-flipped .sd-engrave{animation:sd-engrave 1.3s 1.2s cubic-bezier(.5,0,.3,1) forwards}
+.sd-nuit.is-flipped .sd-engrave b,.sd-nuit.is-flipped .sd-engrave span,.sd-nuit.is-flipped .sd-names{animation:sd-shine 4s 1.4s linear infinite}
+.sd.is-instant .sd-front .sd-in>*,.sd-still .sd-front .sd-in>*{transition:none!important}
+.sd.is-instant .sd-engrave,.sd-still .sd-engrave{clip-path:none!important;animation:none!important}
+@keyframes sd-engrave{to{clip-path:inset(0 0 0 0)}}
+@keyframes sd-shine{to{background-position:-260% 0}}
+.sd-nuit .sd-hint,.sd-nuit .sd-cue{color:#F3D894}
+
+/* ---------- Le domaine : vraie étiquette de lin (photo détourée, ruban compris) pendue au clou du mur ---------- */
+.sd-domaine .sd-bg{background:#ece0c9}
+.sd-domaine .sd-bg1{inset:0;background-image:url(/img/std-domaine-mur.webp)}
+/* écran large : le mur garde toute sa hauteur au centre, fondu sur les côtés, sur le même enduit flouté */
+.sd-domaine.is-wide .sd-bg::before{content:"";position:absolute;inset:-30px;background:url(/img/std-domaine-mur.webp) center 70%/cover;filter:blur(14px) brightness(1.02)}
+.sd-domaine.is-wide .sd-bg1{left:50%;right:auto;width:calc(100vh * 941 / 1672);translate:-50% 0;background-size:100% 100%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent);mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent)}
+.sd-domaine .sd-bg2{background:linear-gradient(rgba(250,246,238,.55),rgba(250,246,238,.72)),url(/img/domaine-facade.webp) center/cover;filter:blur(6px);opacity:0;transform:scale(1.06)}
+.sd-domaine.is-flipped .sd-bg2{opacity:1}
+.sd-domaine.is-flipped .sd-bg1,.sd-domaine.is-flipped .sd-bg::before{opacity:.35}
+.sd-domaine .sd-stage{display:block}
+/* l'étiquette pend sous la tête du clou : image 640 × 1140, ruban en haut, œillet à 28,9 % */
+.sd-hang{--pull:0;position:absolute;left:var(--nx,50%);top:var(--ny,12svh);width:min(78vw,330px,calc((100svh - var(--ny,12svh) - 96px) * .5614));translate:-50% 0;transform-origin:50% 0;animation:sd-sway 5s ease-in-out infinite;perspective:1400px}
+.sd-hang.is-pull{animation-play-state:paused}
+.sd-domaine.is-flipped .sd-hang{animation:sd-swing 2.2s cubic-bezier(.3,.1,.3,1) both}
+@keyframes sd-sway{0%,100%{rotate:-1.1deg}50%{rotate:1.1deg}}
+@keyframes sd-swing{0%{rotate:0deg}25%{rotate:4deg}50%{rotate:-2.5deg}75%{rotate:1deg}100%{rotate:0deg}}
+.sd-tag{width:100%;aspect-ratio:640/1140;transform-origin:50% 0;scale:1 calc(1 + var(--pull) * .05);transition:scale .35s cubic-bezier(.3,1.4,.5,1);filter:drop-shadow(0 18px 16px rgba(80,60,30,.22))}
+.sd-hang.is-pull .sd-tag{transition:none}
+.sd-domaine .sd-face{background:center/100% 100% no-repeat}
+.sd-domaine .sd-back{background-image:url(/img/std-domaine-etiquette-dos.webp)}
+.sd-domaine .sd-front{background-image:url(/img/std-domaine-etiquette.webp)}
+/* zone écrite : sous l'œillet, dans le corps de l'étiquette (20 % → 98 % de la hauteur, 4 % → 95 % de la largeur) */
+.sd-domaine .sd-in{position:absolute;left:9%;right:9%;top:35%;bottom:6%;display:grid;place-items:center;align-content:center;gap:6px;text-align:center}
+.sd-nailhead{position:absolute;z-index:3;left:var(--nx,50%);top:var(--nh,10svh);width:var(--nd,36px);height:var(--nd,36px);translate:-50% -50%;background:url(/img/std-domaine-clou.png) center/100% 100%;pointer-events:none;transition:opacity 1.2s}
+.sd-domaine.is-flipped .sd-nailhead{filter:drop-shadow(0 2px 3px rgba(60,40,15,.35))}
+.sd-domaine .sd-back .sd-mono{font-size:clamp(2.8rem,13vw,3.4rem);color:#3E3122}
+.sd-domaine .sd-back hr{width:46px;border:0;border-top:1px solid var(--gold);margin:4px 0}
+.sd-domaine .sd-back small{font-size:.64rem;letter-spacing:.36em;text-transform:uppercase;padding-left:.36em;color:#8a6a32}
+.sd-domaine .sd-front .sd-names{color:#3E3122;font-size:clamp(1.9rem,8.6vw,2.5rem)}
+.sd-domaine .sd-front .sd-k{color:#8a6a32}
+.sd-domaine .sd-front .sd-time{color:#6b5a42}
+.sd-domaine .sd-engrave b,.sd-domaine .sd-engrave span{background:linear-gradient(110deg,#6e5222 10%,#a8884f 40%,#7d5f2c 60%,#b8975a 80%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sd-domaine .sd-engrave b{font-size:clamp(3.6rem,17vw,4.6rem)}
+.sd-domaine .sd-front .sd-in>*{opacity:0;transform:translateY(6px);transition:opacity .9s ease,transform .9s ease}
+.sd-domaine.is-flipped .sd-front .sd-in>*{opacity:1;transform:none}
+.sd-domaine.is-flipped .sd-front .sd-k{transition-delay:.9s}
+.sd-domaine.is-flipped .sd-front .sd-names{transition-delay:1.1s}
+.sd-domaine.is-flipped .sd-front .sd-engrave{transition-delay:1.4s}
+.sd-domaine.is-flipped .sd-front .sd-time{transition-delay:1.8s}
+.sd-domaine .sd-hint,.sd-domaine .sd-cue{color:#6b5a42}
+
+/* ---------- La suite (courte) ---------- */
+.sd-main{position:relative;z-index:1;display:grid;gap:18px;padding:10px 16px 0;max-width:560px;margin:0 auto;box-sizing:border-box}
+.sd-sec{display:grid;justify-items:center;gap:10px;text-align:center;padding:30px 20px;border-radius:18px;background:var(--card);box-shadow:0 0 0 1px var(--line),0 20px 40px -24px rgba(0,0,0,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.sd-sec h2{margin:0;font:400 clamp(2rem,9vw,2.6rem)/1.1 "Pinyon Script",cursive;color:var(--gold2)}
+.sd-domaine .sd-sec h2{font:500 clamp(1.6rem,7vw,2rem)/1.2 "Cormorant Garamond",Georgia,serif;color:var(--ink)}
+.sd-note,.sd-intro{margin:0;max-width:32ch;font:italic 400 1.12rem/1.5 "Cormorant Garamond",Georgia,serif;color:var(--muted)}
+.sd-photo{background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding-top:44px}
+.sd-frame{display:grid;place-items:center;width:min(62vw,250px);aspect-ratio:4/5;overflow:hidden;color:var(--gold)}
+.sd-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.sd-nuit .sd-frame{border-radius:50%;box-shadow:0 0 0 2px #D9B46A,0 0 0 8px rgba(20,10,6,.7),0 0 0 9px rgba(217,180,106,.45),0 24px 50px -10px rgba(0,0,0,.8);background:#1a0d06}
+.sd-domaine .sd-frame{border-radius:999px 999px 6px 6px;border:10px solid #f6efe2;box-shadow:0 0 0 1px var(--gold),0 22px 40px -16px rgba(80,60,30,.45);background:#efe6d5}
+.sd-count{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;max-width:340px}
+.sd-count span{display:grid;gap:3px;padding:12px 4px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--line)}
+.sd-count b{font:400 1.9rem/1 "Italiana",serif;color:var(--gold2)}
+.sd-domaine .sd-count b{color:var(--gold)}
+.sd-count i{font-style:normal;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.sd-btn{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:12px 20px;border-radius:999px;background:linear-gradient(120deg,#b8955e,#e8d0a0 50%,#c09a5e);color:#2a1a0c;text-decoration:none;font-size:.82rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
+.sd-btn.ghost{background:transparent;color:var(--gold2);box-shadow:inset 0 0 0 1px var(--line)}
+.sd-domaine .sd-btn.ghost{color:var(--ink)}
+.sd-btn svg,.sd-snd svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.sd-footer{display:grid;justify-items:center;gap:4px;padding:30px 0 calc(30px + env(safe-area-inset-bottom,0px));text-align:center}
+.sd-footer p{margin:0;font:400 2rem/1.1 "Pinyon Script",cursive;color:var(--gold2)}
+.sd-domaine .sd-footer p{color:var(--ink)}
+.sd-footer p i{font-style:normal;font-size:.7em}
+.sd-footer .sd-footer-date{font:400 .78rem/1.4 "Jost",sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.sd-replay{margin-top:10px;padding:6px 12px;border:0;background:none;color:var(--muted);font:inherit;font-size:.8rem;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.sd-snd{position:fixed;z-index:5;top:max(14px,env(safe-area-inset-top));right:14px;width:40px;height:40px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:rgba(20,10,6,.45);color:#F3D894;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.sd-domaine .sd-snd{background:rgba(250,246,238,.7);color:var(--ink)}
+.sd-snd[hidden]{display:none}
+.sd-rv{opacity:0;translate:0 26px;transition:opacity .9s ease,translate .9s cubic-bezier(.2,.8,.2,1)}
+.sd-rv.is-in{opacity:1;translate:0 0}
+.sd-still .sd-rv{opacity:1;translate:none;transition:none}
+.sd-still .sd-card,.sd-still .sd-hang{animation:none!important}
+@media (max-height:640px){.sd-engrave b{font-size:3.6rem}.sd-names{font-size:2rem}}
+@media (prefers-reduced-motion:reduce){.sd-card,.sd-hang,.sd-hint,.sd-cue i{animation:none!important}.sd-flip{transition-duration:.01s}.sd-rv{opacity:1;translate:none}}

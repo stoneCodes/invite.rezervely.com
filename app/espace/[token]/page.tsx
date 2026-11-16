@@ -16,7 +16,10 @@ import PdfDownloadButton from "./PdfDownloadButton";
 import PublishButton from "./PublishButton";
 import { displayNames } from "@/lib/types";
 import { reviewOf } from "@/lib/reviews";
-import { formatPrice, getPriceCents, needsPayment, paymentsOn, pdfAllowed as canPdf } from "@/lib/payment";
+import { getPrices, needsPayment, packCovers, paymentsOn, pdfAllowed as canPdf } from "@/lib/payment";
+import { money, otherFormatDefault, packAvailable, singlePrice } from "@/lib/prices";
+import { packPartner } from "@/lib/pack";
+import { formatOf, pairOf } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,7 +39,14 @@ export default async function Espace({ params, searchParams }: { params: Promise
   const pdfAllowed = await canPdf(inv);
   const payOn = await paymentsOn();
   const needPay = inv.status !== "published" && await needsPayment(inv);
-  const price = needPay ? formatPrice(lang, await getPriceCents()) : null;
+  const prices = needPay ? await getPrices() : null;
+  const price = prices ? money(lang, singlePrice(prices, inv.template)) : null;
+  const plans = prices && packAvailable(inv.template) ? { template: inv.template, prices } : null;
+  // Pack : cet article l'a payé (proposer de créer le 2e) ou il en est le 2e (le dire).
+  const otherStd = formatOf(inv.template) !== "std";
+  const partner = inv.plan === "pack" && inv.paid_at ? await packPartner(inv) : null;
+  const fromPack = !!inv.pack_from && await packCovers(inv);
+  const packTpl = pairOf(inv.template) ?? otherFormatDefault(inv.template);
   const { data } = await db().from("rsvps").select("*").eq("invitation_id", inv.id).order("created_at", { ascending: false });
   const rsvps = (data ?? []) as Rsvp[];
   const yes = rsvps.filter((r) => r.attending);
@@ -73,6 +83,7 @@ export default async function Espace({ params, searchParams }: { params: Promise
           )}
           {inv.status !== "published" ? (
             <PublishButton token={token} needPay={needPay} label={price ? t.pay.publish(price) : t.editor.publish}
+              labelPack={prices ? t.pay.publish(money(lang, prices.pack)) : undefined} plans={plans}
               copy={{ accept: t.legal.accept, cgv: t.legal.cgv, acceptRequired: t.legal.acceptRequired, fail: t.editor.msgPublishFail, redirect: t.pay.redirect, done: s.publishedNow }}
               extra={<><Link className="btn-s ghost" href={`/creer?edit=${token}`}>{s.edit}</Link><Link className="btn-s ghost" href={`/espace/${token}/voir`}>{s.see}</Link></>} />
           ) : (
@@ -82,6 +93,16 @@ export default async function Espace({ params, searchParams }: { params: Promise
             </div>
           )}
         </section>
+
+        {inv.plan === "pack" && inv.paid_at && (
+          <section className="card-s sp-pack">
+            <div><strong>{s.packOwed(otherStd)}</strong>{!partner && <p className="muted" style={{ margin: "4px 0 0", fontSize: ".88rem" }}>{s.packHelp}</p>}</div>
+            {partner
+              ? <Link className="btn-s ghost" href={`/espace/${partner.edit_token}`}>{s.packOpen(otherStd)}</Link>
+              : <Link className="btn-s" href={`/creer?pack=${token}${packTpl ? `&t=${packTpl}` : ""}`}>{s.packCreate(otherStd)}</Link>}
+          </section>
+        )}
+        {fromPack && <p className="muted" style={{ margin: 0, fontSize: ".88rem" }}>{s.packFrom}</p>}
 
         {askReview && (
           <section className="card-s" style={{ padding: 20, display: "flex", gap: 14, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>

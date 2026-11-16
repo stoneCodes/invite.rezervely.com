@@ -6,6 +6,9 @@ export const CATEGORIES = [
   { id: "baby-shower" },
 ] as const;
 export type CategoryId = (typeof CATEGORIES)[number]["id"];
+/** Deux blocs dans la galerie (16 nov. 2026, demandé par Glad) : les invitations et les save the date, chacun avec les mêmes catégories. */
+export const FORMATS = [{ id: "invitation" }, { id: "std" }] as const;
+export type FormatId = (typeof FORMATS)[number]["id"];
 
 type PhoneSpec = {
   screen: string;
@@ -37,6 +40,10 @@ export const TEMPLATES = [
   { id: "pinata", name: "La piñata", tagline: "Trois coups sur la piñata, et chaque section tombe dans un bonbon à déballer", cover: "/img/phone-pinata.webp", categories: ["anniversaire"], featured: true, kids: true, phone: { screen: "/img/phone-pinata.webp", names: { top: 78, size: 13 }, hint: { top: 88.5 }, seal: null, ink: "#5a2140", font: "serif" } },
   // Baby shower (docs/baby-shower.md) : un ou deux parents (partner2 facultatif), données propres dans data.baby.
   { id: "livre", name: "Il était une fois", tagline: "Un livre pop-up en papier découpé : on tourne les pages, et chaque scène se déplie en relief", cover: "/img/phone-livre.webp", categories: ["baby-shower"], featured: true, phone: { screen: "/img/phone-livre.webp", names: { top: 43, size: 12 }, hint: { top: 88 }, seal: null, ink: "#8a6534", font: "script" } },
+  // Save the date (16 nov. 2026, demandé par Glad) : modèles à part, chacun assorti à une invitation (`pair`) dont il garde l'identité
+  // (couleurs, matières, typographie) avec une autre ouverture. Version courte : prénoms, photo, date, compte à rebours, agenda, « à suivre ».
+  { id: "std-nuit-doree", name: "Nuit dorée · Save the date", tagline: "Une carte noir et or se retourne et la date se grave en lettres d'or", cover: "/img/2a-enveloppe.webp", categories: ["mariage"], format: "std", featured: true, pair: "nuit-doree", phone: { screen: "/img/phone-std-nuit-doree.webp", names: { top: 75, size: 12 }, hint: { top: 82 }, seal: { top: 40.1, left: 49.2, d: 34, ink: "#F3D894" }, ink: "#F3D894", font: "script" } },
+  { id: "std-domaine", name: "Le domaine · Save the date", tagline: "Une étiquette de lin nouée d'un ruban se retourne sur le mur ivoire du domaine", cover: "/img/domaine-mur.webp", categories: ["mariage"], format: "std", featured: true, pair: "boule-neige", phone: { screen: "/img/phone-std-domaine.webp", names: { top: 77, size: 12 }, hint: { top: 84 }, seal: { top: 48.6, left: 50, d: 30, ink: "#3E3122" }, ink: "#5a4630", font: "script" } },
 ] as const;
 
 export type TemplateId = (typeof TEMPLATES)[number]["id"];
@@ -48,6 +55,17 @@ export const isBirthday = (id: string | null | undefined) => TEMPLATES.some((t) 
 export const isKids = (id: string | null | undefined) => TEMPLATES.some((t) => t.id === id && "kids" in t && t.kids);
 /** Baby shower (un ou deux parents, data.baby, pas de verset ni d'histoire). */
 export const isBaby = (id: string | null | undefined) => TEMPLATES.some((t) => t.id === id && (t.categories as readonly string[]).includes("baby-shower"));
+/** Save the date (catégorie à part, version courte sans réponse). */
+export const isStd = (id: string | null | undefined) => TEMPLATES.some((t) => t.id === id && "format" in t && t.format === "std");
+/** Bloc de la galerie d'un modèle : « invitation » ou « std » (save the date). */
+export const formatOf = (id: string | null | undefined): FormatId => (isStd(id) ? "std" : "invitation");
+/** Invitation assortie à un save the date (même identité), ou save the date assorti à une invitation. */
+export const pairOf = (id: string | null | undefined): TemplateId | null => {
+  const t = TEMPLATES.find((x) => x.id === id);
+  if (t && "pair" in t) return t.pair as TemplateId;
+  const s = TEMPLATES.find((x) => "pair" in x && x.pair === id);
+  return s ? s.id : null;
+};
 /** « La dot » : pagne des mariés, phrase des familles. */
 export const isDot = (id: string | null | undefined) => id === "dot";
 /** Prénoms affichés : « Léa & Samuel », ou un seul prénom pour un anniversaire. */
@@ -142,6 +160,8 @@ export type InvitationData = {
   wishlist?: Wishlist;
   /** Choix du repas et des boissons proposé aux invités présents (tous les modèles, lib/meal.ts). */
   meal?: import("./meal").Meal;
+  /** Save the date seulement : petit mot sous « L'invitation arrive bientôt » (vide = texte par défaut). */
+  std?: { note: string };
   /** Musique de fond : id d'un morceau de la bibliothèque (/api/musiques), "none" = sans musique, absent = musique par défaut de la catégorie. */
   music?: string;
 };
@@ -169,4 +189,8 @@ export type InvitationRow = {
   stripe_session_id?: string | null;
   comped_at?: string | null;
   pdf_granted_at?: string | null;
+  /** Formules (migration 018) : "pack" = payé avec le pack save the date + invitation. */
+  plan?: "single" | "pack" | null;
+  /** 2e article d'un pack : id de l'article qui a payé le pack. */
+  pack_from?: string | null;
 };

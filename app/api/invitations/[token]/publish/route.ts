@@ -1,7 +1,7 @@
 import { getLang, getT } from "@/lib/i18n/server";
 import { NextResponse, after } from "next/server";
 import { publishedEmail, sendEmail } from "@/lib/email";
-import { createCheckout, needsPayment } from "@/lib/payment";
+import { createCheckout, needsPayment, packCovers } from "@/lib/payment";
 import { getByToken, siteUrl } from "@/lib/supabase";
 import { updateOnPublish } from "@/lib/publish";
 import { invitePath } from "@/lib/slug";
@@ -17,14 +17,17 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
     const body = await req.json().catch(() => ({}));
     if (body?.acceptTerms !== true) return NextResponse.json({ error: t.legal.acceptRequired }, { status: 400 });
     try {
-      return NextResponse.json({ checkoutUrl: await createCheckout(inv, await getLang()) });
+      return NextResponse.json({ checkoutUrl: await createCheckout(inv, await getLang(), body?.plan === "pack" ? "pack" : "single") });
     } catch (e) {
       console.error("stripe.checkout", e instanceof Error ? e.message : e);
       return NextResponse.json({ error: t.pay.unavailable }, { status: 502 });
     }
   }
   // Première publication : l'invitation reçoit son lien lisible définitif (lea-et-samuel-k7m2).
-  const { slug, error } = await updateOnPublish(inv, { status: "published", published_at: inv.published_at ?? new Date().toISOString() });
+  // 2e article d'un pack déjà payé : publié sans payer, marqué payé (0 €) pour le PDF et l'admin.
+  const now = new Date().toISOString();
+  const pack = !inv.paid_at && !inv.published_at && await packCovers(inv);
+  const { slug, error } = await updateOnPublish(inv, { status: "published", published_at: inv.published_at ?? now, ...(pack ? { paid_at: now, paid_amount_cents: 0 } : {}) });
   if (error) return NextResponse.json({ error: t.api.publishFail }, { status: 500 });
   // Première publication seulement (pas à chaque mise à jour).
   if (!inv.published_at && inv.owner_email) { const to = inv.owner_email; after(() => sendEmail({ to, ...publishedEmail(inv.owner_lang, inv.data, inv.edit_token, slug) })); }

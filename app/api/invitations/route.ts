@@ -1,6 +1,7 @@
 import { getLang, getT } from "@/lib/i18n/server";
 import { NextResponse, after } from "next/server";
-import { db, newEditToken, newSlug } from "@/lib/supabase";
+import { db, getByToken, newEditToken, newSlug } from "@/lib/supabase";
+import { packClaimable } from "@/lib/pack";
 import { isTemplate, sanitizeData } from "@/lib/validate";
 import { cleanEmail, sendEmail, welcomeEmail } from "@/lib/email";
 
@@ -13,7 +14,10 @@ export async function POST(req: Request) {
   const owner = cleanEmail(body.email);
   if (!owner) return NextResponse.json({ error: t.api.emailRequired }, { status: 400 });
   const data = sanitizeData(body.data, body.template);
-  const row ={ slug: newSlug(), edit_token: newEditToken(), template: body.template, data, owner_email: owner, owner_lang: lang };
+  // 2e article d'un pack : rattaché à l'article qui a payé le pack (jeton de son espace), s'il n'a pas déjà servi.
+  const src = typeof body.pack === "string" && body.pack.length < 100 ? await getByToken(body.pack) : null;
+  const packFrom = src && await packClaimable(src, body.template) ? src.id : null;
+  const row = { slug: newSlug(), edit_token: newEditToken(), template: body.template, data, owner_email: owner, owner_lang: lang, ...(packFrom ? { pack_from: packFrom } : {}) };
   const { error } = await db().from("invitations").insert(row);
   if (error) { console.error("invitations.insert", error.code, error.message); return NextResponse.json({ error: t.api.saveFail }, { status: 500 }); }
   // L'e-mail part après la réponse : l'enregistrement n'attend pas Brevo.

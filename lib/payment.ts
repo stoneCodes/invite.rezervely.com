@@ -7,14 +7,15 @@ import { updateOnPublish } from "./publish";
 import { publishedEmail, sendEmail } from "./email";
 import { siteDict } from "./i18n/site";
 import { getAdminSetting } from "./admin/settings";
+import { DEFAULT_PRICES, money, packAvailable, readPrices, singlePrice, type Plan, type Prices } from "./prices";
+import { formatOf } from "./types";
 
 /* Paiement Stripe Checkout, appelé directement par l'API REST (pas de SDK : le site reste léger sur Cloudflare).
-   Prix unique par invitation, payé à la première publication ; modifications et republications gratuites ensuite. */
+   Payé à la première publication ; modifications et republications gratuites ensuite.
+   Formules (lib/prices.ts) : save the date seul, invitation seule, ou pack save the date + invitation :
+   le pack est payé sur le 1er article publié (plan = "pack"), le 2e (pack_from) se publie ensuite sans payer. */
 
-export const PRICE_CENTS = 990;
 export const CURRENCY = "eur";
-const MIN_PRICE_CENTS = 50;
-const MAX_PRICE_CENTS = 1_000_000;
 
 const clean = (v?: string) => v?.trim().replace(/^["']|["']$/g, "").trim() || "";
 export async function paymentsOn(): Promise<boolean> {
@@ -22,15 +23,21 @@ export async function paymentsOn(): Promise<boolean> {
   return typeof saved === "boolean" ? saved : clean(process.env.PAYMENTS_ENABLED) === "true";
 }
 
-/** Prix en centimes, configurable depuis l'administration ; le défaut reste 9,90 €. */
-export async function getPriceCents(): Promise<number> {
-  const saved = await getAdminSetting<unknown>("price_cents");
-  return typeof saved === "number" && Number.isInteger(saved) && saved >= MIN_PRICE_CENTS && saved <= MAX_PRICE_CENTS ? saved : PRICE_CENTS;
+/** Prix des trois formules en centimes, réglables depuis l'administration (settings.prices). */
+export async function getPrices(): Promise<Prices> {
+  return readPrices(await getAdminSetting<unknown>("prices"));
 }
 
-/** Le paiement est-il exigé avant de publier cette invitation ? (déjà publiée avant le paiement = gratuite) */
-export async function needsPayment(inv: Pick<InvitationRow, "paid_at" | "published_at">) {
-  return await paymentsOn() && !inv.paid_at && !inv.published_at;
+/** 2e article d'un pack : l'article qui a payé le pack existe, a bien été payé en pack, et il est de l'autre format. */
+export async function packCovers(inv: Pick<InvitationRow, "template"> & { pack_from?: string | null }): Promise<boolean> {
+  if (!inv.pack_from) return false;
+  const { data } = await db().from("invitations").select("template, plan, paid_at").eq("id", inv.pack_from).maybeSingle<{ template: string; plan: string | null; paid_at: string | null }>();
+  return !!data && data.plan === "pack" && !!data.paid_at && formatOf(data.template) !== formatOf(inv.template);
+}
+
+/** Le paiement est-il exigé avant de publier cette invitation ? (déjà publiée avant le paiement, ou couverte par un pack = gratuite) */
+export async function needsPayment(inv: Pick<InvitationRow, "paid_at" | "published_at" | "template"> & { pack_from?: string | null }) {
+  return await paymentsOn() && !inv.paid_at && !inv.published_at && !(await packCovers(inv));
 }
 
 /** Liste des invités en PDF : payée, offerte, accordée depuis l'admin, ou publiée tant que les paiements sont désactivés
@@ -40,8 +47,8 @@ export async function pdfAllowed(inv: Pick<InvitationRow, "paid_at" | "status"> 
   return inv.status === "published" && !(await paymentsOn());
 }
 
-export function formatPrice(lang: Lang, cents = PRICE_CENTS) {
-  return new Intl.NumberFormat(lang === "en" ? "en-IE" : "fr-FR", { style: "currency", currency: CURRENCY }).format(cents / 100);
+export function formatPrice(lang: Lang, cents = DEFAULT_PRICES.invitation) {
+  return money(lang, cents);
 }
 
 /** Appel de l'API Stripe (formulaire encodé, comme l'attend Stripe). */
@@ -95,25 +102,29 @@ export async function createPromotionCode(input: {
 }
 
 /** Crée la page de paiement Stripe pour cette invitation et renvoie son adresse. */
-export async function createCheckout(inv: InvitationRow, lang: Lang): Promise<string> {
+export async function createCheckout(inv: InvitationRow, lang: Lang, wanted: Plan = "single"): Promise<string> {
   const p = siteDict(lang).pay;
   const base = siteUrl();
-  const priceCents = await getPriceCents();
+  const prices = await getPrices();
+  const plan: Plan = wanted === "pack" && packAvailable(inv.template) ? "pack" : "single";
+  const priceCents = plan === "pack" ? prices.pack : singlePrice(prices, inv.template);
   const names = [inv.data.partner1, inv.data.partner2].filter(Boolean).join(" & ");
+  const product = plan === "pack" ? p.productPack(names) : formatOf(inv.template) === "std" ? p.productStd(names) : p.product(names);
   const s = await stripe<Session>("checkout/sessions", {
     mode: "payment",
     "line_items[0][quantity]": "1",
     "line_items[0][price_data][currency]": CURRENCY,
     "line_items[0][price_data][unit_amount]": String(priceCents),
-    "line_items[0][price_data][product_data][name]": p.product(names),
-    "line_items[0][price_data][product_data][description]": p.productDesc,
+    "line_items[0][price_data][product_data][name]": product,
+    "line_items[0][price_data][product_data][description]": plan === "pack" ? p.productPackDesc : p.productDesc,
     ...(inv.owner_email ? { customer_email: inv.owner_email } : {}),
     client_reference_id: inv.id,
     "metadata[token]": inv.edit_token,
     "metadata[invitation_id]": inv.id,
+    "metadata[plan]": plan,
     // Preuve de l'acceptation des CGV et de la renonciation au droit de rétractation (case cochée dans l'éditeur).
     "metadata[terms_accepted_at]": new Date().toISOString(),
-    "payment_intent_data[description]": p.product(names),
+    "payment_intent_data[description]": product,
     locale: lang,
     allow_promotion_codes: "true",
     success_url: `${base}/api/stripe/retour?session_id={CHECKOUT_SESSION_ID}`,
@@ -138,7 +149,7 @@ export async function applyPaidSession(s: Session): Promise<{ token: string } | 
   // Publication + lien lisible définitif, une seule fois même si le retour et le webhook arrivent ensemble.
   const { slug, updated } = await updateOnPublish(
     inv,
-    { paid_at: now, paid_amount_cents: s.amount_total, stripe_session_id: s.id, status: "published", published_at: inv.published_at ?? now },
+    { paid_at: now, paid_amount_cents: s.amount_total, stripe_session_id: s.id, status: "published", published_at: inv.published_at ?? now, ...(s.metadata?.plan === "pack" ? { plan: "pack" } : {}) },
     { onlyIfUnpaid: true },
   );
   if (updated && !inv.published_at && inv.owner_email) {

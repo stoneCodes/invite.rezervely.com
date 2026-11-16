@@ -4,7 +4,7 @@
 .ed-form h1{font-size:2.6rem;margin:0}
 .ed select option{background:#F9F6EF;color:var(--ink)}
 .ed input[type=checkbox]{accent-color:#C99A4B}
-.ed fieldset{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px 18px 18px;display:grid;gap:12px;margin:0;min-width:0}
+.ed fieldset{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:16px 18px 18px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:0;min-width:0}
 .ed legend{font:500 .72rem/1 var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--accent);padding:0 6px}
 /* Sections repliables : la carte devient le <details>, le titre est le <summary>. */
 .ed-sec{border:1px solid rgba(190,160,105,.38);border-radius:16px;background:var(--card);min-width:0;overflow:hidden;box-shadow:0 14px 30px -24px rgba(80,58,28,.5)}

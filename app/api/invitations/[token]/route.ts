@@ -3,6 +3,7 @@ import { NextResponse, after } from "next/server";
 import { db, getByToken } from "@/lib/supabase";
 import { isTemplate, sanitizeData } from "@/lib/validate";
 import { cleanEmail, sendEmail, welcomeEmail } from "@/lib/email";
+import { packCovers } from "@/lib/payment";
 
 type Ctx = { params: Promise<{ token: string }> };
 
@@ -10,7 +11,8 @@ export async function GET(_req: Request, { params }: Ctx) {
   const t = await getT();
   const inv = await getByToken((await params).token);
   if (!inv) return NextResponse.json({ error: t.api.notFound }, { status: 404 });
-  return NextResponse.json({ slug: inv.slug, template: inv.template, data: inv.data, status: inv.status, email: inv.owner_email, paid: !!inv.paid_at });
+  // pack : cet article est le 2e d'un pack déjà payé (publication sans paiement) ; plan : formule payée.
+  return NextResponse.json({ slug: inv.slug, template: inv.template, data: inv.data, status: inv.status, email: inv.owner_email, paid: !!inv.paid_at, pack: await packCovers(inv), plan: inv.plan ?? null });
 }
 
 export async function PUT(req: Request, { params }: Ctx) {

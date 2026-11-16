@@ -4,9 +4,10 @@ import { recordAdminEvent, updateAdminEvent } from "@/lib/admin/audit";
 import { setAdminSetting } from "@/lib/admin/settings";
 import { createPromotionCode, paymentsOn as getPaymentsOn, stripeKeyStatus } from "@/lib/payment";
 import adminFr from "@/lib/i18n/admin-fr";
+import { validPrices } from "@/lib/prices";
 
 export const dynamic = "force-dynamic";
-type Body = { action?: unknown; priceCents?: unknown; enabled?: unknown; code?: unknown; kind?: unknown; value?: unknown; expires?: unknown; maxRedemptions?: unknown };
+type Body = { action?: unknown; prices?: unknown; priceCents?: unknown; enabled?: unknown; code?: unknown; kind?: unknown; value?: unknown; expires?: unknown; maxRedemptions?: unknown };
 const fail=(status:number)=>NextResponse.json({error:adminFr.formError},{status});
 export async function POST(req:Request){
   const actor=await requireAdmin();
@@ -21,6 +22,15 @@ export async function POST(req:Request){
       const eventId=await recordAdminEvent({actor,action:adminFr.savePriceAction,details:{stage:"started",priceCents:cents}});
       try{await setAdminSetting("price_cents",cents);await updateAdminEvent(eventId,{stage:"completed",priceCents:cents});}
       catch(error){await updateAdminEvent(eventId,{stage:"failed",priceCents:cents});throw error;}
+      return NextResponse.json({ok:true});
+    }
+    if(body.action==="prices"){
+      const prices=body.prices;
+      if(!validPrices(prices))return fail(400);
+      const value={std:prices.std,invitation:prices.invitation,pack:prices.pack};
+      const eventId=await recordAdminEvent({actor,action:adminFr.savePriceAction,details:{stage:"started",prices:value}});
+      try{await setAdminSetting("prices",value);await updateAdminEvent(eventId,{stage:"completed",prices:value});}
+      catch(error){await updateAdminEvent(eventId,{stage:"failed",prices:value});throw error;}
       return NextResponse.json({ok:true});
     }
     if(body.action==="payments"){

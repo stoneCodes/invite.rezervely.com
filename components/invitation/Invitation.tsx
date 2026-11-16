@@ -14,6 +14,7 @@ import "./gateau/gateau.css";
 import "./pinata/pinata.css";
 import "./livre/livre.css";
 import "./dot/dot.css";
+import "./std/std.css";
 import { useEffect, useRef, useState } from "react";
 import { markup } from "./markup";
 import { inviteDict } from "@/lib/i18n/invite";
@@ -28,6 +29,7 @@ import { mountGateau } from "./gateau/gateau";
 import { mountPinata } from "./pinata/pinata";
 import { mountLivre } from "./livre/livre";
 import { mountDot } from "./dot/dot";
+import { mountStd } from "./std/std";
 import type { InvitationData, TemplateId } from "@/lib/types";
 import { DEMO_PHOTOS } from "@/lib/demoPhotos";
 import { trackRefFor } from "@/lib/musicClient";
@@ -70,6 +72,8 @@ export default function Invitation(input: Props) {
   if (props.template === "gateau") return <OwnEngine {...props} mount={mountGateau} />;
   if (props.template === "pinata") return <OwnEngine {...props} mount={mountPinata} />;
   if (props.template === "dot") return <OwnEngine {...props} mount={mountDot} />;
+  if (props.template === "std-nuit-doree") return <OwnEngine {...props} mount={(r, d, o) => mountStd(r, d, o, "nuit")} />;
+  if (props.template === "std-domaine") return <OwnEngine {...props} mount={(r, d, o) => mountStd(r, d, o, "domaine")} />;
   if (props.template === "livre") return <OwnEngine {...props} mount={mountLivre} />;
   return <ClassicInvitation {...props} />;
 }

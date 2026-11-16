@@ -105,7 +105,7 @@ export function HomeDashboard() {
   );
 }
 
-export function HomeFaq({ price }: { price: string | null }) {
+export function HomeFaq({ price }: { price: { std: string; inv: string; pack: string } | null }) {
   const h = useT().home;
   return (
     <section id="faq" className="gl-faq gl-wave" aria-labelledby="gl-faq-t"><div className="wrap-site">

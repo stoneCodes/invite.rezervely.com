@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import PhoneTemplate from "@/components/PhoneTemplate";
 import { useT } from "@/components/I18n";
-import { CATEGORIES, TEMPLATES, type CategoryId, type TemplateId } from "@/lib/types";
+import { CATEGORIES, FORMATS, TEMPLATES, formatOf, type CategoryId, type FormatId, type TemplateId } from "@/lib/types";
 import type { Lang } from "@/lib/i18n";
 
 export default function TemplateRows({ names, lang, compact = false, noAll = false, marquee = false, paused = false, selected, order, onPreview, onSelect, onCreate }: {
@@ -29,9 +29,11 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
     const own = TEMPLATES.find((item) => item.id === selected)?.categories[0] as CategoryId | undefined;
     return own ?? CATEGORIES[0].id;
   });
+  // Bloc affiché : invitations ou save the date (celui du modèle choisi dans l'éditeur).
+  const [format, setFormat] = useState<FormatId>(() => formatOf(selected));
   const ordered = (ids: TemplateId[]) => selected && ids.includes(selected) ? [selected, ...ids.filter((id) => id !== selected)] : ids;
   const rank = (id: TemplateId) => { const i = order ? order.indexOf(id) : -1; return i < 0 ? 999 + TEMPLATES.findIndex((item) => item.id === id) : i; };
-  const idsFor = (category: CategoryId) => ordered(TEMPLATES.filter((item) => (item.categories as readonly CategoryId[]).includes(category)).map((item) => item.id as TemplateId).sort((a, b) => rank(a) - rank(b)));
+  const idsFor = (category: CategoryId) => ordered(TEMPLATES.filter((item) => formatOf(item.id) === format && (item.categories as readonly CategoryId[]).includes(category)).map((item) => item.id as TemplateId).sort((a, b) => rank(a) - rank(b)));
 
   const card = (id: TemplateId, key: string, clone = false) => (
     <article key={key} className={`ph-card${selected === id ? " is-selected" : ""}`} aria-hidden={clone || undefined}>
@@ -61,6 +63,19 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
   // « Tout » : une rangée par catégorie (plus de « coups de cœur », qui répétaient les modèles). Sinon la seule catégorie choisie.
   const shown = filter === "all" ? CATEGORIES.map(({ id }) => id) : [filter];
   return <div className={`ph-gallery${compact ? " is-compact" : ""}`}>
+    <div className="ph-formats" role="group" aria-label={t.gallery.formatsLabel}>
+      {/* Deux cartes de papeterie (proposition A validée par Glad le 16 nov. 2026) : ivoire à double filet d'or,
+          la carte choisie passe en encre noire et dorure, coins dorés, étiquette « Votre choix ». */}
+      {FORMATS.map(({ id }, i) => <button key={id} type="button" className="ph-fmt" aria-pressed={format === id} onClick={() => setFormat(id)}>
+        <span className="ph-fmt-c" aria-hidden="true" />
+        <span className="ph-fmt-num" aria-hidden="true">{i ? "II" : "I"}</span>
+        <span className="ph-fmt-ico" aria-hidden="true">{FORMAT_ICONS[id]}</span>
+        <span className="ph-fmt-t">{t.gallery.formats[id]}</span>
+        <span className="ph-fmt-s"><span className="ph-long">{t.gallery.formatsSub[id]}</span><span className="ph-short">{t.gallery.formatsSubShort[id]}</span></span>
+        <span className="ph-fmt-l">{t.gallery.formatsList[id]}</span>
+        {format === id && <span className="ph-fmt-ok">{t.gallery.formatChosen}</span>}
+      </button>)}
+    </div>
     <div className="ph-filters" role="group" aria-label={t.gallery.filtersLabel}>
       {!noAll && <button type="button" className="is-all" aria-pressed={filter === "all"} onClick={() => setFilter("all")}>
         <span className="ph-ico" aria-hidden="true">{ICONS.all}</span><span className="ph-lbl">{t.gallery.filters.all}</span>
@@ -79,7 +94,7 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
         const title = filter === "all" ? t.gallery.filters.all : t.gallery.rows[filter];
         return <section className="ph-section" aria-label={title}>
           {ids.length > 0
-            ? <Marquee key={filter} paused={paused} ids={ids} render={card} labels={{ prev: t.gallery.prev, next: t.gallery.next }} />
+            ? <Marquee key={`${format}-${filter}`} paused={paused} ids={ids} render={card} labels={{ prev: t.gallery.prev, next: t.gallery.next }} />
             : <Rail count={0} labels={{ prev: t.gallery.prev, next: t.gallery.next, position: t.gallery.position }}>{soon}</Rail>}
         </section>;
       })()
@@ -94,6 +109,11 @@ const ICONS: Record<CategoryId | "all", React.ReactNode> = {
   mariage: svg(<><circle cx="9" cy="14" r="5.2" /><circle cx="15" cy="14" r="5.2" /><path d="M13.2 6.2 15 4l1.8 2.2L15 8.4z" /></>),
   anniversaire: svg(<><path d="M4.5 20.5h15M5.5 20.5v-6.5a1.5 1.5 0 0 1 1.5-1.5h10a1.5 1.5 0 0 1 1.5 1.5v6.5" /><path d="M5.5 16.2c1.2 1 2.4 1 3.6 0s2.4-1 3.6 0 2.4 1 3.6 0 1.8-.9 2.2-.4" /><path d="M12 12.5V9.3" /><path d="M12 4.2c.9 1 1.2 1.8.9 2.5a1 1 0 0 1-1.8 0c-.3-.7 0-1.5.9-2.5z" /></>),
   "baby-shower": svg(<><path d="M10 4.5h4M10.5 4.5V7M13.5 4.5V7" /><path d="M9 7h6l.6 2.2a4 4 0 0 1 .4 1.8v8a2.5 2.5 0 0 1-2.5 2.5h-3A2.5 2.5 0 0 1 8 19v-8a4 4 0 0 1 .4-1.8z" /><path d="M8 13h3M8 16h2" /></>),
+};
+const FORMAT_ICONS: Record<FormatId, React.ReactNode> = {
+  // Enveloppe au sceau de cire / calendrier noué d'un ruban (trait fin, couleur du texte ; sceau et ruban pleins).
+  invitation: <svg viewBox="0 0 86 86" fill="none" stroke="currentColor" strokeWidth="1.3"><rect x="8" y="22" width="70" height="46" /><path d="M8 22 43 48 78 22" /><path d="M8 68 34 42M78 68 52 42" strokeWidth=".8" opacity=".55" /><circle cx="43" cy="48" r="9.5" fill="currentColor" stroke="none" /><circle cx="43" cy="48" r="6.4" stroke="rgba(0,0,0,.28)" strokeWidth=".7" /><path d="M39.6 48.4c1.2-2.7 5.6-2.7 6.8 0" stroke="rgba(0,0,0,.4)" strokeWidth=".9" /></svg>,
+  std: <svg viewBox="0 0 86 86" fill="none" stroke="currentColor" strokeWidth="1.3"><rect x="16" y="18" width="54" height="54" /><path d="M16 30h54M30 12v12M56 12v12" /><path d="M43 62c-6-3.8-8.4-6.6-8.4-9.4 0-2.1 1.6-3.7 3.7-3.7 1.9 0 3.3.9 4.7 2.6 1.4-1.7 2.8-2.6 4.7-2.6 2.1 0 3.7 1.6 3.7 3.7 0 2.8-2.4 5.6-8.4 9.4z" fill="currentColor" stroke="none" /><path d="M60 66c5 .6 8.6 4 10.4 10-4.4-2.4-7.8-3.2-12-3.2.8-2.6.9-4.6 1.6-6.8zM61.6 66c-2.4 3.6-6.6 5.4-11.8 6 3.4 1.6 6 3.6 7.6 7 1.8-4.4 3.4-8.6 4.2-13z" fill="currentColor" stroke="none" /></svg>,
 };
 /** Rangée de modèles. Sur mobile : un téléphone par écran, glissement au doigt et flèches précédent / suivant. */
 function Rail({ count, labels, children }: { count: number; labels: { prev: string; next: string; position: (i: number, n: number) => string }; children: React.ReactNode }) {

@@ -1,7 +1,8 @@
 import HomeClient from "./HomeClient";
 import { getLang, getT } from "@/lib/i18n/server";
 import { getAdminSetting } from "@/lib/admin/settings";
-import { getPriceCents, paymentsOn } from "@/lib/payment";
+import { getPrices, paymentsOn } from "@/lib/payment";
+import { money } from "@/lib/prices";
 import { getTemplateOrder } from "@/lib/admin/templateOrder";
 import { getPublishedReviews, getReviewStats } from "@/lib/reviews";
 
@@ -11,8 +12,8 @@ export default async function Home() {
   const active=enabled&&promo&&(!promo.expiresAt||promo.expiresAt>Date.now()/1000)&&Number.isFinite(promo.value);
   const label=active?(promo.kind==="percent"?t.home.promoPercent(promo.value):t.home.promoAmount(new Intl.NumberFormat(lang==="en"?"en-IE":"fr-FR",{style:"currency",currency:"EUR"}).format(promo.value/100))):undefined;
   // Prix affiché dans la FAQ seulement si les paiements sont actifs (sinon « gratuit pour le moment »).
-  const cents=enabled?await getPriceCents().catch(()=>null):null;
-  const price=cents?new Intl.NumberFormat(lang==="en"?"en-IE":"fr-FR",{style:"currency",currency:"EUR"}).format(cents/100):null;
+  const p=enabled?await getPrices().catch(()=>null):null;
+  const price=p?{std:money(lang,p.std),inv:money(lang,p.invitation),pack:money(lang,p.pack)}:null;
   // Données structurées FAQPage (Google peut afficher les questions dans ses résultats).
   const faqLd={"@context":"https://schema.org","@type":"FAQPage",mainEntity:t.home.faq(price).map(([q,a])=>({"@type":"Question",name:q,acceptedAnswer:{"@type":"Answer",text:a}}))};
   return <>

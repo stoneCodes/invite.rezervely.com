@@ -1,5 +1,5 @@
 import { MEAL_MAX } from "./meal";
-import { BABY_PALETTES, BABY_SEXES, PALETTES, PLACES, TEMPLATE_IDS, isBaby, isBirthday, isDot, type BabyPaletteId, type BabySex, type InvitationData, type PaletteId, type PlaceId, type TemplateId } from "./types";
+import { BABY_PALETTES, BABY_SEXES, PALETTES, PLACES, TEMPLATE_IDS, isBaby, isBirthday, isDot, isStd, type BabyPaletteId, type BabySex, type InvitationData, type PaletteId, type PlaceId, type TemplateId } from "./types";
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const hex = (v: unknown) => (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v) ? v : undefined);
@@ -65,6 +65,7 @@ export function sanitizeData(input: any, template?: string): InvitationData {
       items: arr(d.wishlist?.items, 20, (x) => ({ name: str(x?.name, 80), url: link(x?.url) })).filter((x) => x.name || x.url),
       fund: link(d.wishlist?.fund),
     },
+    ...(isStd(template) ? { std: { note: str(d.std?.note, 240) } } : {}),
     meal: {
       enabled: d.meal?.enabled === true,
       note: str(d.meal?.note, MEAL_MAX.note),

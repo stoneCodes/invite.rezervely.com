@@ -19,4 +19,7 @@ export const DEMO_PHOTOS: Record<TemplateId, string | null> = {
   pinata: null,
   // Baby shower : couple attendant un bébé (démos seulement).
   livre: "/img/demo-couple-livre.webp",
+  // Save the date : même couple que l'invitation assortie.
+  "std-nuit-doree": "/img/demo-couple-nuit-doree.webp",
+  "std-domaine": "/img/demo-couple-boule-neige.webp",
 };

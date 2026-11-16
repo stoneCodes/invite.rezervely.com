@@ -209,3 +209,7 @@ details[open] .ad-music-chev{rotate:225deg;translate:0 2px}
 .ad-rv-actions .ad-rv-pub{background:linear-gradient(110deg,#D0C1A3,#B9A47A);border-color:#B9A47A;color:#302A20}
 .ad-rv-actions .ad-rv-del{margin-left:auto;border-color:#d9a1a7;color:#8f2f37}
 .ad-rv-actions a{font-size:13.5px}
+
+.ad-price-trio{display:grid;grid-template-columns:auto auto;gap:4px 16px;margin:4px 0 0;align-items:baseline}.ad-price-trio dt{color:#746B63;font-size:13px}.ad-price-trio dd{margin:0;color:#81643A;font:24px Italiana,Georgia,serif;text-align:right}
+.ad-price-hint{margin:0;font-size:13px;line-height:1.5}
+.ad-input-suffix span{white-space:nowrap}

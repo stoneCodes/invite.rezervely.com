@@ -24,7 +24,7 @@ const STEP_ICONS: React.ReactNode[] = [
   <><path d="M4 5h16v11H9l-5 4z" /><path d="m8.5 10.5 2.2 2.2 4.8-4.7" /></>,
 ];
 
-export default function HomeClient({publicPromo,order,price,reviews,reviewStats}:{publicPromo?:{code:string;label:string};order:TemplateId[];price:string|null;reviews:HomeReview[];reviewStats:{count:number;avg:number}}) {
+export default function HomeClient({publicPromo,order,price,reviews,reviewStats}:{publicPromo?:{code:string;label:string};order:TemplateId[];price:{std:string;inv:string;pack:string}|null;reviews:HomeReview[];reviewStats:{count:number;avg:number}}) {
   const router = useRouter();
   const t = useT();
   const lang = useLang();
@@ -189,7 +189,7 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
 
       <nav id="gl-nav" className="gl-nav">
         <Link href="/" className="gl-logo" aria-label={t.common.homeAria}><Logo height={32} onLight className="gl-logo-d" /><Logo height={32} onLight={false} className="gl-logo-l" /></Link>
-        <div className="gl-nav-r"><a className="gl-navfaq" href="#faq">{h.navFaq}</a><Link className="gl-space" href={spaceHref(last)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg><span>{t.find.mySpace}</span></Link><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
+        <div className="gl-nav-r"><Link className="gl-navfaq" href="/offres">{h.navOffers}</Link><a className="gl-navfaq" href="#faq">{h.navFaq}</a><Link className="gl-space" href={spaceHref(last)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" strokeWidth="1.6"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg><span>{t.find.mySpace}</span></Link><LangSwitch /><Link className="btn-s ghost" href="/creer">{h.create}</Link></div>
       </nav>
 
       {publicPromo&&<aside className="gl-promo" role="status"><span>{h.promoLine(publicPromo.label)}</span><strong>{publicPromo.code}</strong></aside>}

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import { useRouter, useSearchParams } from "next/navigation";
 import { sampleFor } from "@/lib/sample";
-import { PLACES, TEMPLATES, displayNames, isBaby, isBirthday, isDot, isKids, PALETTES, BABY_PALETTES, BABY_SEXES, type BabySex, type InvitationData, type PlaceId, type TemplateId } from "@/lib/types";
+import { PLACES, TEMPLATES, displayNames, isBaby, isBirthday, isDot, isKids, isStd, PALETTES, BABY_PALETTES, BABY_SEXES, type BabySex, type InvitationData, type PlaceId, type TemplateId } from "@/lib/types";
 import { lockScroll } from "@/lib/scrollLock";
 import { LangSwitch, useLang, useT } from "@/components/I18n";
 import { invitePath } from "@/lib/slug";
@@ -16,6 +16,8 @@ import TemplateRows from "@/components/TemplateRows";
 import PhoneTemplate from "@/components/PhoneTemplate";
 import MusicPicker from "@/components/MusicPicker";
 import { cycleTemplate } from "@/lib/templateOrder";
+import PlanChoice from "@/components/PlanChoice";
+import { money, packAvailable, singlePrice, type Plan, type Prices } from "@/lib/prices";
 
 /* ---------- Dates : l'éditeur saisit l'heure de Paris, on stocke un ISO avec décalage ---------- */
 function toParisISO(local: string) {
@@ -62,7 +64,7 @@ const fileUrl = (d: InvitationData, k: FileKey) => (k === "photo" ? d.photoUrl :
 const withFile = (d: InvitationData, k: FileKey, url: string | null): InvitationData =>
   k === "photo" ? { ...d, photoUrl: url } : { ...d, dot: { ...DOT_DEFAULT, ...d.dot, [k]: url } };
 
-export default function Editor({ payPrice = null, order }: { payPrice?: string | null; order: TemplateId[] }) {
+export default function Editor({ prices = null, order }: { prices?: Prices | null; order: TemplateId[] }) {
   const cycle = (id: TemplateId, step: number) => cycleTemplate(order, id, step);
   const router = useRouter();
   const sp = useSearchParams();
@@ -73,7 +75,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
   const siteLang = useLang();
   const [template, setTemplate] = useState<TemplateId>((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId);
   const [data, setData] = useState<InvitationData>(() => sampleFor((TEMPLATES.find((t) => t.id === sp.get("t"))?.id ?? "jardin-nuit") as TemplateId, siteLang));
-  const bday = isBirthday(template), kids = isKids(template), baby = isBaby(template);
+  const bday = isBirthday(template), kids = isKids(template), baby = isBaby(template), std = isStd(template);
   const [email, setEmail] = useState("");
   const [emailErr, setEmailErr] = useState(false);
   const [last, setLast] = useState<LastInvite | null>(null);
@@ -85,8 +87,15 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
   const [slug, setSlug] = useState<string | null>(null);
   const [status, setStatus] = useState<"draft" | "published">("draft");
   const [paid, setPaid] = useState(false);
-  // Paiement exigé à la première publication seulement (déjà payée ou déjà publiée : gratuit).
-  const needPay = !!payPrice && !paid && status !== "published";
+  // 2e article d'un pack déjà payé (créé depuis l'espace avec ?pack=<jeton>) : publication sans paiement.
+  const [packFree, setPackFree] = useState(false);
+  const packToken = useRef<string | null>(null);
+  const [plan, setPlan] = useState<Plan>("single");
+  // Paiement exigé à la première publication seulement (déjà payée, déjà publiée ou comprise dans un pack : gratuit).
+  const needPay = !!prices && !paid && !packFree && status !== "published";
+  const showPlans = needPay && packAvailable(template);
+  const payCents = prices ? (showPlans && plan === "pack" ? prices.pack : singlePrice(prices, template)) : 0;
+  const payPrice = needPay ? money(siteLang, payCents) : null;
   const publishLabel = status === "published" ? e_.update : needPay ? t.pay.publish(payPrice!) : e_.publish;
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -110,8 +119,25 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
     if (!t) return;
     fetch(`/api/invitations/${t}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((j) => { setTemplate(j.template); setData(j.data); setSlug(j.slug); setStatus(j.status); setPaid(!!j.paid); setEmail(j.email ?? ""); setToken(t); if (sp.get("paiement") === "annule") setMsg({ kind: "err", text: pay.canceled }); })
+      .then((j) => { setTemplate(j.template); setData(j.data); setSlug(j.slug); setStatus(j.status); setPaid(!!j.paid); setPackFree(!!j.pack); setEmail(j.email ?? ""); setToken(t); if (sp.get("paiement") === "annule") setMsg({ kind: "err", text: pay.canceled }); })
       .catch(() => setMsg({ kind: "err", text: e_.msgBadLink }));
+  }, [sp]);
+
+  /* 2e article d'un pack : on reprend prénoms, date, lieu, photo, langue, musique et e-mail de l'article payé. */
+  useEffect(() => {
+    const pk = sp.get("pack");
+    if (!pk || sp.get("edit")) return;
+    fetch(`/api/invitations/${encodeURIComponent(pk)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((j) => {
+        if (j.plan !== "pack") return;
+        packToken.current = pk;
+        setPackFree(true);
+        setEmail(j.email ?? "");
+        const src = j.data as InvitationData;
+        setData((d) => ({ ...d, lang: src.lang ?? d.lang, partner1: src.partner1, partner2: src.partner2, dateISO: src.dateISO, venue: src.venue, photoUrl: src.photoUrl, ...(src.music ? { music: src.music } : {}) }));
+      })
+      .catch(() => {});
   }, [sp]);
 
   /* Aperçu en direct */
@@ -191,7 +217,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
     setBusy(true); setMsg(null);
     let tk = tokenRef.current;
     const write = async (token: string | null, body: InvitationData) => {
-      const res = await fetch(token ? `/api/invitations/${token}` : "/api/invitations", { method: token ? "PUT" : "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, data: body, email }) });
+      const res = await fetch(token ? `/api/invitations/${token}` : "/api/invitations", { method: token ? "PUT" : "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ template, data: body, email, ...(!token && packToken.current ? { pack: packToken.current } : {}) }) });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error);
       return j;
@@ -234,7 +260,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
     const t = await save();
     if (!t) return;
     setBusy(true);
-    const res = await fetch(`/api/invitations/${t}/publish`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ acceptTerms: agree }) });
+    const res = await fetch(`/api/invitations/${t}/publish`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ acceptTerms: agree, plan: showPlans ? plan : "single" }) });
     const j = await res.json().catch(() => ({}));
     setBusy(false);
     if (!res.ok) { setMsg({ kind: "err", text: j.error ?? e_.msgPublishFail }); return; }
@@ -368,6 +394,13 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
             </Sec>
           )}
 
+          {std && (
+            <Sec title={e_.stdSec}>
+              <p className="ed-help">{e_.stdHelp}</p>
+              <label>{e_.stdNote}<textarea id="stdnote" rows={3} maxLength={240} placeholder={e_.stdNotePh} value={data.std?.note ?? ""} onChange={(e) => set("std", { note: e.target.value })} /></label>
+            </Sec>
+          )}
+
           {isDot(template) && (
             <Sec title={e_.dotSec}>
               <label>{e_.families}<input id="families" maxLength={120} placeholder={e_.familiesPh} value={dt.families} onChange={(e) => setDt({ families: e.target.value })} /></label>
@@ -411,7 +444,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
             </Sec>
           )}
 
-          {!bday && !baby && <Sec title={e_.verse}>
+          {!bday && !baby && !std && <Sec title={e_.verse}>
             <label>{e_.type}
               <select id="vkind" value={data.verse?.kind ?? "none"} onChange={(e) => {
                 const k = e.target.value;
@@ -436,7 +469,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
             )}
           </Sec>}
 
-          <Sec title={e_.programme}>
+          {!std && <Sec title={e_.programme}>
             {data.programme.map((p, i) => (
               <div className="ed-item" key={i}>
                 <input aria-label={e_.time} className="ed-time" value={p.t} maxLength={12} placeholder={e_.timePh} onChange={(e) => set("programme", data.programme.map((x, j) => (j === i ? { ...x, t: e.target.value } : x)))} />
@@ -452,9 +485,9 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
               </div>
             ))}
             {data.programme.length < 10 && <button type="button" className="ed-add" onClick={() => set("programme", [...data.programme, { t: "", title: "", note: "" }])}>{e_.addStep}</button>}
-          </Sec>
+          </Sec>}
 
-          <Sec title={bday || baby ? e_.dressTheme : e_.dress}>
+          {!std && <Sec title={bday || baby ? e_.dressTheme : e_.dress}>
             <label className="ed-check"><input type="checkbox" checked={dc.enabled} onChange={(e) => setDc({ enabled: e.target.checked })} /> {bday || baby ? e_.showTheme : e_.showDress}</label>
             {dc.enabled && (
               <>
@@ -488,9 +521,9 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
                 </div>}
               </>
             )}
-          </Sec>
+          </Sec>}
 
-          {!bday && !baby && <Sec title={e_.story}>
+          {!bday && !baby && !std && <Sec title={e_.story}>
             {data.story.map((s, i) => (
               <div className="ed-item" key={i}>
                 <input aria-label={e_.year} className="ed-time" value={s.y} maxLength={12} placeholder="2019" onChange={(e) => set("story", data.story.map((x, j) => (j === i ? { ...x, y: e.target.value } : x)))} />
@@ -501,7 +534,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
             {data.story.length < 6 && <button type="button" className="ed-add" onClick={() => set("story", [...data.story, { y: "", text: "" }])}>{e_.addMemory}</button>}
           </Sec>}
 
-          <Sec title={e_.wish}>
+          {!std && <Sec title={e_.wish}>
             <p className="ed-help">{e_.wishHelp}</p>
             <label>{e_.wishNote}<textarea id="wnote" rows={2} maxLength={240} placeholder={e_.wishNotePh} value={wl.note} onChange={(e) => setWl({ note: e.target.value })} /></label>
             {wl.items.map((w, i) => {
@@ -518,9 +551,9 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
             {wl.items.length < 20 && <button type="button" className="ed-add" onClick={() => setWl({ items: [...wl.items, { name: "", url: "" }] })}>{e_.addWish}</button>}
             <label>{e_.fund}<input id="wfund" type="url" inputMode="url" maxLength={500} placeholder={e_.fundPh} value={wl.fund} aria-invalid={!okLink(wl.fund) || undefined} className={okLink(wl.fund) ? undefined : "ed-invalid"} onChange={(e) => setWl({ fund: e.target.value })} onBlur={() => setWl({ fund: fixLink(wl.fund) })} /></label>
             {okLink(wl.fund) ? <p className="ed-help">{e_.fundHelp}</p> : <p className="ed-help ed-bad">{e_.badLink}</p>}
-          </Sec>
+          </Sec>}
 
-          <Sec title={e_.meal}>
+          {!std && <Sec title={e_.meal}>
             <p className="ed-help">{e_.mealHelp}</p>
             <label className="ed-check"><input type="checkbox" checked={meal.enabled} onChange={(e) => setMeal({ enabled: e.target.checked, questions: e.target.checked && !meal.questions.length ? [newQ()] : meal.questions })} /> {e_.mealOn}</label>
             {meal.enabled && <>
@@ -551,15 +584,16 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
               {meal.questions.length < 8 && <button type="button" className="ed-add" onClick={() => setMeal({ questions: [...meal.questions, newQ()] })}>{e_.addMealQ}</button>}
               <label className="ed-check"><input type="checkbox" checked={meal.remarks} onChange={(e) => setMeal({ remarks: e.target.checked })} /> {e_.mealRemarks}</label>
             </>}
-          </Sec>
+          </Sec>}
 
-          <Sec title={e_.replies}>
-            <label>{e_.rsvpLine}<input id="rsvpby" maxLength={120} value={data.rsvpBy} onChange={(e) => set("rsvpBy", e.target.value)} /></label>
+          <Sec title={std ? e_.stdContact : e_.replies}>
+            {!std && <label>{e_.rsvpLine}<input id="rsvpby" maxLength={120} value={data.rsvpBy} onChange={(e) => set("rsvpBy", e.target.value)} /></label>}
             <label><span>{e_.email} <span aria-hidden="true">*</span></span><input id="email" type="email" required autoComplete="email" aria-invalid={emailErr || undefined} className={emailErr ? "ed-invalid" : undefined} maxLength={200} placeholder={e_.emailPh} value={email} onChange={(e) => { setEmail(e.target.value); setEmailErr(false); }} /></label>
             <p className="ed-help">{e_.emailHelp} <a href="/espace">{t.find.lost}</a></p>
           </Sec>
 
           <div className="ed-actions">
+            {showPlans && <PlanChoice template={template} prices={prices!} plan={plan} onChange={setPlan} />}
             {msg && <p className={`ed-msg ${msg.kind}`} role="status">{msg.text}</p>}
             <div className="ed-btns">
               <button className="btn-s ghost" type="button" onClick={() => setFull(template)}>{e_.seeRender}</button>
@@ -568,6 +602,7 @@ export default function Editor({ payPrice = null, order }: { payPrice?: string |
               {token && <a className="btn-s ghost" href={`/espace/${token}`}>{e_.mySpace}</a>}
             </div>
             {needPay && <p className="ed-help">{t.pay.note(payPrice!)}</p>}
+            {packFree && status !== "published" && <p className="ed-help">{t.pay.packIncluded}</p>}
             {needPay && <label className="ed-check ed-cgv"><input id="cgv-ok" type="checkbox" checked={agree} onChange={(e) => { setAgree(e.target.checked); setMsg(null); }} /> <span>{lg.accept} <a href="/cgv" target="_blank" rel="noopener">{lg.cgv}</a></span></label>}
             {!needPay && status !== "published" && <p className="ed-help">{lg.publishNote}</p>}
             {status === "published" && slug && <p className="ed-help">{e_.publicLink} <a href={invitePath(slug)} target="_blank" rel="noopener">{invitePath(slug)}</a></p>}
