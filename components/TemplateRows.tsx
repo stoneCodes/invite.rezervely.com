@@ -19,7 +19,8 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
   /** Arrête le défilement (pop-up de démo ouverte). */
   paused?: boolean;
   selected?: TemplateId;
-  onPreview: (id: TemplateId) => void;
+  /** Ouvre la démo d'un modèle. `list` = les modèles affichés (bloc et catégorie en cours) : les flèches de la démo restent dedans. */
+  onPreview: (id: TemplateId, list: TemplateId[]) => void;
   onSelect?: (id: TemplateId) => void;
   onCreate?: (id: TemplateId, event: React.MouseEvent<HTMLAnchorElement>) => void;
 }) {
@@ -35,15 +36,17 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
   const rank = (id: TemplateId) => { const i = order ? order.indexOf(id) : -1; return i < 0 ? 999 + TEMPLATES.findIndex((item) => item.id === id) : i; };
   const idsFor = (category: CategoryId) => ordered(TEMPLATES.filter((item) => formatOf(item.id) === format && (item.categories as readonly CategoryId[]).includes(category)).map((item) => item.id as TemplateId).sort((a, b) => rank(a) - rank(b)));
 
+  // Modèles affichés (bloc invitations / save the date + catégorie choisie ; tous ceux du bloc dans « Tout »).
+  const visible: TemplateId[] = filter === "all" ? [...new Set(CATEGORIES.flatMap(({ id }) => idsFor(id)))] : idsFor(filter);
   const card = (id: TemplateId, key: string, clone = false) => (
     <article key={key} className={`ph-card${selected === id ? " is-selected" : ""}`} aria-hidden={clone || undefined}>
       {selected === id && <span className="ph-selected">{t.editor.yourModel}</span>}
-      <button className="ph-preview" type="button" tabIndex={clone ? -1 : undefined} aria-label={t.common.demoOf(t.templates[id].name)} onClick={() => { onSelect?.(id); onPreview(id); }}>
+      <button className="ph-preview" type="button" tabIndex={clone ? -1 : undefined} aria-label={t.common.demoOf(t.templates[id].name)} onClick={() => { onSelect?.(id); onPreview(id, visible); }}>
         <PhoneTemplate template={id} names={names} lang={lang} compact={compact} />
         <span className="ph-model-name">{t.templates[id].name}</span>
       </button>
       {!compact && <div className="ph-actions">
-        <button type="button" className="btn-s ghost" tabIndex={clone ? -1 : undefined} onClick={() => onPreview(id)}>{t.home.demo}</button>
+        <button type="button" className="btn-s ghost" tabIndex={clone ? -1 : undefined} onClick={() => onPreview(id, visible)}>{t.home.demo}</button>
         <a className="btn-s" tabIndex={clone ? -1 : undefined} href={`/creer?t=${id}`} onClick={(event) => onCreate?.(id, event)}>{t.home.createMine}</a>
       </div>}
     </article>
@@ -90,7 +93,7 @@ export default function TemplateRows({ names, lang, compact = false, noAll = fal
     {marquee
       // Accueil : une seule bande, qui ne fait défiler que la catégorie choisie (tous les modèles dans « Tout »).
       ? (() => {
-        const ids = filter === "all" ? [...new Set(CATEGORIES.flatMap(({ id }) => idsFor(id)))] : idsFor(filter);
+        const ids = visible;
         const title = filter === "all" ? t.gallery.filters.all : t.gallery.rows[filter];
         return <section className="ph-section" aria-label={title}>
           {ids.length > 0

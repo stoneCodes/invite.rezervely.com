@@ -65,7 +65,11 @@ const withFile = (d: InvitationData, k: FileKey, url: string | null): Invitation
   k === "photo" ? { ...d, photoUrl: url } : { ...d, dot: { ...DOT_DEFAULT, ...d.dot, [k]: url } };
 
 export default function Editor({ prices = null, order }: { prices?: Prices | null; order: TemplateId[] }) {
-  const cycle = (id: TemplateId, step: number) => cycleTemplate(order, id, step);
+  const cycle = (id: TemplateId, step: number) => {
+    // Le modèle choisi n'a pas de flèches (« ← Modifier ») : on le saute pour ne pas rester bloqué.
+    const list = fullIds.filter((x) => x !== template);
+    return cycleTemplate(list.includes(id) ? list : order, id, step);
+  };
   const router = useRouter();
   const sp = useSearchParams();
   const t = useT();
@@ -148,6 +152,8 @@ export default function Editor({ prices = null, order }: { prices?: Prices | nul
   /* Rendu plein écran : l'invitation complète (ouverture, date à révéler…) avec les données en cours, même non enregistrées. */
   // Modèle affiché en plein écran (celui choisi, ou un autre qu'on découvre depuis les cartes).
   const [full, setFull] = useState<TemplateId | null>(null);
+  // Modèles parcourus par les flèches du rendu plein écran : ceux affichés dans la galerie (bloc + catégorie).
+  const [fullIds, setFullIds] = useState<TemplateId[]>([]);
   // Galerie des autres modèles dans la section « Style » : fermée par défaut, l'éditeur reste court.
   const [pick, setPick] = useState(false);
   const fullFrame = useRef<HTMLIFrameElement>(null);
@@ -333,7 +339,7 @@ export default function Editor({ prices = null, order }: { prices?: Prices | nul
             </div>
             {pick && <div className="ed-pick">
               <p className="ed-help">{e_.pickHelp}</p>
-              <TemplateRows compact noAll order={order} names={[data.partner1, bday ? "" : data.partner2]} lang={siteLang} selected={template} onPreview={setFull} />
+              <TemplateRows compact noAll order={order} names={[data.partner1, bday ? "" : data.partner2]} lang={siteLang} selected={template} onPreview={(id, list) => { setFullIds(list); setFull(id); }} />
             </div>}
             <label>{e_.inviteLang}
               <select id="ilang" value={data.lang ?? "fr"} onChange={(e) => set("lang", e.target.value as InvitationData["lang"])}>

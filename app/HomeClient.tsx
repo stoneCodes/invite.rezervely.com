@@ -154,6 +154,8 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
 
   /* Démo en pop-up dans un téléphone, sans quitter l'accueil (plus de nouvel onglet). */
   const [demo, setDemo] = useState<TemplateId | null>(null);
+  // Modèles parcourus par les flèches de la démo : ceux affichés dans la galerie (bloc + catégorie).
+  const [demoIds, setDemoIds] = useState<TemplateId[]>([]);
   /* Plein écran au choix (bouton discret sous le téléphone) : la démo occupe toute la fenêtre, et tout l'écran quand le navigateur le permet. */
   const [full, setFull] = useState(false);
   const fullRef = useRef<HTMLDivElement>(null);
@@ -169,7 +171,7 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
     document.addEventListener("fullscreenchange", change);
     return () => document.removeEventListener("fullscreenchange", change);
   }, [full]);
-  const cycle = (id: TemplateId, step: number) => cycleTemplate(order, id, step);
+  const cycle = (id: TemplateId, step: number) => cycleTemplate(demoIds.includes(id) ? demoIds : order, id, step);
   useEffect(() => {
     if (!demo) return;
     const unlock = lockScroll();
@@ -180,7 +182,7 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
     window.addEventListener("keydown", key);
     return () => { unlock(); window.removeEventListener("keydown", key); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [demo !== null]);
+  }, [demo !== null, demoIds]);
   const shown = demo ? { id: demo, ...t.templates[demo] } : null;
   return (
     <main className="site gl">
@@ -220,7 +222,7 @@ export default function HomeClient({publicPromo,order,price,reviews,reviewStats}
 
       <section id="gl-hz" className="gl-hz gl-wave is-b">
         <div className="gl-hz-head"><h2>{h.chooseTitle} <span className="gold-text">{h.chooseGold}</span></h2></div>
-        <TemplateRows marquee paused={demo !== null} names={["Léa", "Samuel"]} lang={lang} order={order} onPreview={setDemo} onCreate={(id, event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return; celebrate(`/creer?t=${id}`)(event); }} />
+        <TemplateRows marquee paused={demo !== null} names={["Léa", "Samuel"]} lang={lang} order={order} onPreview={(id, list) => { setDemoIds(list); setDemo(id); }} onCreate={(id, event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return; celebrate(`/creer?t=${id}`)(event); }} />
       </section>
 
       <HomeFeatures />
