@@ -66,6 +66,10 @@ export const PDF_THEMES: Record<TemplateId, PdfTheme> = {
     background: "#FCF9F3", text: "#4A3B2A", muted: "#857563", accent: "#A8884F", rule: "#E8DCC6",
     titleFont: "/fonts/pdf/CormorantGaramond-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/PinyonScript-Regular.ttf", ornament: "/pdf/ornaments/livre.svg",
   },
+  nuage: {
+    background: "#FCF8F5", text: "#43362B", muted: "#857262", accent: "#A8884F", rule: "#EADFD6",
+    titleFont: "/fonts/pdf/CormorantGaramond-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/PinyonScript-Regular.ttf", ornament: "/pdf/ornaments/livre.svg",
+  },
   "std-nuit-doree": {
     background: "#FFFCF5", text: "#3A2815", muted: "#806B4F", accent: "#A9772A", rule: "#E8D9B9",
     titleFont: "/fonts/pdf/Cinzel-VF.ttf", bodyFont: "/fonts/pdf/Jost-VF.ttf", scriptFont: "/fonts/pdf/GreatVibes-Regular.ttf", ornament: "/pdf/ornaments/nuit-doree.svg",

@@ -96,6 +96,7 @@ export function sanitizeData(input: any, template?: string): InvitationData {
       due: typeof bb.due === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(bb.due) ? bb.due : "",
       guesses: bb.guesses === true,
       palette: (BABY_PALETTES as readonly string[]).includes(bb.palette) ? (bb.palette as BabyPaletteId) : "ivoire",
+      reveal: bb.reveal === true && (bb.sex === "fille" || bb.sex === "garcon"),
     } } : {}),
   };
 }

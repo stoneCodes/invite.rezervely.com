@@ -8,7 +8,7 @@ Choisi par Glad le 10 nov. 2026, avec le style de papier **B, papier découpé e
 |---|---|
 | **« Il était une fois » / « Once Upon a Time »** (livre en papier découpé) | codé le 10 nov. 2026, à valider par Glad |
 | « Le mobile de berceau » | **plus tard** |
-| « Sur un petit nuage » (montgolfière) | **plus tard** |
+| « Sur un petit nuage » / « On Cloud Nine » (montgolfière) | **codé le 17 nov. 2026**, à valider par Glad : cahier des charges `docs/sur-un-petit-nuage.md` |
 
 ## Fiche technique
 
@@ -147,3 +147,50 @@ Je les détoure ensuite en Python, comme pour les anniversaires.
 > Photographie élégante et naturelle d'un couple attendant un bébé, la femme enceinte, tenues lin crème et beige, en extérieur dans une prairie à la lumière dorée, cadrage à mi-corps, ambiance douce et joyeuse, aucun texte. Format portrait.
 
 À déposer dans `images-source/livre/` (le nom de fichier n'a pas d'importance, je les renomme).
+
+---
+
+## « Il était une fois » : intérieur refait en « photographies d'art » (17 nov. 2026)
+
+Glad trouvait les scènes en papier découpé (nuages, collines, maison, fanions) trop « livre pour enfants ». Planche des deux propositions : `docs/maquettes/livre-interieur.*`. **Proposition B choisie** : comme un album photo de luxe.
+
+**Ce qui ne change pas :** la couverture, le livre, le papier et les pages qui tournent.
+
+**Ce qui change :** en haut de chaque page, une vraie photo de nature morte, avec :
+- un tirage à bord blanc, collé de biais avec des coins dorés ;
+- un ruban signet ;
+- un papier calque imprimé en or.
+
+La photo se pose sur la page quand celle-ci se découvre. Sur la page de la date, la tirette fait glisser le calque qui cache la photo. Le compte à rebours est imprimé sur un calque posé sur la photo.
+
+Fichiers : `public/img/livre-photo-<page>.webp` (originaux dans `images-source/livre/photos/`). Les 9 photos ont été livrées par Glad le 17 nov. 2026 et intégrées.
+
+### Les 9 photos à générer (ChatGPT)
+
+**Consignes pour toutes les photos :**
+- photographie de nature morte haut de gamme, réaliste (ambiance de magazine de décoration ou de papeterie de luxe) ;
+- lumière naturelle douce venant d'une fenêtre, faible profondeur de champ ;
+- tons ivoire, crème, lin, champagne et touches de rose poudré ;
+- **aucun texte, aucune lettre, aucun chiffre, aucun logo, aucune personne, aucun visage, aucune main** ;
+- format carré 1024 × 1024, sujet bien centré, avec de la marge autour (la photo est recadrée).
+
+1. **Titre** (`titre`, montrée seulement si les parents n'ont pas mis de photo)
+   > Photographie de nature morte haut de gamme : un bouquet de pivoines ivoire et de roses de jardin rose poudré dans un vase en cristal, posé sur une table en lin crème à côté d'une couverture de bébé en cachemire ivoire pliée et nouée d'un ruban de soie champagne, lumière douce du matin venant d'une fenêtre, faible profondeur de champ, ambiance élégante et feutrée, aucun texte, aucune personne. Format carré.
+2. **Date** (`date`)
+   > Photographie de nature morte haut de gamme : une enveloppe en papier coton ivoire fermée d'un cachet de cire dorée sans motif lisible, posée sur du lin crème avec une branche de gypsophile et un ruban de soie champagne, lumière douce de fenêtre, faible profondeur de champ, aucun texte, aucune lettre, aucune personne. Format carré.
+3. **Compte à rebours** (`count`)
+   > Photographie de nature morte haut de gamme : un élégant sablier en verre et laiton doré au sable très clair, à côté d'une paire de petits chaussons de bébé tricotés en cachemire ivoire, sur une table en lin crème, lumière douce et chaude, faible profondeur de champ, aucun texte, aucun chiffre, aucune personne. Format carré.
+4. **Programme** (`programme`)
+   > Photographie de nature morte haut de gamme : un goûter raffiné sur une table nappée de lin ivoire, présentoir à gâteaux en porcelaine blanche avec de petits gâteaux à la crème et des macarons rose poudré, théière en porcelaine fine, tasses à liseré doré, quelques pivoines, lumière douce de l'après-midi, faible profondeur de champ, aucun texte, aucune personne. Format carré.
+5. **Thème et couleurs** (`theme`)
+   > Photographie de nature morte haut de gamme : des étoffes de soie et de mousseline drapées en plis souples (ivoire, champagne, rose poudré, vert sauge très pâle), quelques rubans de satin enroulés sur des bobines en bois clair, sur une table en lin, lumière douce, faible profondeur de champ, aucun texte, aucune personne. Format carré.
+6. **Lieu** (`lieu`)
+   > Photographie haut de gamme d'un salon lumineux et élégant prêt pour une réception : grandes fenêtres à petits carreaux, voilages de lin, fauteuils en velours crème, grands bouquets de fleurs blanches et rose poudré, jardin flou dehors, lumière douce de l'après-midi, aucune personne, aucun texte. Format carré.
+7. **Liste de souhaits** (`souhaits`)
+   > Photographie de nature morte haut de gamme : une pile de cadeaux emballés dans du papier ivoire et champagne, noués de larges rubans de soie, petites étiquettes en papier coton vierges, une branche d'eucalyptus, sur du lin crème, lumière douce, faible profondeur de champ, aucun texte, aucune lettre, aucune personne. Format carré.
+8. **Pronostics** (`pronostics`)
+   > Photographie de nature morte haut de gamme : un hochet de bébé en argent ancien, une petite cuillère en argent et un body de bébé en coton ivoire plié, posés sur une mousseline de coton crème, quelques fleurs séchées, lumière douce de fenêtre, faible profondeur de champ, aucun texte, aucune personne. Format carré.
+9. **Réponse** (`reponse`)
+   > Photographie de nature morte haut de gamme : une carte en papier coton ivoire vierge avec un stylo plume doré posé dessus, un cachet de cire dorée sans motif lisible, quelques pivoines rose poudré, sur une table en lin crème, lumière douce de fenêtre, faible profondeur de champ, aucun texte écrit sur la carte, aucune lettre, aucune personne. Format carré.
+
+À déposer dans `images-source/livre/photos/`, avec le nom de la page (`titre.webp`, `date.webp`…) ou dans l'ordre ci-dessus.

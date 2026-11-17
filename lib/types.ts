@@ -40,6 +40,8 @@ export const TEMPLATES = [
   { id: "pinata", name: "La piñata", tagline: "Trois coups sur la piñata, et chaque section tombe dans un bonbon à déballer", cover: "/img/phone-pinata.webp", categories: ["anniversaire"], featured: true, kids: true, phone: { screen: "/img/phone-pinata.webp", names: { top: 78, size: 13 }, hint: { top: 88.5 }, seal: null, ink: "#5a2140", font: "serif" } },
   // Baby shower (docs/baby-shower.md) : un ou deux parents (partner2 facultatif), données propres dans data.baby.
   { id: "livre", name: "Il était une fois", tagline: "Un livre pop-up en papier découpé : on tourne les pages, et chaque scène se déplie en relief", cover: "/img/phone-livre.webp", categories: ["baby-shower"], featured: true, phone: { screen: "/img/phone-livre.webp", names: { top: 43, size: 12 }, hint: { top: 88 }, seal: null, ink: "#8a6534", font: "script" } },
+  // « Sur un petit nuage » (docs/sur-un-petit-nuage.md) : montgolfière en soie, ascension dans un ciel nacré, révélation fille/garçon facultative (baby.reveal).
+  { id: "nuage", name: "Sur un petit nuage", tagline: "On gonfle la montgolfière de soie, elle s'envole et l'on monte dans un ciel nacré", cover: "/img/phone-nuage.webp", categories: ["baby-shower"], featured: true, phone: { screen: "/img/phone-nuage.webp", names: { top: 15.5, size: 12 }, hint: { top: 88, ink: "#5f4b33" }, seal: null, ink: "#85652F", font: "script" } },
   // Save the date (16 nov. 2026, demandé par Glad) : modèles à part, chacun assorti à une invitation (`pair`) dont il garde l'identité
   // (couleurs, matières, typographie) avec une autre ouverture. Version courte : prénoms, photo, date, compte à rebours, agenda, « à suivre ».
   { id: "std-nuit-doree", name: "Nuit dorée · Save the date", tagline: "Une carte noir et or se retourne et la date se grave en lettres d'or", cover: "/img/2a-enveloppe.webp", categories: ["mariage"], format: "std", featured: true, pair: "nuit-doree", phone: { screen: "/img/phone-std-nuit-doree.webp", names: { top: 75, size: 12 }, hint: { top: 82 }, seal: { top: 40.1, left: 49.2, d: 34, ink: "#F3D894" }, ink: "#F3D894", font: "script" } },
@@ -105,6 +107,8 @@ export type BabyData = {
   /** Pronostics des invités (prénom, date, poids) ajoutés en tête du message de réponse */
   guesses: boolean;
   palette: BabyPaletteId;
+  /** « Sur un petit nuage » : révélation fille / garçon par un ballon de soie (le sexe reste caché jusque-là) */
+  reveal?: boolean;
 };
 
 /** Données propres à « La dot » (mariage coutumier). */

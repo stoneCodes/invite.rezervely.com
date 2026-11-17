@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Il était une fois : intérieur haut de gamme</title>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Jost:wght@300;400;500&family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fbf7ef;--ink:#4a3b2a;--muted:#857563;--acc:#a8884f;--acc2:#d2b67f;
+  --foil:linear-gradient(172deg,#caa461 0%,#8f6a2e 42%,#d9bb7c 64%,#9a7536 100%)}
+*{box-sizing:border-box}
+body{margin:0;background:#E9E1D4;font-family:Jost,sans-serif;font-weight:300;color:var(--ink);padding:34px 30px 40px}
+h1{font:400 34px/1 Italiana,serif;margin:0 0 6px;letter-spacing:.02em}
+.sub{margin:0 0 28px;color:var(--muted);font-size:14px}
+.row{display:flex;gap:44px;align-items:flex-start}
+.grp{display:flex;flex-direction:column;gap:14px}
+.grp h2{margin:0;font:400 24px/1.2 Italiana,serif}
+.grp h2 b{font:500 12px/1 Jost;letter-spacing:.3em;color:var(--acc);margin-right:10px;vertical-align:4px}
+.grp p.why{margin:0;max-width:700px;font-size:13.5px;color:var(--muted);line-height:1.5}
+.pages{display:flex;gap:22px}
+/* page du livre : même papier que le modèle */
+.page{position:relative;width:340px;height:700px;border-radius:2px 8px 8px 2px;overflow:hidden;
+  background:var(--paper) url(../../public/img/livre-papier.webp) 0 0/300px;background-blend-mode:multiply;
+  box-shadow:1px 0 0 #ebe2d3,3px 1px 0 #f3ede2,4px 1px 0 #e2d8c6,6px 2px 0 #efe8db,0 22px 46px rgba(45,30,12,.32)}
+.page::before{content:"";position:absolute;inset:0 auto 0 0;width:26px;background:linear-gradient(90deg,rgba(90,65,30,.2),transparent);z-index:3}
+.txt{position:absolute;left:0;right:0;padding:0 30px;text-align:center}
+.it{font:italic 300 19px/1 "Cormorant Garamond",serif;color:var(--acc)}
+.names{margin:6px 0 4px;font:400 50px/1.05 "Pinyon Script",cursive;background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent;padding:0 .1em .08em}
+.names i{font:italic 300 30px "Cormorant Garamond",serif}
+.caps{font:500 10.5px/1 Jost;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+.lead{margin:14px 0 0;font-size:14.5px;line-height:1.6}
+.eyebrow{display:flex;align-items:center;justify-content:center;gap:10px;font:500 10px/1 Jost;letter-spacing:.32em;text-transform:uppercase;color:var(--acc)}
+.eyebrow::before,.eyebrow::after{content:"";width:22px;height:1px;background:linear-gradient(90deg,transparent,var(--acc))}
+.eyebrow::after{transform:scaleX(-1)}
+.ttl{margin:10px 0 0;font:400 30px/1.15 Italiana,serif}
+.dia{display:block;width:7px;height:7px;margin:14px auto;rotate:45deg;background:var(--foil)}
+/* programme commun */
+.prog{list-style:none;margin:18px 0 0;padding:0;text-align:left}
+.prog li{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:12px 0;border-top:1px solid rgba(168,136,79,.28)}
+.prog li:last-child{border-bottom:1px solid rgba(168,136,79,.28)}
+.prog time{font:400 22px/1 "Cormorant Garamond",serif;background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.prog h3{margin:0;font:400 17px/1.2 Italiana,serif;letter-spacing:.02em}
+.prog p{margin:3px 0 0;font-size:12.5px;color:var(--muted)}
+
+/* ===== A : gravure et dorure à chaud ===== */
+.a-plate{position:absolute;left:22px;right:22px;top:22px;height:322px}
+.a-plate::before{content:"";position:absolute;inset:0;border:1px solid rgba(168,136,79,.55)}
+.a-plate::after{content:"";position:absolute;inset:5px;border:.6px solid rgba(168,136,79,.3)}
+/* creux de gaufrage (papier embossé à sec) */
+.a-deboss{position:absolute;inset:16px;border-radius:50% / 46%;
+  box-shadow:inset 2px 3px 5px rgba(90,65,30,.16),inset -2px -2px 4px rgba(255,255,255,.85),0 1px 0 rgba(255,255,255,.7)}
+.a-medal{position:absolute;left:50%;top:50%;width:176px;height:176px;margin:-94px 0 0 -88px;border-radius:50%;
+  padding:5px;background:var(--foil);box-shadow:0 8px 18px rgba(60,40,18,.25)}
+.a-medal::after{content:"";position:absolute;inset:9px;border-radius:50%;box-shadow:0 0 0 .8px rgba(255,248,230,.85)}
+.a-medal img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 30%}
+.a-plate svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.corner{position:absolute;width:26px;height:26px}
+.page.a .txt.t1{top:362px}
+
+/* ===== B : photographies d'art ===== */
+.b-photo{position:absolute;left:34px;right:34px;top:30px;height:330px;padding:9px 9px 9px;background:#fffdf8;rotate:-1.6deg;
+  box-shadow:0 1px 1px rgba(60,40,18,.12),0 14px 26px -8px rgba(60,40,18,.35)}
+.b-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.b-photo .pc{position:absolute;width:30px;height:30px;background:var(--foil);filter:drop-shadow(0 1px 1px rgba(60,40,18,.3))}
+.pc.tl{left:-6px;top:-6px;clip-path:polygon(0 0,100% 0,0 100%)}
+.pc.tr{right:-6px;top:-6px;clip-path:polygon(0 0,100% 0,100% 100%)}
+.pc.bl{left:-6px;bottom:-6px;clip-path:polygon(0 0,100% 100%,0 100%)}
+.pc.br{right:-6px;bottom:-6px;clip-path:polygon(100% 0,100% 100%,0 100%)}
+/* papier calque imprimé or posé sur la photo */
+.b-vellum{position:absolute;left:52px;right:52px;top:236px;padding:16px 10px 14px;text-align:center;rotate:1.2deg;
+  background:rgba(252,248,240,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  box-shadow:0 6px 14px -6px rgba(60,40,18,.3),inset 0 0 0 .6px rgba(255,255,255,.8)}
+.b-vellum .eyebrow{color:#8a6a35}
+.b-vellum b{display:block;margin-top:6px;font:400 26px/1 Italiana,serif;color:var(--ink)}
+.b-ribbon{position:absolute;right:58px;top:14px;width:30px;height:120px;z-index:2;
+  background:linear-gradient(90deg,#d8c3a2,#f3e7d2 40%,#c9b08a 70%,#e9dbc3);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%);box-shadow:0 2px 4px rgba(0,0,0,.1);filter:drop-shadow(1px 3px 3px rgba(60,40,18,.25))}
+.page.b .txt.t1{top:388px}
+.b-cap{margin-top:12px;font:italic 300 13px "Cormorant Garamond",serif;color:var(--muted);text-align:center}
+</style></head>
+<body>
+<h1>« Il était une fois » : l'intérieur du livre en version haut de gamme</h1>
+<p class="sub">Couverture, livre, papier et pages qui tournent : inchangés. Seuls les décors en haut des pages sont remplacés (fini les nuages, collines et maisons en papier découpé).</p>
+<div class="row">
+  <section class="grp">
+    <h2><b>A</b>Gravure et dorure à chaud</h2>
+    <p class="why">Comme un faire-part de naissance de papetier : cadre à double filet, gaufrage à sec dans le papier, dessins gravés au trait fin en feuille d'or (couronne de laurier, croissant de lune, étoiles). Aucune nouvelle image à générer.</p>
+    <div class="pages">
+      <div class="page a">
+        <div class="a-plate">
+          <div class="a-deboss"></div>
+          <svg id="laurel" viewBox="0 0 296 322"></svg>
+          <div class="a-medal"><img src="../../public/img/demo-couple-livre.webp" alt=""></div>
+        </div>
+        <div class="txt t1">
+          <div class="it">Il était une fois…</div>
+          <div class="names">Chloé <i>&</i> Malik</div>
+          <div class="caps">attendent un bébé</div>
+          <span class="dia"></span>
+          <div class="it" style="font-size:17px">Bébé arrive en avril</div>
+          <p class="lead">Venez partager un après-midi tout en douceur pour fêter bébé avant sa grande arrivée.</p>
+        </div>
+      </div>
+      <div class="page a">
+        <div class="a-plate" style="height:250px">
+          <svg id="moon" viewBox="0 0 296 250"></svg>
+        </div>
+        <div class="txt" style="top:276px">
+          <div class="eyebrow">Le programme</div>
+          <div class="ttl">Le déroulé de l'après-midi</div>
+          <ol class="prog">
+            <li><time>15h00</time><div><h3>Accueil et goûter</h3><p>Gâteaux et citronnade</p></div></li>
+            <li><time>16h00</time><div><h3>Jeux et pronostics</h3><p>Qui verra juste ?</p></div></li>
+            <li><time>17h00</time><div><h3>Ouverture des cadeaux</h3><p>Avec beaucoup d'émotion</p></div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="grp">
+    <h2><b>B</b>Photographies d'art</h2>
+    <p class="why">Comme un album photo de luxe : en haut de chaque page, une vraie photo de nature morte (pivoines, chaussons en cachemire, ruban de soie, hochet en argent…) collée avec des coins dorés, un ruban signet et un papier calque imprimé en or. 8 photos à générer (prompts fournis).</p>
+    <div class="pages">
+      <div class="page b">
+        <div class="b-photo"><img src="../../public/img/demo-couple-livre.webp" alt="" style="object-position:50% 28%"><i class="pc tl"></i><i class="pc tr"></i><i class="pc bl"></i><i class="pc br"></i></div>
+        <div class="txt t1">
+          <div class="it">Il était une fois…</div>
+          <div class="names">Chloé <i>&</i> Malik</div>
+          <div class="caps">attendent un bébé</div>
+          <span class="dia"></span>
+          <p class="lead" style="margin-top:0">Venez partager un après-midi tout en douceur pour fêter bébé avant sa grande arrivée.</p>
+        </div>
+      </div>
+      <div class="page b">
+        <div class="b-ribbon"></div>
+        <div class="b-photo" style="height:250px;rotate:1.4deg"><img src="../../public/img/livre-chambre.webp" alt=""><i class="pc tl"></i><i class="pc tr"></i><i class="pc bl"></i><i class="pc br"></i></div>
+        <div class="b-vellum" style="top:196px"><div class="eyebrow">Le programme</div><b>Samedi 20 février</b></div>
+        <div class="txt" style="top:300px">
+          <div class="ttl" style="margin-top:0">Le déroulé de l'après-midi</div>
+          <ol class="prog">
+            <li><time>15h00</time><div><h3>Accueil et goûter</h3><p>Gâteaux et citronnade</p></div></li>
+            <li><time>16h00</time><div><h3>Jeux et pronostics</h3><p>Qui verra juste ?</p></div></li>
+            <li><time>17h00</time><div><h3>Ouverture des cadeaux</h3><p>Avec beaucoup d'émotion</p></div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+const NS="http://www.w3.org/2000/svg";
+const defs=`<defs><linearGradient id="g" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#caa461"/><stop offset=".42" stop-color="#8f6a2e"/><stop offset=".64" stop-color="#d9bb7c"/><stop offset="1" stop-color="#9a7536"/></linearGradient></defs>`;
+function corners(w,h){let s="";const c=(x,y,sx,sy)=>`<g transform="translate(${x} ${y}) scale(${sx} ${sy})" fill="none" stroke="url(#g)" stroke-width=".9"><path d="M10 26 C10 16 16 10 26 10"/><path d="M14 30 C14 20 20 14 30 14" opacity=".55"/><circle cx="10" cy="10" r="2.2" fill="url(#g)" stroke="none"/></g>`;
+  s+=c(0,0,1,1)+c(w,0,-1,1)+c(0,h,1,-1)+c(w,h,-1,-1);return s}
+function star(x,y,r){return `<path d="M${x} ${y-r} Q${x+r*.16} ${y-r*.16} ${x+r} ${y} Q${x+r*.16} ${y+r*.16} ${x} ${y+r} Q${x-r*.16} ${y+r*.16} ${x-r} ${y} Q${x-r*.16} ${y-r*.16} ${x} ${y-r}Z" fill="url(#g)"/>`}
+// couronne de laurier gravée : deux rameaux qui montent de part et d'autre, feuilles effilées en quinconce
+(function(){const W=296,H=322,cx=148,cy=155,R=112;let s=defs+corners(W,H);
+  const leaf=(x,y,rot,L,Wd)=>`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot.toFixed(1)})"><path d="M0 0 C${Wd} ${-L*.3} ${Wd*.8} ${-L*.72} 0 ${-L} C${-Wd*.8} ${-L*.72} ${-Wd} ${-L*.3} 0 0Z" fill="rgba(214,182,120,.2)" stroke="url(#g)" stroke-width=".7"/><path d="M0 -1.5 Q${Wd*.15} ${-L*.5} 0 ${-L+3}" fill="none" stroke="url(#g)" stroke-width=".4"/></g>`;
+  for(const side of [-1,1]){
+    const a0=90+side*10, a1=90+side*142, N=13; let d="";
+    for(let k=0;k<=40;k++){const a=(a0+(a1-a0)*k/40)*Math.PI/180;d+=(k?"L":"M")+(cx+Math.cos(a)*R).toFixed(1)+" "+(cy+Math.sin(a)*R).toFixed(1)}
+    s+=`<path d="${d}" fill="none" stroke="url(#g)" stroke-width="1"/>`;
+    for(let i=0;i<N;i++){for(const o of [-1,1]){
+      const t=(i+(o>0?.5:0))/N; const a=(a0+(a1-a0)*t)*Math.PI/180;
+      const x=cx+Math.cos(a)*R,y=cy+Math.sin(a)*R;
+      const vx=-Math.sin(a)*side*-1*(a1>a0?1:-1)*side, vy=Math.cos(a)*(a1>a0?1:-1);
+      const base=Math.atan2(-Math.sin(a)*(a1>a0?1:-1),Math.cos(a)*(a1>a0?1:-1)); // direction de montée
+      const rot=base*180/Math.PI+90+o*38; const sc=1-t*.45;
+      s+=leaf(x,y,rot,21*sc,5.2*sc)}}
+    // baie en bout de rameau
+    const a=a1*Math.PI/180; s+=`<circle cx="${(cx+Math.cos(a)*R).toFixed(1)}" cy="${(cy+Math.sin(a)*R).toFixed(1)}" r="2.2" fill="url(#g)"/>`;
+  }
+  // nœud de ruban au pied
+  s+=`<g fill="none" stroke="url(#g)" stroke-width=".9"><path d="M${cx} ${cy+R+2} c-10 -8 -22 -4 -18 4 c3 6 12 2 18 -4z"/><path d="M${cx} ${cy+R+2} c10 -8 22 -4 18 4 c-3 6 -12 2 -18 -4z"/><path d="M${cx-2} ${cy+R+4} q-6 12 -14 16 M${cx+2} ${cy+R+4} q6 12 14 16"/></g>`;
+  s+=star(cx,26,7)+star(cx-20,36,2.6)+star(cx+20,36,2.6);
+  document.getElementById("laurel").innerHTML=s})();
+// croissant de lune gravé (hachures fines), étoiles et constellation
+(function(){const W=296,H=250;let s=defs.replace(/id="g"/,'id="g2"').replace("</defs>","")+
+  `<mask id="cm"><rect width="296" height="250" fill="#000"/><circle cx="132" cy="125" r="82" fill="#fff"/><circle cx="166" cy="106" r="74" fill="#000"/></mask>`+
+  `<mask id="om"><rect width="296" height="250" fill="#fff"/><circle cx="166" cy="106" r="74" fill="#000"/></mask>`+
+  `<mask id="im"><rect width="296" height="250" fill="#000"/><circle cx="132" cy="125" r="82" fill="#fff"/></mask></defs>`;
+  s=s.replace(/url\(#g\)/g,"url(#g2)");
+  const G="url(#g2)"; s+=corners(W,H).replace(/url\(#g\)/g,G);
+  let h="";for(let i=-120;i<300;i+=4.2)h+=`<path d="M${i} 20 L${i+150} 240" stroke="${G}" stroke-width=".5"/>`;
+  s+=`<g mask="url(#cm)"><rect width="296" height="250" fill="rgba(214,182,120,.16)"/><g opacity=".8">${h}</g></g>`;
+  s+=`<circle cx="132" cy="125" r="82" fill="none" stroke="${G}" stroke-width="1.3" mask="url(#om)"/>`;
+  s+=`<circle cx="166" cy="106" r="74" fill="none" stroke="${G}" stroke-width=".9" mask="url(#im)"/>`;
+  s+=`<circle cx="132" cy="125" r="88" fill="none" stroke="${G}" stroke-width=".4" stroke-dasharray="1 4" mask="url(#om)" opacity=".8"/>`;
+  const st=(x,y,r)=>star(x,y,r).replace("url(#g)",G);
+  [[212,152,8],[236,190,3.6],[252,128,4.2],[226,64,2.6],[62,40,2.4],[258,214,2.2],[40,214,3]].forEach(([x,y,r])=>s+=st(x,y,r));
+  s+=`<path d="M252 128 L212 152 L236 190" fill="none" stroke="${G}" stroke-width=".5" stroke-dasharray="1.5 3"/>`;
+  document.getElementById("moon").innerHTML=s})();
+</script>
+</body></html>

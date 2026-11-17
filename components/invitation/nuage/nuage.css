@@ -1,0 +1,274 @@
+/* Modèle baby shower « Sur un petit nuage » (montgolfière en soie, ciel nacré). Préfixe nu-. Cahier des charges : docs/sur-un-petit-nuage.md */
+body[data-tpl="nuage"] { background: #E9E4E6; overflow-x: clip; }
+body.nu-locked { overflow: hidden; overscroll-behavior: none; }
+
+.nu {
+  --ink: #3D3229; --muted: #7C6B5C; --gold: #A8884F; --gold-d: #85652F;
+  --foil: linear-gradient(115deg, #8a6a36 0%, #d7bb84 24%, #9c7a3e 42%, #e6cf9c 60%, #8f6d38 80%, #c4a66b 100%);
+  --nacre: 255, 251, 247; --tint: 247, 236, 230;
+  position: relative; min-height: 100svh; color: var(--ink); font-family: Jost, system-ui, sans-serif; font-weight: 300;
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+}
+.nu[data-pal="rose"] { --tint: 248, 230, 228; --gold: #A9845A; }
+.nu[data-pal="bleu"] { --tint: 232, 238, 245; --gold: #9C8556; }
+.nu :where(button) { font: inherit; color: inherit; }
+.nu :where(p) { max-width: none; } /* le style global p{max-width:34ch} coupait les consignes */
+
+/* ---------- Ciel fixe : aube → altitude ---------- */
+.nu-sky { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #DCE3EA; }
+.nu-sky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.nu-sky-lo { object-position: 50% 30%; }
+.nu-sky-hi { opacity: 0; transition: opacity .25s linear; }
+.nu-sky::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 120% 70% at 50% 50%, rgba(var(--tint), .28), transparent 70%), linear-gradient(rgba(255, 255, 255, .1), rgba(var(--tint), .22)); }
+.nu-clouds { position: fixed; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+.nu-c { position: absolute; top: 0; width: min(calc(var(--w) * 1vw), calc(var(--w) * .62svh)); will-change: transform; }
+.nu-c img { display: block; width: 100%; height: auto; }
+.nu-low .nu-c:nth-child(3n+1) { display: none; }
+.nu-pal { position: fixed; z-index: 1; right: max(4vw, calc(50% - 360px)); top: 17svh; width: clamp(54px, 13vw, 96px); pointer-events: none; opacity: .92; will-change: transform; }
+.nu-pal img { display: block; width: 100%; filter: drop-shadow(0 18px 18px rgba(80, 60, 50, .18)); animation: nu-sway 7s ease-in-out infinite; transform-origin: 50% 0; }
+@keyframes nu-sway { 0%, 100% { transform: translateY(0) rotate(-1.6deg); } 50% { transform: translateY(-10px) rotate(1.6deg); } }
+
+/* ---------- Contenu : cartes de nacre à double filet d'or ---------- */
+.nu-main { position: relative; z-index: 2; padding: 0 16px 6svh; overflow-x: clip; opacity: 0; transition: opacity 1.2s ease; }
+.nu.is-in .nu-main { opacity: 1; }
+.nu-sec { display: grid; place-items: center; padding: 9svh 0; }
+.nu-sec.is-hero { min-height: 100svh; padding-top: 12svh; }
+.nu-card {
+  position: relative; width: 100%; max-width: 440px; box-sizing: border-box; padding: 40px 28px 36px; text-align: center; border-radius: 3px;
+  background: linear-gradient(165deg, rgba(var(--nacre), .5), rgba(var(--tint), .28) 55%, rgba(var(--nacre), .42));
+  -webkit-backdrop-filter: blur(7px) saturate(1.2); backdrop-filter: blur(7px) saturate(1.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 40px 70px -46px rgba(70, 50, 50, .55), 0 2px 10px -6px rgba(70, 50, 50, .2);
+}
+.nu-low .nu-card { -webkit-backdrop-filter: none; backdrop-filter: none; background: linear-gradient(165deg, rgba(var(--nacre), .78), rgba(var(--tint), .64)); }
+.nu-card::before, .nu-card::after { content: ""; position: absolute; pointer-events: none; }
+.nu-card::before { inset: 9px; border: 1px solid rgba(168, 136, 79, .5); }
+.nu-card::after { inset: 13px; border: 1px solid rgba(168, 136, 79, .2); }
+.nu-sec .nu-card { opacity: 0; translate: 0 34px; filter: blur(6px); transition: opacity 1.2s ease, translate 1.4s cubic-bezier(.2, .7, .2, 1), filter 1.2s ease; }
+.nu-sec.is-seen .nu-card { opacity: 1; translate: 0 0; filter: none; }
+.nu-still .nu-sec .nu-card { translate: none; filter: none; transition: opacity .6s; }
+.nu.is-gated .nu-after { display: none; }
+
+.nu-head small, .nu-kick { display: flex; align-items: center; justify-content: center; gap: 12px; font: 500 .62rem/1.3 Jost, sans-serif; letter-spacing: .32em; text-transform: uppercase; color: var(--gold); margin: 0; white-space: nowrap; }
+.nu-head small::before, .nu-head small::after, .nu-kick::before, .nu-kick::after { content: ""; width: clamp(10px, 5vw, 26px); height: 1px; flex: none; background: linear-gradient(90deg, transparent, var(--gold)); }
+.nu-head small::after, .nu-kick::after { transform: scaleX(-1); }
+.nu-head h2 { margin: 14px 0 0; font: 400 clamp(1.7rem, 7vw, 2.15rem)/1.12 Italiana, serif; letter-spacing: .02em; color: var(--ink); }
+.nu-sub { margin: 12px auto 0; max-width: 34ch; font-size: .92rem; line-height: 1.6; color: var(--muted); }
+.nu-names { margin: 16px 0 0; font: 400 clamp(2.6rem, 12vw, 3.5rem)/1.08 "Pinyon Script", cursive; background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .55)); padding: 0 .1em .08em; }
+.nu-names i { font-style: normal; font-size: .72em; }
+.nu-expect { margin: 10px 0 0; font: 400 1.25rem/1.3 Italiana, serif; letter-spacing: .03em; }
+.nu-due { margin: 6px 0 0; font: 300 italic 1.08rem/1.4 "Cormorant Garamond", serif; color: var(--muted); }
+.nu-intro { margin: 18px auto 0; max-width: 32ch; font-size: .95rem; line-height: 1.7; color: var(--muted); }
+.nu-medal { display: grid; place-items: center; width: 148px; height: 148px; margin: 0 auto 22px; border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 35% 30%, #fff, rgba(var(--tint), 1) 70%);
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, .78), 0 0 0 7px rgba(168, 136, 79, .7), 0 0 0 11px rgba(255, 255, 255, .35), 0 24px 40px -22px rgba(80, 55, 40, .7); }
+.nu-medal img { width: 100%; height: 100%; object-fit: cover; }
+.nu-medal b { font: 400 2.6rem/1 "Pinyon Script", cursive; background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.nu-medal b i { font-style: normal; font-size: .7em; margin: 0 .1em; }
+
+/* ---------- Date : écrite en or par l'étoile filante ---------- */
+.nu-sky-date { position: relative; margin: 18px -8px 0; aspect-ratio: 320 / 236; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; outline: none; }
+.nu-sky-date:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
+.nu-sky-date.is-drag { cursor: grabbing; }
+.nu-trail { position: absolute; left: 0; top: 0; width: 100%; height: auto; overflow: visible; }
+.nu-trail path { fill: none; stroke-linecap: round; }
+.nu-trail-guide { stroke: rgba(168, 136, 79, .35); stroke-width: 1; stroke-dasharray: 1 6; }
+.nu-trail-glow { stroke: #f4e2b5; stroke-width: 6; opacity: .55; }
+.nu-trail-line { stroke: url(#nuGold); stroke-width: 1.4; }
+.nu-shoot-halo { fill: #fff3cf; opacity: .9; }
+.nu-shoot { animation: nu-twinkle 1.8s ease-in-out infinite; }
+.is-written .nu-shoot { animation: none; opacity: 0; transition: opacity 1.2s ease .4s; }
+.is-written .nu-trail-guide { opacity: 0; transition: opacity .6s; }
+@keyframes nu-twinkle { 50% { opacity: .75; } }
+.nu-dt { position: absolute; left: 0; right: 0; bottom: 4%; display: grid; justify-items: center; pointer-events: none;
+  clip-path: inset(-20% calc((1 - var(--w, 0)) * 100%) -20% 0); opacity: calc(.25 + var(--w, 0) * .75); transition: opacity .3s; }
+.nu-dt b { display: block; font: 400 clamp(2.3rem, 10.5vw, 3rem)/1.02 "Pinyon Script", cursive; background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 .12em .06em; }
+.nu-dt span { margin-top: 12px; font: 300 1.05rem/1 "Cormorant Garamond", serif; letter-spacing: .32em; color: var(--ink); }
+.nu-gate-note { margin: 12px 0 0; font-size: .74rem; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); animation: nu-breathe 2.8s ease-in-out infinite; }
+.is-written .nu-gate-note { animation: none; opacity: .8; }
+@keyframes nu-breathe { 50% { opacity: .45; } }
+
+/* ---------- Compte à rebours : plaques de nacre en arche ---------- */
+.nu-cd { display: flex; justify-content: center; gap: 8px; margin-top: 22px; }
+.nu-cd div { width: 70px; padding: 15px 0 11px; border-radius: 35px 35px 6px 6px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, .55), rgba(var(--tint), .35)); box-shadow: inset 0 0 0 1px rgba(210, 182, 127, .6), inset 0 0 0 4px rgba(255, 255, 255, .7), 0 16px 24px -18px rgba(70, 50, 50, .6); }
+.nu-cd b { display: block; font: 300 2rem/1 "Cormorant Garamond", serif; font-variant-numeric: tabular-nums; color: var(--ink); }
+.nu-cd small { display: block; margin-top: 6px; font: 500 .5rem/1 Jost, sans-serif; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
+
+/* ---------- Révélation : ballon de soie, feuilles d'or teintées ---------- */
+.nu-rv { position: relative; display: block; width: min(56%, 190px); margin: 26px auto 0; padding: 0; border: 0; background: none; cursor: pointer; }
+.nu-rv-bal { position: relative; display: block; animation: nu-float 5s ease-in-out infinite; transition: transform .5s cubic-bezier(.3, 1.6, .5, 1), opacity .45s ease .05s, filter .45s; }
+.nu-rv-bal img { display: block; width: 100%; filter: drop-shadow(0 22px 22px rgba(80, 60, 55, .22)); }
+.nu-rv-bal i { position: absolute; inset: 0; background: var(--silk); mix-blend-mode: multiply; opacity: 0; transition: opacity .5s;
+  -webkit-mask: url(/img/nuage-ballon.webp) center/100% 100% no-repeat; mask: url(/img/nuage-ballon.webp) center/100% 100% no-repeat; }
+.nu-rv.is-tint .nu-rv-bal { transform: scale(1.08); }
+.nu-rv.is-tint .nu-rv-bal i { opacity: .85; }
+.nu-rv.is-open .nu-rv-bal { opacity: 0; transform: scale(1.35); filter: blur(4px); animation: none; }
+@keyframes nu-float { 0%, 100% { translate: 0 0; rotate: -1.5deg; } 50% { translate: 0 -9px; rotate: 1.5deg; } }
+.nu-rv-leaves { position: absolute; left: 50%; top: 32%; width: 0; height: 0; pointer-events: none; }
+.nu-rv-leaves i { position: absolute; left: -5px; top: -7px; width: 10px; height: 14px; opacity: 0; scale: var(--s);
+  background: linear-gradient(135deg, #fff6e0, var(--leaf) 45%, #b8955e 70%, #f3e4c4); clip-path: polygon(10% 0, 100% 12%, 88% 100%, 0 86%); }
+.nu-rv.is-open .nu-rv-leaves i { animation: nu-leaf 2.6s cubic-bezier(.15, .7, .3, 1) var(--d) forwards; }
+@keyframes nu-leaf {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0); }
+  12% { opacity: 1; }
+  45% { transform: translate(var(--x), var(--y)) rotate(calc(var(--r) * .5)); }
+  100% { opacity: 0; transform: translate(calc(var(--x) * 1.15), calc(var(--y) + var(--fall))) rotate(var(--r)); }
+}
+.nu-rv-hint { margin: 16px 0 0; font-size: .74rem; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); animation: nu-breathe 2.8s ease-in-out infinite; }
+.nu-rv-zone { position: relative; }
+.nu-rv-txt { position: absolute; left: 0; right: 0; top: 50%; translate: 0 -40%; display: grid; gap: 10px; margin: 0; opacity: 0; scale: .96; pointer-events: none; transition: opacity 1.4s ease .55s, scale 1.6s cubic-bezier(.2, .7, .2, 1) .55s; }
+.nu-rv-txt small { font: 500 .6rem/1 Jost, sans-serif; letter-spacing: .4em; text-transform: uppercase; color: var(--gold); }
+.nu-rv-txt b { font: 400 clamp(2.4rem, 11vw, 3.1rem)/1.1 "Pinyon Script", cursive; background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 .1em .08em; }
+.is-revealed .nu-rv-hint { opacity: 0; animation: none; transition: opacity .4s; }
+.is-revealed .nu-rv-txt { opacity: 1; scale: 1; }
+
+/* ---------- Programme : plaques reliées par un cordage doré ---------- */
+.nu-prog { position: relative; list-style: none; margin: 26px auto 0; padding: 0; max-width: 320px; display: grid; gap: 22px; }
+/* cordage en tronçons entre les plaques (il ne passe pas derrière : les plaques sont translucides) */
+.nu-prog li::before, .nu-prog li:last-child::after { content: ""; position: absolute; left: 50%; top: -22px; height: 22px; width: 3px; margin-left: -1.5px;
+  background: repeating-linear-gradient(160deg, #c9a865 0 3px, #8a6a36 3px 5px, #e9d5a3 5px 7px); border-radius: 2px; opacity: .85; }
+.nu-prog li:first-child::before { top: -14px; height: 14px; }
+.nu-prog li:last-child::after { top: auto; bottom: -14px; height: 14px; }
+.nu-prog li { position: relative; padding: 16px 18px 14px; background: linear-gradient(160deg, rgba(255, 255, 255, .55), rgba(var(--tint), .35));
+  box-shadow: inset 0 0 0 1px rgba(210, 182, 127, .55), 0 18px 26px -20px rgba(70, 50, 50, .6); border-radius: 2px; }
+.nu-prog time { display: block; font: 300 1.5rem/1 "Cormorant Garamond", serif; color: var(--gold-d); }
+.nu-prog h3 { margin: 6px 0 0; font: 400 1.15rem/1.25 Italiana, serif; letter-spacing: .02em; }
+.nu-prog p { margin: 4px 0 0; font-size: .82rem; color: var(--muted); }
+
+/* ---------- Thème : pastilles de soie ---------- */
+.nu-sw { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px 22px; list-style: none; margin: 24px 0 0; padding: 0; }
+.nu-sw li { display: grid; justify-items: center; gap: 9px; width: 70px; font-size: .78rem; color: var(--muted); }
+.nu-sw span { position: relative; width: 54px; height: 54px; border-radius: 50%; overflow: hidden;
+  background: linear-gradient(90deg, var(--sw) 50%, var(--sw2, var(--sw)) 50%);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .9), 0 0 0 2px rgba(168, 136, 79, .45), 0 12px 18px -12px rgba(60, 40, 30, .6); }
+.nu-sw span::after { content: ""; position: absolute; inset: 0; background: linear-gradient(125deg, transparent 20%, rgba(255, 255, 255, .55) 40%, transparent 55%, rgba(0, 0, 0, .1) 80%), radial-gradient(circle at 30% 25%, rgba(255, 255, 255, .5), transparent 45%); }
+
+/* ---------- Lieu, boutons ---------- */
+.nu-addr { margin: 12px auto 0; max-width: 30ch; line-height: 1.6; color: var(--muted); }
+.nu-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
+.nu-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 22px; border: 0; border-radius: 999px; cursor: pointer;
+  background: linear-gradient(135deg, #3D3229, #241c15); color: #F3E4C4; font: 400 .74rem/1 Jost, sans-serif; letter-spacing: .2em; text-transform: uppercase; text-decoration: none;
+  box-shadow: inset 0 0 0 1px rgba(210, 182, 127, .55), 0 14px 22px -14px rgba(40, 25, 15, .7); transition: transform .2s, box-shadow .2s; }
+.nu-btn:hover { transform: translateY(-1px); }
+.nu-btn svg { width: 16px; height: 16px; color: #D2B67F; }
+.nu-btn.ghost { background: rgba(255, 255, 255, .5); color: var(--ink); box-shadow: inset 0 0 0 1px rgba(168, 136, 79, .6); }
+.nu-btn.ghost svg { color: var(--gold); }
+.nu .wl { --wl-accent: var(--gold-d); margin-top: 20px; }
+
+/* ---------- Pronostics et réponse ---------- */
+.nu-guess, .nu-form { display: grid; gap: 16px; margin-top: 22px; text-align: left; }
+.nu-guess label, .nu-form label { display: grid; gap: 6px; font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-d); }
+.nu-guess input, .nu-form input, .nu-form textarea { width: 100%; box-sizing: border-box; padding: 11px 2px; border: 0; border-bottom: 1px solid rgba(168, 136, 79, .45); border-radius: 0; background: transparent;
+  font: 300 1rem/1.4 Jost, sans-serif; letter-spacing: 0; text-transform: none; color: var(--ink); outline: none; transition: border-color .2s; }
+.nu-form textarea { resize: vertical; min-height: 70px; }
+.nu-guess input:focus, .nu-form input:focus, .nu-form textarea:focus { border-bottom-color: var(--gold-d); }
+.nu-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.nu-choice button { min-height: 46px; border-radius: 999px; border: 0; cursor: pointer; background: rgba(255, 255, 255, .45); box-shadow: inset 0 0 0 1px rgba(168, 136, 79, .5); font-size: .9rem; transition: background .25s, color .25s; }
+.nu-choice button[aria-pressed="true"] { background: linear-gradient(135deg, #3D3229, #241c15); color: #F3E4C4; box-shadow: inset 0 0 0 1px rgba(210, 182, 127, .55); }
+.nu-guests span { display: inline-flex; align-items: center; gap: 16px; }
+.nu-guests button { width: 38px; height: 38px; border-radius: 50%; border: 0; cursor: pointer; background: rgba(255, 255, 255, .55); box-shadow: inset 0 0 0 1px rgba(168, 136, 79, .55); font-size: 1.1rem; }
+.nu-guests output { min-width: 1.5em; text-align: center; font: 300 1.6rem/1 "Cormorant Garamond", serif; color: var(--ink); letter-spacing: 0; }
+.nu-guests[hidden] { display: none; }
+.nu-err { margin: 0; font-size: .85rem; color: #a3402e; }
+.nu-send { width: 100%; margin-top: 6px; }
+.nu-thanks { display: grid; gap: 10px; justify-items: center; margin-top: 18px; }
+.nu-thanks small { font: 500 .62rem/1 Jost, sans-serif; letter-spacing: .36em; text-transform: uppercase; color: var(--gold); }
+.nu-thanks h3 { margin: 0; font: 400 2.4rem/1.1 "Pinyon Script", cursive; background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 .1em .06em; }
+.nu-thanks p { margin: 0; color: var(--muted); line-height: 1.6; }
+.nu-thanks .nu-btn { margin-top: 8px; }
+.nu-fly { position: fixed; z-index: 30; width: 70px; margin-left: -35px; pointer-events: none; animation: nu-fly 4s cubic-bezier(.45, 0, .7, .4) forwards; filter: drop-shadow(0 14px 14px rgba(70, 50, 40, .2)); }
+@keyframes nu-fly { 0% { opacity: 0; transform: translateY(20px) scale(.6); } 12% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translate(40px, -110svh) scale(.55) rotate(4deg); } }
+
+.nu-end { position: relative; z-index: 2; display: grid; justify-items: center; gap: 6px; padding: 8svh 16px 14svh; text-align: center; }
+.nu-end p { margin: 0; max-width: 24em; text-wrap: balance; font: 500 .62rem/1.8 Jost, sans-serif; letter-spacing: .32em; text-transform: uppercase; color: var(--gold-d); }
+.nu-end b { filter: drop-shadow(0 0 14px rgba(255, 250, 244, .9)); font: 400 2.6rem/1.2 "Pinyon Script", cursive; background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 .1em .06em; }
+.nu-end b i { font-style: normal; }
+.nu-replay { margin-top: 14px; padding: 10px 18px; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .55); box-shadow: inset 0 0 0 1px rgba(168, 136, 79, .5); font-size: .7rem; letter-spacing: .22em; text-transform: uppercase; cursor: pointer; color: var(--ink); }
+
+/* ---------- Son, « continuez » ---------- */
+.nu-snd { position: fixed; z-index: 60; top: max(14px, env(safe-area-inset-top)); right: 14px; width: 42px; height: 42px; display: grid; place-items: center; border: 0; border-radius: 50%; cursor: pointer;
+  background: rgba(255, 252, 248, .6); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 0 0 1px rgba(168, 136, 79, .5); color: var(--gold-d); }
+.nu-snd svg { width: 19px; height: 19px; }
+.nu-more { position: fixed; z-index: 5; left: 0; right: 0; bottom: max(18px, calc(100% - 100svh + 18px)); margin: 0; display: grid; justify-items: center; gap: 4px; pointer-events: none;
+  font: 500 .58rem/1 Jost, sans-serif; letter-spacing: .36em; text-transform: uppercase; color: var(--gold-d); opacity: 0; transition: opacity .8s; }
+.nu-more svg { width: 18px; height: 18px; animation: nu-down 2s ease-in-out infinite; }
+.nu-more.is-on { opacity: .9; }
+@keyframes nu-down { 50% { transform: translateY(5px); } }
+
+/* =========================== Ouverture =========================== */
+.nu-open { position: fixed; inset: 0; z-index: 50; overflow: hidden; background: #E7D9D2; --h: 0; user-select: none; -webkit-user-select: none; touch-action: none; }
+.nu-open[hidden] { display: none; }
+.nu-o-sky { position: absolute; left: 0; top: -12%; width: 100%; height: 124%; object-fit: cover; object-position: 50% 35%; transition: transform 2.6s cubic-bezier(.55, 0, .45, 1); }
+.nu-o-veil { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 45% at 50% 22%, rgba(255, 252, 246, .6), transparent 70%); }
+.nu-o-glow { position: absolute; left: 50%; bottom: 26svh; width: 70svh; height: 70svh; max-width: 140vw; max-height: 140vw; translate: -50% 0; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 236, 200, calc(.35 + var(--h) * .4)), rgba(255, 220, 180, 0) 62%); }
+/* La montgolfière : posée sur la mer de nuages, environ 50 % de la hauteur */
+.nu-o-bal { position: absolute; left: 50%; bottom: 19svh; width: min(64vw, 33svh, 330px); translate: -50% 0; transform-origin: 50% 85%;
+  transform: scale(calc(1 + var(--h) * .025), calc(1 + var(--h) * .035)); transition: transform .2s; animation: nu-bob 5.5s ease-in-out infinite; }
+.nu-o-bal img { display: block; width: 100%; filter: drop-shadow(0 26px 30px rgba(90, 60, 50, .22)); }
+@keyframes nu-bob { 0%, 100% { margin-bottom: 0; } 50% { margin-bottom: 6px; } }
+.nu-flame { position: absolute; left: 50%; top: 70.5%; width: 8%; height: 11%; translate: -50% 0; pointer-events: none; opacity: calc(.15 + var(--h)); }
+.nu-flame::before { content: ""; position: absolute; left: 50%; top: 0; width: 360%; height: 260%; translate: -50% -38%; border-radius: 50%; background: radial-gradient(circle, rgba(255, 210, 130, .65), rgba(255, 190, 110, 0) 60%); opacity: var(--h); }
+.nu-flame i { position: absolute; left: 50%; top: 4%; width: 60%; height: 80%; translate: -50% 0; border-radius: 50% 50% 45% 45% / 70% 70% 30% 30%;
+  background: radial-gradient(ellipse at 50% 80%, #fff8e4, #ffd27a 38%, #ff9f43 62%, rgba(255, 140, 50, 0) 75%); transform: scaleY(calc(.3 + var(--h) * .9)); transform-origin: 50% 100%; animation: nu-fire .18s ease-in-out infinite alternate; }
+@keyframes nu-fire { to { scale: 1.08 .92; } }
+.nu-o-cloud { position: absolute; left: 50%; pointer-events: none; }
+.nu-o-cloud img { display: block; width: 100%; }
+.nu-o-cloud.is-back { bottom: 17svh; width: max(150vw, 95svh); translate: -46% 0; opacity: .75; transition: transform 2.6s cubic-bezier(.55, 0, .45, 1); }
+.nu-o-cloud.is-front { bottom: calc(23svh - max(59vw, 35.4svh)); width: max(150vw, 90svh); translate: -52% 0; transition: transform 2.6s cubic-bezier(.55, 0, .45, 1); }
+.nu-o-cloud.is-mist { bottom: 44svh; width: max(140vw, 85svh); translate: -50% 0; opacity: .38; animation: nu-drift 26s ease-in-out infinite alternate; }
+@keyframes nu-drift { to { translate: -42% 0; } }
+.nu-o-text { position: absolute; left: 0; right: 0; top: max(9svh, calc(env(safe-area-inset-top) + 40px)); padding: 0 20px; text-align: center; transition: opacity .7s ease, transform 1.2s ease; }
+.nu-o-text .nu-names { margin-top: 14px; font-size: clamp(2.8rem, 13vw, 3.8rem); }
+.nu-o-text .nu-expect { margin-top: 6px; color: var(--ink); text-shadow: 0 0 18px rgba(255, 250, 244, .9); }
+.nu-o-text .nu-kick { color: var(--gold-d); white-space: nowrap; letter-spacing: .3em; }
+.nu-o-text .nu-names { filter: drop-shadow(0 0 14px rgba(255, 250, 244, .85)) drop-shadow(0 1px 0 rgba(255, 255, 255, .6)); }
+.nu-o-act { position: absolute; left: 0; right: 0; bottom: max(26px, calc(100% - 100svh + 26px)); display: grid; justify-items: center; gap: 14px; transition: opacity .6s ease; }
+.nu-o-hint { margin: 0; font: 500 .62rem/1 Jost, sans-serif; letter-spacing: .38em; text-transform: uppercase; color: #5f4b33; text-shadow: 0 0 12px rgba(255, 255, 255, .9); }
+.nu-hold { position: relative; width: 84px; height: 84px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; display: grid; place-items: center; touch-action: none;
+  background: rgba(255, 253, 248, .62); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: 0 16px 30px -16px rgba(80, 60, 40, .55); -webkit-touch-callout: none; }
+.nu-hold svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.nu-hold circle { fill: none; stroke-width: 1.4; }
+.nu-hold-bg { stroke: rgba(168, 136, 79, .35); }
+.nu-hold-fg { stroke: #A8884F; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: calc(100 - var(--h) * 100); }
+.nu-hold i { width: 14px; height: 14px; border-radius: 50%; background: var(--foil); box-shadow: 0 0 calc(10px + var(--h) * 22px) calc(3px + var(--h) * 8px) rgba(240, 210, 150, .85); transition: transform .3s; }
+.nu-open:not(.is-holding):not(.is-launch) .nu-hold::after { content: ""; position: absolute; inset: -1px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(168, 136, 79, .5); animation: nu-ring 2.6s ease-out infinite; }
+@keyframes nu-ring { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.5); opacity: 0; } }
+.nu-hold.is-nudge { animation: nu-nudge .5s ease; }
+@keyframes nu-nudge { 25% { transform: scale(.94); } 60% { transform: scale(1.04); } }
+.nu-o-white { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 60%, #fff, rgba(255, 252, 248, .96) 60%, rgba(248, 240, 236, .94)); opacity: 0; pointer-events: none; }
+
+/* Décollage : le texte s'efface, la montgolfière monte, la caméra la suit, puis on traverse les nuages */
+.nu-open.is-launch .nu-o-text, .nu-open.is-launch .nu-o-act { opacity: 0; }
+.nu-open.is-launch .nu-o-text { transform: translateY(-20px); }
+.nu-open.is-launch .nu-o-bal { animation: nu-lift 2.7s cubic-bezier(.5, 0, .7, .35) forwards; }
+@keyframes nu-lift { 0% { transform: scale(1.025, 1.035); } 12% { transform: translateY(1svh) scale(1.02, 1.03); } 100% { transform: translateY(-115svh) scale(.82); } }
+.nu-open.is-launch .nu-o-cloud.is-front { transform: translateY(60svh); }
+.nu-open.is-launch .nu-o-cloud.is-back { transform: translateY(35svh); }
+.nu-open.is-launch .nu-o-sky { transform: translateY(9%); }
+.nu-open.is-launch .nu-o-white { animation: nu-white 2.6s ease forwards; }
+@keyframes nu-white { 0%, 55% { opacity: 0; } 85%, 100% { opacity: 1; } }
+.nu-open.is-out { opacity: 0; transition: opacity .9s ease; pointer-events: none; }
+
+/* ---------- Mouvement réduit ---------- */
+.nu-still .nu-pal img, .nu-still .nu-o-bal, .nu-still .nu-o-cloud.is-mist, .nu-still .nu-rv-bal, .nu-still .nu-shoot, .nu-still .nu-flame i { animation: none; }
+.nu-still .nu-open.is-launch .nu-o-bal { animation: none; opacity: 0; transition: opacity .3s; }
+.nu-still .nu-open.is-launch .nu-o-white { animation: none; opacity: 1; transition: opacity .3s; }
+.nu-still .nu-rv.is-open .nu-rv-leaves i { animation: none; }
+
+/* ---------- Écrans larges et courts ---------- */
+@media (min-width: 760px) {
+  .nu-card { padding: 48px 44px 42px; max-width: 480px; }
+  .nu-o-text .nu-names { font-size: 4.2rem; }
+}
+@media (max-height: 640px) {
+  .nu-o-text { top: 5svh; }
+  .nu-o-text .nu-names { font-size: 2.6rem; margin-top: 8px; }
+  .nu-o-bal { width: min(58vw, 30svh); bottom: 19svh; }
+  .nu-hold { width: 70px; height: 70px; }
+  .nu-medal { width: 120px; height: 120px; }
+}
+@media (max-height: 540px) {
+  .nu-o-text .nu-expect { display: none; }
+  .nu-o-act { gap: 8px; }
+}

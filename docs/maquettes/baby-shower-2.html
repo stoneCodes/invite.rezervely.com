@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Baby shower n° 2 : deux propositions</title>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Jost:wght@300;400;500&family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1E1812;--ink2:#2B2419;--gold:#A8884F;--gold2:#D2B67F;--muted:#7a6a55;--ivory:#F3EBDC;
+  --foil:linear-gradient(115deg,#9c7a3e 0%,#e9d5a3 22%,#b8955e 40%,#f6e7c1 58%,#a8884f 78%,#d9c08a 100%)}
+*{box-sizing:border-box}
+body{margin:0;background:#EDE5D6;font-family:Jost,sans-serif;font-weight:300;color:var(--ink2);-webkit-font-smoothing:antialiased}
+.board{width:1640px;padding:56px 70px 70px}
+.board>header{display:flex;align-items:baseline;gap:22px;margin-bottom:40px}
+.board>header h1{margin:0;font:400 2.6rem/1 Italiana,serif;letter-spacing:.04em}
+.board>header p{margin:0;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;font-size:.8rem}
+.prop{margin-bottom:80px}
+.prop-t{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+.prop-t b{font:400 1.9rem/1 Italiana,serif;letter-spacing:.06em}
+.prop-t span{font:400 1.7rem/1 "Pinyon Script",cursive;color:var(--gold)}
+.prop-t i{flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+.lead{margin:0 0 34px;max-width:1150px;color:var(--muted);font-size:1rem;line-height:1.65}
+.phones{display:flex;gap:56px;align-items:flex-start}
+.ph{width:330px;flex:none}
+.scr{position:relative;width:330px;height:714px;border-radius:50px;border:10px solid #111;overflow:hidden;
+  box-shadow:0 0 0 1.5px #3a3a3a,0 40px 80px -40px rgba(50,35,15,.6)}
+.scr::before{content:"";position:absolute;z-index:20;top:9px;left:50%;width:96px;height:27px;margin-left:-48px;border-radius:20px;background:#000}
+.cap{margin-top:20px}
+.cap b{display:block;font:400 1.2rem/1.2 Italiana,serif;color:var(--ink)}
+.cap b small{font:500 .62rem/1 Jost;letter-spacing:.3em;color:var(--gold);margin-right:10px;vertical-align:3px}
+.cap p{margin:7px 0 0;font-size:.88rem;line-height:1.55;color:var(--muted)}
+.side{flex:1;padding-top:6px}
+.side h3{margin:0 0 10px;font:500 .66rem/1 Jost;letter-spacing:.34em;text-transform:uppercase;color:var(--gold)}
+.side ul{margin:0 0 26px;padding:0;list-style:none}
+.side li{position:relative;padding:0 0 9px 20px;font-size:.9rem;line-height:1.5;color:var(--ink2)}
+.side li::before{content:"";position:absolute;left:2px;top:.55em;width:5px;height:5px;transform:rotate(45deg);background:var(--gold)}
+.sw{display:flex;gap:8px;margin-bottom:26px}
+.sw i{width:38px;height:38px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06),0 6px 14px -8px rgba(0,0,0,.4)}
+
+/* ---------- textes communs dans les écrans ---------- */
+.k{font:500 .54rem/1 Jost;letter-spacing:.42em;text-transform:uppercase}
+.nm{font:400 2.7rem/1 "Pinyon Script",cursive}
+.it{font:400 1.5rem/1.1 Italiana,serif;letter-spacing:.04em}
+.foiltxt{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ab{position:absolute;left:0;right:0;text-align:center}
+
+/* =========== A · LE MOBILE DE BERCEAU =========== */
+.a-bg{position:absolute;inset:0;background:
+  radial-gradient(ellipse 80% 45% at 50% 30%,rgba(255,244,222,.85),transparent 70%),
+  radial-gradient(ellipse 120% 60% at 50% 110%,rgba(140,150,120,.35),transparent 70%),
+  repeating-linear-gradient(90deg,rgba(90,80,60,.035) 0 1px,transparent 1px 3px),
+  repeating-linear-gradient(0deg,rgba(90,80,60,.03) 0 1px,transparent 1px 4px),
+  linear-gradient(#E9E2D2,#D9D4C0 60%,#C9CBB4)}
+.a-bg.dim{background:
+  radial-gradient(ellipse 70% 40% at 50% 26%,rgba(255,236,200,.75),transparent 70%),
+  repeating-linear-gradient(90deg,rgba(60,60,40,.05) 0 1px,transparent 1px 3px),
+  linear-gradient(#B9BBA3,#9FA48B 55%,#8A917A)}
+.a-ui{color:#3d3a2c}
+.ring{position:absolute;left:50%;bottom:34px;width:64px;height:64px;margin-left:-32px;border-radius:50%;
+  border:1px solid rgba(168,136,79,.8);display:grid;place-items:center;background:rgba(255,252,244,.55);backdrop-filter:blur(6px)}
+.ring::after{content:"";position:absolute;inset:5px;border-radius:50%;border:1px solid rgba(168,136,79,.3)}
+.ring svg{width:26px;height:26px;fill:none;stroke:var(--gold);stroke-width:1.2;stroke-linecap:round}
+.hint{position:absolute;left:0;right:0;bottom:110px;text-align:center}
+.plate{position:absolute;left:50%;top:418px;transform:translateX(-50%);padding:14px 30px 13px;border-radius:50%/60%;
+  background:linear-gradient(160deg,#f7ecd0,#d4b984 45%,#b8955e 70%,#e8d3a1);box-shadow:inset 0 1px 1px rgba(255,255,255,.8),inset 0 -2px 3px rgba(90,60,20,.4),0 14px 22px -12px rgba(60,40,10,.7)}
+.plate span{display:block;font:400 1.55rem/1 "Pinyon Script";color:#5a4320;text-shadow:0 1px 0 rgba(255,240,200,.7);white-space:nowrap}
+.card-h{position:absolute;width:236px;left:47px;padding:16px 18px 14px;background:linear-gradient(#FFFDF7,#F6EEDF);border-radius:3px;
+  box-shadow:0 18px 26px -18px rgba(50,40,20,.6),inset 0 0 0 1px rgba(168,136,79,.35),inset 0 0 0 4px #FFFDF7,inset 0 0 0 5px rgba(168,136,79,.18)}
+.card-h .t{font:300 1.6rem/1 "Cormorant Garamond";color:var(--gold)}
+.card-h .d{font:400 1.05rem/1.25 Italiana,serif;color:var(--ink2);margin-top:4px}
+.card-h .s{font-size:.7rem;color:var(--muted);margin-top:3px}
+
+/* =========== B · SUR UN PETIT NUAGE =========== */
+.b-bg{position:absolute;inset:0;background:
+  radial-gradient(ellipse 90% 40% at 50% 100%,rgba(255,255,255,.95),transparent 70%),
+  radial-gradient(ellipse 70% 30% at 30% 18%,rgba(255,236,224,.9),transparent 70%),
+  linear-gradient(#DCE3EA 0%,#EADFDC 38%,#F5E6DA 62%,#FBF4EC)}
+.b-bg.high{background:
+  radial-gradient(ellipse 60% 30% at 70% 20%,rgba(255,250,240,.9),transparent 70%),
+  linear-gradient(#C9D4E0 0%,#DCDDE6 45%,#EEDFDA 80%,#F7EDE6)}
+.cl{position:absolute;border-radius:50%;background:radial-gradient(ellipse at 50% 35%,#fff 0,#fff 45%,rgba(255,255,255,0) 72%);filter:blur(1.5px)}
+.hold{position:absolute;left:50%;bottom:36px;width:76px;height:76px;margin-left:-38px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(255,253,248,.6);backdrop-filter:blur(8px);box-shadow:0 10px 24px -14px rgba(80,60,40,.5)}
+.hold svg.pr{position:absolute;inset:0;transform:rotate(-90deg)}
+.hold svg.pr circle{fill:none;stroke-width:1.5}
+.hold i{width:12px;height:12px;border-radius:50%;background:var(--foil);box-shadow:0 0 14px 4px rgba(233,213,163,.8)}
+.cd{display:flex;gap:9px;justify-content:center}
+.cd div{width:60px;padding:11px 0 9px;text-align:center;border-radius:30px 30px 6px 6px;
+  background:linear-gradient(160deg,rgba(255,255,255,.95),rgba(246,238,236,.85));box-shadow:0 14px 22px -16px rgba(70,60,80,.5),inset 0 0 0 1px rgba(210,182,127,.55)}
+.cd b{display:block;font:300 1.7rem/1 "Cormorant Garamond";color:var(--ink2)}
+.cd small{display:block;margin-top:4px;font:500 .44rem/1 Jost;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+</style></head>
+<body><div class="board">
+<header><h1>Baby shower n° 2</h1><p>Deux propositions · à choisir</p></header>
+
+<!-- ======================= A ======================= -->
+<section class="prop">
+  <div class="prop-t"><b>A · Le mobile</b><span>Doux rêves</span><i></i></div>
+  <p class="lead">Un mobile de berceau d'artisan (fils de laiton doré, lune et étoiles en porcelaine, petit nuage en laine feutrée) suspendu dans une chambre baignée de lumière.
+    On le fait tourner du doigt, une boîte à musique démarre, puis on descend le long de ses fils : chaque section est une carte suspendue qui se balance selon la vitesse du défilement.</p>
+  <div class="phones">
+    <div class="ph">
+      <div class="scr"><div class="a-bg dim"></div>
+        <svg id="mob" class="ab" style="top:0" width="310" height="420" viewBox="0 0 310 420"></svg>
+        <div class="plate"><span>Léa &amp; Samuel</span></div>
+        <div class="hint a-ui"><div class="k" style="color:#5b4d2e">Une petite étoile arrive</div></div>
+        <div class="ring"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.05-4.95"/><path d="M17.5 3.5v3.6h-3.6"/></svg></div>
+      </div>
+      <div class="cap"><b><small>I</small>L'ouverture</b><p>Faire tourner le mobile au doigt : les pendentifs tournoient, la boîte à musique joue, les prénoms sont gravés sur une plaque de laiton.</p></div>
+    </div>
+    <div class="ph">
+      <div class="scr"><div class="a-bg"></div>
+        <svg id="star" class="ab" style="top:0" width="310" height="560" viewBox="0 0 310 560"></svg>
+        <div class="ab k" style="top:96px;color:var(--gold)">Le grand jour</div>
+        <div class="ab" style="bottom:70px"><div class="it" style="color:var(--ink2)">Samedi 14 mars 2027</div><div style="margin-top:8px;font-size:.78rem;color:var(--muted)">à 15 h · Domaine des Tilleuls</div></div>
+      </div>
+      <div class="cap"><b><small>II</small>La date</b><p>Une étoile en porcelaine pend au bout d'un fil. On la touche : elle se retourne lentement, son dos doré porte la date gravée. Obligatoire avant la suite.</p></div>
+    </div>
+    <div class="ph">
+      <div class="scr"><div class="a-bg"></div>
+        <svg id="bar" class="ab" style="top:0" width="310" height="714" viewBox="0 0 310 714"></svg>
+        <div class="ab k" style="top:66px;color:var(--gold)">Le programme</div>
+        <div class="card-h" style="top:178px;transform:rotate(-2.2deg)"><div class="t">15 h</div><div class="d">Accueil et thé</div><div class="s">Dans le jardin</div></div>
+        <div class="card-h" style="top:338px;transform:rotate(1.6deg)"><div class="t">16 h</div><div class="d">Ouverture des cadeaux</div><div class="s">Au salon</div></div>
+        <div class="card-h" style="top:498px;transform:rotate(-1deg)"><div class="t">17 h 30</div><div class="d">Pronostics et gâteau</div><div class="s">Résultat à la naissance</div></div>
+      </div>
+      <div class="cap"><b><small>III</small>Les sections</b><p>Chaque section est une carte ivoire bordée d'or, pendue à un fil : elle se balance quand on fait défiler, puis s'immobilise.</p></div>
+    </div>
+    <div class="side">
+      <h3>Palette</h3>
+      <div class="sw"><i style="background:#F3EBDC"></i><i style="background:#C9CBB4"></i><i style="background:#8A917A"></i><i style="background:#D9C9A8"></i><i style="background:var(--foil)"></i></div>
+      <h3>Matières</h3>
+      <ul><li>Laiton doré, porcelaine mate, laine feutrée</li><li>Lin naturel, bois clair</li><li>Cartes ivoire à double filet d'or</li></ul>
+      <h3>Pourquoi c'est différent</h3>
+      <ul><li>Objets réels en volume, pas de papier découpé (ce qui le distingue d'« Il était une fois »)</li><li>On défile de haut en bas, on ne tourne pas de pages</li><li>Fonctionne pour fille, garçon ou surprise</li></ul>
+      <h3>Images à fournir</h3>
+      <ul><li>La chambre floue, lumière du soir</li><li>Le mobile entier, détouré</li><li>Lune, étoile (recto et verso doré), nuage, détourés</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= B ======================= -->
+<section class="prop">
+  <div class="prop-t"><b>B · Sur un petit nuage</b><span>Le ciel pour vous</span><i></i></div>
+  <p class="lead">Une montgolfière en soie ivoire, filet doré, nacelle en osier, posée sur un nuage à l'aube.
+    On maintient le doigt pour la gonfler, la flamme s'allume et elle décolle : on monte dans un ciel nacré, à travers des couches de nuages. Option : la révélation fille ou garçon.</p>
+  <div class="phones">
+    <div class="ph">
+      <div class="scr"><div class="b-bg"></div>
+        <div class="cl" style="left:-60px;bottom:120px;width:260px;height:90px"></div>
+        <div class="cl" style="right:-80px;bottom:150px;width:260px;height:80px;opacity:.8"></div>
+        <svg id="balloon" class="ab" style="top:168px" width="310" height="440" viewBox="0 0 310 440"></svg>
+        <div class="cl" style="left:-40px;bottom:-30px;width:420px;height:200px"></div>
+        <div class="ab" style="top:62px"><div class="k" style="color:var(--gold)">Une naissance s'annonce</div><div class="nm foiltxt" style="margin-top:12px;filter:drop-shadow(0 1px 0 rgba(90,60,20,.3)) brightness(.85)">Léa &amp; Samuel</div></div>
+        <div class="ab k" style="bottom:126px;color:#7c6a52">Maintenez pour gonfler</div>
+        <div class="hold"><svg class="pr" viewBox="0 0 76 76"><circle cx="38" cy="38" r="36" stroke="rgba(168,136,79,.25)"/><circle cx="38" cy="38" r="36" stroke="#A8884F" stroke-dasharray="226" stroke-dashoffset="150" stroke-linecap="round"/></svg><i></i></div>
+      </div>
+      <div class="cap"><b><small>I</small>L'ouverture</b><p>Maintenir le doigt : l'anneau doré se remplit, la soie se tend, la flamme s'allume, puis la montgolfière s'élève et nous emmène.</p></div>
+    </div>
+    <div class="ph">
+      <div class="scr"><div class="b-bg high"></div>
+        <div class="cl" style="left:-80px;top:430px;width:300px;height:110px"></div>
+        <div class="cl" style="right:-90px;top:500px;width:300px;height:120px"></div>
+        <svg id="trail" class="ab" style="top:0" width="310" height="714" viewBox="0 0 310 714"></svg>
+        <div class="ab k" style="top:120px;color:var(--gold)">Notez la date</div>
+        <div class="ab" style="top:230px"><div class="nm foiltxt" style="font-size:2.9rem;line-height:1.1;filter:drop-shadow(0 1px 0 rgba(90,60,20,.35)) brightness(.82)">Samedi<br>14 mars</div><div style="margin-top:12px;font:300 1.2rem/1 'Cormorant Garamond';letter-spacing:.3em;color:var(--ink2)">2027 · 15 H</div></div>
+        <div class="cl" style="left:-40px;bottom:-40px;width:420px;height:180px"></div>
+      </div>
+      <div class="cap"><b><small>II</small>La date</b><p>Un oiseau de papier d'or vole en laissant une traînée de lumière : on la suit du doigt, et la date s'écrit dans le ciel en lettres d'or. Obligatoire.</p></div>
+    </div>
+    <div class="ph">
+      <div class="scr"><div class="b-bg high"></div>
+        <div class="cl" style="left:-70px;top:200px;width:260px;height:80px;opacity:.7"></div>
+        <div class="ab k" style="top:72px;color:var(--gold)">Dans</div>
+        <div class="ab" style="top:96px"><div class="cd"><div><b>116</b><small>jours</small></div><div><b>07</b><small>heures</small></div><div><b>42</b><small>min</small></div></div></div>
+        <svg id="reveal" class="ab" style="top:230px" width="310" height="300" viewBox="0 0 310 300"></svg>
+        <div class="ab" style="top:486px"><div class="k" style="color:var(--gold)">Option · la révélation</div><div class="it" style="margin-top:12px;color:var(--ink2)">C'est une fille</div><div style="margin-top:8px;font-size:.78rem;color:var(--muted)">après avoir touché le ballon de soie</div></div>
+        <div class="cl" style="left:-40px;bottom:-90px;width:420px;height:150px"></div>
+      </div>
+      <div class="cap"><b><small>III</small>Les sections</b><p>Compte à rebours sur des plaques de nacre. Si les parents le veulent, un ballon de soie libère des feuilles d'or rose ou bleu.</p></div>
+    </div>
+    <div class="side">
+      <h3>Palette</h3>
+      <div class="sw"><i style="background:#FBF4EC"></i><i style="background:#F5E6DA"></i><i style="background:#DCE3EA"></i><i style="background:#EADFDC"></i><i style="background:var(--foil)"></i></div>
+      <h3>Matières</h3>
+      <ul><li>Soie ivoire, filet et cordages dorés, osier</li><li>Ciel nacré à l'aube, nuages vaporeux</li><li>Plaques de nacre, feuille d'or</li></ul>
+      <h3>Pourquoi c'est différent</h3>
+      <ul><li>Une ascension : on monte au lieu de descendre</li><li>Ciel photographique, aucun papier</li><li>La révélation fille ou garçon, très demandée</li></ul>
+      <h3>Images à fournir</h3>
+      <ul><li>Ciel de l'aube en hauteur, et ciel au-dessus des nuages</li><li>La montgolfière détourée</li><li>Trois nappes de nuages détourées</li></ul>
+    </div>
+  </div>
+</section>
+</div>
+
+<script>
+const NS="http://www.w3.org/2000/svg";
+const defs=`<defs>
+ <linearGradient id="gw" x1="0" x2="1"><stop offset="0" stop-color="#9c7a3e"/><stop offset=".4" stop-color="#f1deb0"/><stop offset=".7" stop-color="#b8955e"/><stop offset="1" stop-color="#e2c992"/></linearGradient>
+ <radialGradient id="por" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#F1ECE2"/><stop offset="1" stop-color="#CFC6B4"/></radialGradient>
+ <radialGradient id="felt" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#F6F2E8"/><stop offset="1" stop-color="#C9C7B2"/></radialGradient>
+ <linearGradient id="goldf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e7c1"/><stop offset=".35" stop-color="#c9a865"/><stop offset=".6" stop-color="#9c7a3e"/><stop offset="1" stop-color="#e9d5a3"/></linearGradient>
+ <filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#3a2c14" flood-opacity=".35"/></filter>
+ <filter id="sh2" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#5b4a3a" flood-opacity=".28"/></filter>
+ <filter id="glow"><feGaussianBlur stdDeviation="3"/></filter>
+</defs>`;
+function star(cx,cy,r,rot=0){let p=[];for(let i=0;i<10;i++){const a=(i*36-90+rot)*Math.PI/180,rr=i%2?r*.48:r;p.push((cx+rr*Math.cos(a)).toFixed(1)+","+(cy+rr*Math.sin(a)).toFixed(1))}return p.join(" ")}
+function moon(cx,cy,r){return `<path d="M${cx},${cy-r} A${r},${r} 0 1,0 ${cx},${cy+r} A${r*.78},${r*.82} 0 1,1 ${cx},${cy-r}Z" fill="url(#por)" filter="url(#sh)"/>`}
+function cloud(cx,cy,s){return `<g transform="translate(${cx},${cy}) scale(${s})" filter="url(#sh)"><path d="M-30,10 a14,14 0 0,1 4,-26 a18,18 0 0,1 32,-6 a14,14 0 0,1 24,12 a12,12 0 0,1 0,24 h-56 a10,10 0 0,1 -4,-4Z" fill="url(#felt)"/></g>`}
+function thread(x,y1,y2){return `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="#b8955e" stroke-width=".7" opacity=".85"/>`}
+
+/* A1 : mobile */
+(function(){let s=defs;
+ s+=thread(155,0,52);
+ s+=`<circle cx="155" cy="58" r="6" fill="none" stroke="url(#gw)" stroke-width="2"/>`;
+ // bras courbes
+ s+=`<path d="M60,112 Q155,60 250,112" fill="none" stroke="url(#gw)" stroke-width="2.4" stroke-linecap="round"/>`;
+ s+=`<path d="M95,214 Q155,178 215,214" fill="none" stroke="url(#gw)" stroke-width="2" stroke-linecap="round"/>`;
+ s+=thread(155,64,196);
+ s+=`<circle cx="60" cy="112" r="2.6" fill="url(#gw)"/><circle cx="250" cy="112" r="2.6" fill="url(#gw)"/><circle cx="95" cy="214" r="2.2" fill="url(#gw)"/><circle cx="215" cy="214" r="2.2" fill="url(#gw)"/>`;
+ s+=thread(60,112,232)+moon(91,262,30);
+ s+=thread(250,112,190)+`<polygon points="${star(250,214,24,6)}" fill="url(#por)" filter="url(#sh)"/>`;
+ s+=thread(155,93,140)+cloud(150,156,.95);
+ s+=thread(95,214,300)+`<polygon points="${star(95,318,17,-8)}" fill="url(#goldf)" filter="url(#sh)"/>`;
+ s+=thread(215,214,330)+`<polygon points="${star(215,348,15,12)}" fill="url(#por)" filter="url(#sh)"/>`;
+ s+=thread(155,214,272)+`<circle cx="155" cy="286" r="12" fill="url(#por)" filter="url(#sh)"/>`;
+ document.getElementById("mob").innerHTML=s})();
+
+/* A2 : étoile à retourner (verso doré) */
+(function(){let s=defs+thread(155,0,170);
+ s+=`<circle cx="155" cy="174" r="4" fill="none" stroke="url(#gw)" stroke-width="1.6"/>`;
+ s+=`<ellipse cx="155" cy="300" rx="120" ry="110" fill="#fff6dc" opacity=".55" filter="url(#glow)"/>`;
+ s+=`<polygon points="${star(155,300,118,0)}" fill="url(#goldf)" filter="url(#sh2)"/>`;
+ s+=`<polygon points="${star(155,300,108,0)}" fill="none" stroke="#f6e7c1" stroke-width=".8" opacity=".7"/>`;
+ s+=`<text x="155" y="292" text-anchor="middle" font-family="Cormorant Garamond" font-weight="300" font-size="44" fill="#5a4320" opacity=".9">14</text>`;
+ s+=`<text x="155" y="318" text-anchor="middle" font-family="Jost" font-weight="500" font-size="9.5" letter-spacing="3.6" fill="#5a4320">MARS 2027</text>`;
+ document.getElementById("star").innerHTML=s})();
+
+/* A3 : barre de laiton + fils des cartes */
+(function(){let s=defs;
+ s+=`<path d="M40,118 Q155,104 270,118" fill="none" stroke="url(#gw)" stroke-width="3" stroke-linecap="round"/>`;
+ s+=`<circle cx="40" cy="118" r="3" fill="url(#gw)"/><circle cx="270" cy="118" r="3" fill="url(#gw)"/>`;
+ s+=thread(120,112,180)+thread(196,112,180)+thread(160,250,340)+thread(150,412,500);
+ s+=`<polygon points="${star(268,620,12,10)}" fill="url(#por)" filter="url(#sh)"/>`+thread(268,560,608);
+ s+=`<polygon points="${star(40,520,9,-10)}" fill="url(#goldf)" filter="url(#sh)"/>`+thread(40,440,511);
+ document.getElementById("bar").innerHTML=s})();
+
+/* B1 : montgolfière en soie */
+(function(){let s=defs+`<defs><linearGradient id="silk" x1="0" x2="1"><stop offset="0" stop-color="#d9cfc0"/><stop offset=".35" stop-color="#fffaf1"/><stop offset=".55" stop-color="#f7efe2"/><stop offset="1" stop-color="#c9bba6"/></linearGradient>
+ <linearGradient id="wick" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#c8a26a"/><stop offset="1" stop-color="#8a6a3e"/></linearGradient></defs>`;
+ s+=`<ellipse cx="155" cy="150" rx="150" ry="150" fill="#fff4e0" opacity=".55" filter="url(#glow)"/>`;
+ s+=`<path id="env" d="M155,20 C240,20 268,92 262,140 C255,198 196,236 182,268 L128,268 C114,236 55,198 48,140 C42,92 70,20 155,20Z" fill="url(#silk)" filter="url(#sh2)"/>`;
+ // fuseaux dorés
+ [[-1],[-.55],[0],[.55],[1]].forEach(([k])=>{s+=`<path d="M155,20 C${155+k*95},28 ${155+k*120},110 ${155+k*96},170 C${155+k*70},226 ${155+k*30},252 ${155+k*24},268" fill="none" stroke="url(#gw)" stroke-width="${k?1:1.3}" opacity=".9"/>`});
+ s+=`<path d="M60,175 Q155,200 250,175" fill="none" stroke="url(#gw)" stroke-width=".9" opacity=".8"/>`;
+ s+=`<rect x="126" y="266" width="58" height="7" rx="3" fill="url(#gw)"/>`;
+ s+=`<line x1="130" y1="273" x2="138" y2="312" stroke="#b8955e" stroke-width=".9"/><line x1="180" y1="273" x2="172" y2="312" stroke="#b8955e" stroke-width=".9"/>`;
+ s+=`<ellipse cx="155" cy="300" rx="7" ry="11" fill="#ffd27a" opacity=".85" filter="url(#glow)"/>`;
+ s+=`<path d="M134,312 h42 l-5,30 a4,4 0 0,1 -4,3 h-24 a4,4 0 0,1 -4,-3Z" fill="url(#wick)" filter="url(#sh)"/>`;
+ for(let y=318;y<342;y+=5)s+=`<line x1="137" y1="${y}" x2="173" y2="${y}" stroke="#6f532e" stroke-width=".5" opacity=".5"/>`;
+ s+=`<rect x="132" y="310" width="46" height="4" rx="2" fill="#a8814c"/>`;
+ document.getElementById("balloon").innerHTML=s})();
+
+/* B2 : oiseau d'or et traînée */
+(function(){let s=defs;
+ s+=`<path d="M-10,212 C60,150 120,250 190,190 S300,160 330,130" fill="none" stroke="#f1deb0" stroke-width="5" opacity=".35" filter="url(#glow)"/>`;
+ s+=`<path d="M-10,212 C60,150 120,250 190,190 S300,160 330,130" fill="none" stroke="url(#gw)" stroke-width="1.1" stroke-dasharray="1 5" stroke-linecap="round"/>`;
+ s+=`<g transform="translate(262,150) rotate(-20)" filter="url(#sh)"><path d="M0,0 L-26,-10 L-14,0 L-26,10Z" fill="url(#goldf)"/><path d="M-14,0 L-4,-16 L2,0Z" fill="#f6e7c1"/></g>`;
+ for(let i=0;i<14;i++){const x=20+i*19,y=200-Math.sin(i*.8)*22-i*3;s+=`<circle cx="${x}" cy="${y}" r="${(i%3?0.9:1.6)}" fill="#fff8e6" opacity=".9"/>`}
+ document.getElementById("trail").innerHTML=s})();
+
+/* B3 : ballon de soie (révélation) */
+(function(){let s=defs+`<defs><radialGradient id="rose" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#fff6f3"/><stop offset=".5" stop-color="#ecc9c2"/><stop offset="1" stop-color="#c79a92"/></radialGradient></defs>`;
+ s+=`<path d="M155,190 C150,215 162,240 152,280" fill="none" stroke="url(#gw)" stroke-width=".9"/>`;
+ s+=`<ellipse cx="155" cy="110" rx="70" ry="82" fill="url(#rose)" filter="url(#sh2)"/>`;
+ s+=`<ellipse cx="130" cy="78" rx="16" ry="26" fill="#fff" opacity=".45" transform="rotate(-25 130 78)"/>`;
+ s+=`<path d="M149,190 l6,8 l6,-8Z" fill="#c79a92"/>`;
+ [[60,60,-30],[250,80,20],[44,170,40],[268,190,-12],[96,22,8],[222,30,-40]].forEach(([x,y,r])=>{s+=`<rect x="${x}" y="${y}" width="9" height="12" fill="url(#goldf)" transform="rotate(${r} ${x} ${y})" opacity=".9"/>`});
+ document.getElementById("reveal").innerHTML=s})();
+</script>
+</body></html>

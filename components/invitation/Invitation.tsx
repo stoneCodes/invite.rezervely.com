@@ -13,6 +13,7 @@ import "./toast/toast.css";
 import "./gateau/gateau.css";
 import "./pinata/pinata.css";
 import "./livre/livre.css";
+import "./nuage/nuage.css";
 import "./dot/dot.css";
 import "./std/std.css";
 import { useEffect, useRef, useState } from "react";
@@ -28,6 +29,7 @@ import { mountToast } from "./toast/toast";
 import { mountGateau } from "./gateau/gateau";
 import { mountPinata } from "./pinata/pinata";
 import { mountLivre } from "./livre/livre";
+import { mountNuage } from "./nuage/nuage";
 import { mountDot } from "./dot/dot";
 import { mountStd } from "./std/std";
 import type { InvitationData, TemplateId } from "@/lib/types";
@@ -75,6 +77,7 @@ export default function Invitation(input: Props) {
   if (props.template === "std-nuit-doree") return <OwnEngine {...props} mount={(r, d, o) => mountStd(r, d, o, "nuit")} />;
   if (props.template === "std-domaine") return <OwnEngine {...props} mount={(r, d, o) => mountStd(r, d, o, "domaine")} />;
   if (props.template === "livre") return <OwnEngine {...props} mount={mountLivre} />;
+  if (props.template === "nuage") return <OwnEngine {...props} mount={mountNuage} />;
   return <ClassicInvitation {...props} />;
 }
 

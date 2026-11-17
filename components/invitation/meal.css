@@ -35,5 +35,6 @@ body[data-tpl="boule-neige"] .ml{--ml-accent:#B8955E;--ml-on:#33281E}
 body[data-tpl="origami"] .ml{--ml-accent:#4B3A30;--ml-on:#FBF6EE}
 body[data-tpl="velours"] .ml{--ml-accent:#C9A46A;--ml-on:#38252A}
 body[data-tpl="livre"] .ml{--ml-accent:#A8884F;--ml-on:#FFFAF1}
+body[data-tpl="nuage"] .ml{--ml-accent:#3D3229;--ml-on:#F3E4C4}
 body[data-tpl="dot"] .ml{--ml-accent:#B8955A;--ml-on:#2B2419}
 .fx .ml{--ml-accent:var(--fx-accent);--ml-on:var(--fx-accent-ink)}

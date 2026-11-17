@@ -1,7 +1,7 @@
 // Modèle baby shower « Il était une fois » / « Once Upon a Time » (id livre, styles lv-).
-// Un livre en toile de lin : on soulève la couverture, puis on tourne les pages. Chaque page porte une scène
-// en papier découpé blanc (plans superposés, teintés par la palette, ombre entre les plans, lumière derrière)
-// qui se déplie en relief quand la page se découvre.
+// Un livre en toile de lin : on soulève la couverture, puis on tourne les pages. En haut de chaque page, une
+// photographie de nature morte imprimée dans la page (bords fondus dans le papier, texture du papier par-dessus),
+// qui apparaît quand la page se découvre (choix de Glad, 17 nov. 2026).
 // Même contrat que les autres modèles (InvitationData ; options onRsvp, skipIntro, noGate, music) :
 // titre + photo → date derrière une tirette (obligatoire) → compte à rebours → programme → thème → lieu
 // → liste de souhaits → pronostics (facultatif) → réponse, puis le livre se referme sur « … à suivre ».
@@ -29,10 +29,13 @@ const ICON = {
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const ease = (k) => 1 - Math.pow(1 - k, 3);
 
-/** Un plan de papier découpé. x, b, w : position (gauche, bas) et largeur en % de la scène ; d : profondeur 0 (fond) → 4 (devant).
- *  cls : classes en plus (lv-float = flotte doucement, lv-top = accroché en haut) ; tint : couleur imposée (nuages du thème). */
-const L = (img, x, b, w, d, cls = "", tint = "") => `<span class="lv-l lv-d${d} ${cls}" style="left:${x}%;${cls.includes("lv-top") ? `top:${b}%` : `bottom:${b}%`};width:${w}%;--d:${d};--img:url(${IMG}${img}.webp)${tint ? `;--tint:${tint}` : ""}" aria-hidden="true"><img src="${IMG}${img}.webp" alt="" draggable="false" decoding="async"></span>`;
-const HILLS = (from = 2) => L("colline-3", -18, 17, 136, from) + L("colline-2", -8, 6, 128, from + 1) + L("colline-1", -14, -6, 132, Math.min(4, from + 2));
+/** Photos de nature morte livrées (public/img/livre-photo-<page>.webp). Une page absente de la liste prend PHOTO_REPLI. */
+const PHOTOS_PRETES = ["titre", "date", "count", "programme", "theme", "lieu", "souhaits", "pronostics", "reponse"];
+const PHOTO_REPLI = "chambre";
+const photoOf = (id) => `${IMG}${PHOTOS_PRETES.includes(id) ? `photo-${id}` : PHOTO_REPLI}.webp`;
+/** Une photo imprimée dans la page : bords fondus dans le papier ; en option un calque imprimé en or (vel). */
+const PH = (src, { vel = "", alt = "", pos = "" } = {}) =>
+  `<figure class="lv-pf"><span class="lv-pf-img"><img src="${src}" alt="${alt}" draggable="false" decoding="async"${pos ? ` style="object-position:${pos}"` : ""}></span>${vel}</figure>`;
 
 export function mountLivre(root, data, OPTS = {}) {
   const D = data;
@@ -70,14 +73,13 @@ export function mountLivre(root, data, OPTS = {}) {
   const wish = wishHtml(D);
   const head = (k, t) => `<header class="lv-head"><small>${k}</small><h2>${t}</h2></header>`;
 
-  /* ---------- Les pages : une scène en papier découpé + le texte ---------- */
+  /* ---------- Les pages : une photo collée + le texte ---------- */
   const pages = [];
   const page = (id, scene, text, cls = "") => pages.push({ id, scene, text, cls });
 
-  const medal = `<span class="lv-medal" aria-hidden="${photo ? "false" : "true"}" style="--d:2">${photo ? `<img src="${esc(photo)}" alt="${esc(V.photoAlt)}">` : `<b>${ini}</b>`}</span>`;
   page("titre",
-    L("croissant", 72, 7, 15, 0, "lv-top lv-float") + L("etoile-1", 10, 9, 7, 0, "lv-top lv-float") + L("etoile-3", 26, 22, 5, 0, "lv-top lv-float") + L("etoile-5", 58, 7, 5, 0, "lv-top lv-float")
-      + L("nuage-3", 4, 52, 30, 1, "lv-float") + L("nuage-2", 68, 40, 34, 1, "lv-float") + medal + HILLS(2),
+    photo ? PH(esc(photo), { alt: esc(V.photoAlt), pos: "50% 30%" })
+      : PH(photoOf("titre"), { vel: `<span class="lv-vel lv-vel-ini"><b>${ini}</b></span>` }),
     `<p class="lv-once">${V.once}</p><h1 class="lv-names">${namesHtml}</h1>
      <p class="lv-expect">${esc(V.expect(two, baby.sex))}</p>
      ${dueTxt ? `<p class="lv-due">${esc(dueTxt)}</p>` : ""}
@@ -85,8 +87,7 @@ export function mountLivre(root, data, OPTS = {}) {
      <p class="lv-swipe">${ICON.swipe}<span>${V.turn}</span></p>`, "is-title");
 
   page("date",
-    L("etoile-2", 8, 8, 6, 0, "lv-top lv-float") + L("etoile-4", 30, 18, 4.5, 0, "lv-top lv-float") + L("etoile-6", 84, 12, 6, 0, "lv-top lv-float") + L("etoile-7", 64, 26, 4, 0, "lv-top lv-float")
-      + `<span class="lv-moon" style="--d:1" aria-hidden="true">${L("lune", 0, 0, 100, 1)}</span>` + L("nuage-5", 64, 56, 30, 1, "lv-float") + HILLS(2),
+    PH(photoOf("date"), { vel: `<span class="lv-vel lv-vel-cover"><small>${V.dateEyebrow}</small><i class="lv-vel-star"></i></span>` }),
     `${head(V.dateEyebrow, V.dateTitle)}
      <div class="lv-date" aria-live="polite"><b>${when ? esc(when.day) : ""}</b><span>${when ? esc(`${when.month} ${when.year}`) : ""}</span><em>${when ? esc(when.full) : ""}</em></div>
      <div class="lv-pull" role="slider" tabindex="0" aria-label="${esc(V.pullAria)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -96,35 +97,30 @@ export function mountLivre(root, data, OPTS = {}) {
      <p class="lv-pull-note">${V.gate}</p>`, "is-date");
 
   page("count",
-    L("nuage-1", -6, 58, 34, 0, "lv-float") + L("nuage-4", 70, 62, 32, 0, "lv-float")
-      + `<span class="lv-stars" style="--d:2">${["etoile-1", "etoile-3", "etoile-5", "etoile-7"].map((s, i) => `<span class="lv-star">${L(s, 0, 0, 100, 2, "lv-float")}<b data-c="${i}">0</b><small>${[V.days, V.hours, V.min, V.sec][i]}</small></span>`).join("")}</span>`
-      + L("colline-2", -10, -2, 130, 3) + L("colline-1", -16, -12, 134, 4),
+    PH(photoOf("count"), { vel: `<span class="lv-vel lv-vel-cd">${[V.days, V.hours, V.min, V.sec].map((u, i) => `<span><b data-c="${i}">0</b><small>${u}</small></span>`).join("")}</span>` }),
     `${head(V.countdown, V.countTitle)}${when ? `<p class="lv-sub">${esc(when.full)}</p>` : ""}`);
 
   if (programme.length) page("programme",
-    L("fanions-1", -4, -6, 108, 0, "lv-top") + L("nuage-3", 70, 46, 26, 0, "lv-float") + L("cypres", 10, 14, 9, 1) + L("arbre-rond", 74, 12, 22, 1) + L("colline-3", -18, 6, 136, 2) + L("cypres", 84, 4, 7, 3) + L("colline-1", -10, -10, 128, 4),
+    PH(photoOf("programme")),
     `${head(V.program, V.program)}<ol class="lv-prog">${programme.map((x, i) => `<li><span class="lv-flag" aria-hidden="true">${i + 1}</span><div><time>${esc(x.t)}</time><h3>${esc(x.title)}</h3>${x.note ? `<p>${esc(x.note)}</p>` : ""}</div></li>`).join("")}</ol>`, "is-prog");
 
   if (showTheme) {
-    const spots = [[4, 56, 34], [56, 60, 38], [24, 30, 36], [66, 26, 30]];
-    const clouds = colors.length ? colors.map((c, i) => L(`nuage-${[2, 1, 5, 3][i]}`, spots[i][0], spots[i][1], spots[i][2], 1 + (i % 2), "lv-float lv-tinted", esc(c.women || c.hex))).join("")
-      : L("nuage-2", 8, 54, 34, 1, "lv-float") + L("nuage-1", 54, 40, 40, 2, "lv-float");
-    page("theme", L("etoile-2", 46, 8, 5, 0, "lv-top lv-float") + clouds + L("colline-2", -10, -4, 128, 3) + L("colline-1", -16, -14, 134, 4),
+    page("theme", PH(photoOf("theme")),
       `${head(V.theme, dc.title ? esc(dc.title) : V.colors)}${dc.note ? `<p class="lv-sub">${esc(dc.note)}</p>` : ""}
        ${colors.length ? `<ul class="lv-sw">${colors.map((c) => `<li><span style="--sw:${esc(c.women || c.hex)}${c.men && c.men !== c.women ? `;--sw2:${esc(c.men)}` : ""}"></span>${esc(c.name)}</li>`).join("")}</ul>` : ""}`);
   }
 
   if (venueQ) page("lieu",
-    L("nuage-4", 58, 64, 30, 0, "lv-float") + L("oiseau-2", 12, 70, 11, 0, "lv-float") + L("colline-3", -18, 14, 136, 1) + L("saule", 2, 10, 26, 1) + L("maison", 30, 8, 40, 2) + L("arbre-rond", 74, 10, 22, 2) + L("colline-1", -10, -12, 128, 3) + L("fleurs", 66, -6, 34, 4),
+    PH(photoOf("lieu")),
     `${head(V.venue, esc(D.venue?.name || ""))}<p class="lv-addr">${esc(D.venue?.address || "")}</p>
      <div class="lv-btns"><a class="lv-btn" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${ICON.pin}${V.route}</a><a class="lv-btn ghost" href="${calUrl}" target="_blank" rel="noopener noreferrer">${ICON.cal}${esc(C.addCal)}</a></div>`);
 
   if (wish) page("souhaits",
-    L("nuage-2", -4, 58, 32, 0, "lv-float") + L("montgolfiere", 56, 22, 24, 1, "lv-float lv-drift") + L("oiseau-1", 14, 46, 12, 1, "lv-float") + L("oiseau-3", 30, 62, 9, 0, "lv-float") + L("nuage-5", 6, 22, 30, 2, "lv-float") + L("colline-2", -10, -4, 128, 3) + L("colline-1", -16, -14, 134, 4),
+    PH(photoOf("souhaits")),
     `${head(T.wish.eyebrow, T.wish.title)}${wish}`);
 
   if (baby.guesses) page("pronostics",
-    L("mobile", 56, -4, 30, 0, "lv-top lv-swing") + L("etoile-4", 10, 14, 6, 0, "lv-top lv-float") + L("etoile-6", 30, 30, 4.5, 0, "lv-top lv-float") + L("colline-3", -18, 4, 136, 1) + L("berceau", 12, 6, 44, 2) + L("colline-1", -14, -14, 132, 3),
+    PH(photoOf("pronostics")),
     `${head(V.guessEyebrow, V.guessTitle)}<p class="lv-sub">${V.guessHelp}</p>
      <div class="lv-guess">
        <label>${V.gName}<input name="gname" maxlength="40" placeholder="${esc(V.gNamePh)}" autocomplete="off"></label>
@@ -133,7 +129,7 @@ export function mountLivre(root, data, OPTS = {}) {
      </div>`);
 
   page("reponse",
-    L("fanions-2", -4, -6, 108, 0, "lv-top") + L("oiseau-4", 70, 50, 10, 0, "lv-float") + L("oiseau-1", 82, 64, 8, 1, "lv-float") + L("colline-3", -18, 8, 136, 1) + L("arbre-rond", 4, 8, 20, 2) + L("colline-2", -10, -4, 128, 3) + L("fleurs", 34, -8, 44, 4),
+    PH(photoOf("reponse")),
     `<div class="lv-rsvp">${head(V.rsvpEyebrow, V.rsvp)}${D.rsvpBy ? `<p class="lv-sub">${esc(D.rsvpBy)}</p>` : ""}
      <form class="lv-form" novalidate>
        <div class="lv-choice" role="group" aria-label="${esc(V.rsvp)}"><button type="button" data-a="yes" aria-pressed="true">${V.yes}</button><button type="button" data-a="no" aria-pressed="false">${V.no}</button></div>
@@ -151,7 +147,7 @@ export function mountLivre(root, data, OPTS = {}) {
   /* ---------- Balisage ---------- */
   const leaf = (p, i) => `<article class="lv-leaf ${p.cls}" data-i="${i}" aria-label="${esc(V.pageAria(i + 1, N))}">
     <div class="lv-face lv-front">
-      <div class="lv-scene" aria-hidden="${p.id === "titre" && photo ? "false" : "true"}"><span class="lv-glow" aria-hidden="true"></span>${p.scene}</div>
+      <div class="lv-scene" aria-hidden="${p.id === "titre" && photo ? "false" : "true"}">${p.scene}</div>
       <div class="lv-text">${p.text}</div>
       <span class="lv-folio" aria-hidden="true">${i + 1}</span>
     </div>

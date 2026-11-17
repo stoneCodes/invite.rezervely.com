@@ -166,6 +166,7 @@ export function sampleFor(template: TemplateId, lang: Lang = "fr"): InvitationDa
   if (template === "velours") return veloursSampleData(lang);
   if (template === "dot") return dotSampleData(lang);
   if (isBirthday(template)) return birthdaySample(template, lang);
+  if (template === "nuage") { const b = babySample(lang); return { ...b, baby: { ...b.baby!, sex: "fille", reveal: true } }; }
   if (isBaby(template)) return babySample(lang);
   return sampleData(lang);
 }

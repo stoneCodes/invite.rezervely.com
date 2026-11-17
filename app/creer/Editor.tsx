@@ -441,6 +441,10 @@ export default function Editor({ prices = null, order }: { prices?: Prices | nul
               <p className="ed-help">{e_.babySexHelp}</p>
               <label>{e_.babyDue}<input id="bdue" type="month" value={bb.due} onChange={(e) => setBb({ due: e.target.value })} /></label>
               <label className="ed-check"><input type="checkbox" checked={bb.guesses} onChange={(e) => setBb({ guesses: e.target.checked })} /> {e_.babyGuesses}</label>
+              {template === "nuage" && <>
+                <label className="ed-check"><input type="checkbox" checked={!!bb.reveal && bb.sex !== "surprise"} disabled={bb.sex === "surprise"} onChange={(e) => setBb({ reveal: e.target.checked })} /> {e_.babyReveal}</label>
+                <p className="ed-help">{bb.sex === "surprise" ? e_.babyRevealSurprise : e_.babyRevealHelp}</p>
+              </>}
             </Sec>
           )}
 
